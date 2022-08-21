@@ -20,3 +20,5 @@ vendor/
 
 docs/*.json
 docs/*.yaml
+
+internal/agent/k8s.config.test.yml

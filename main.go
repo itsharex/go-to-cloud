@@ -13,8 +13,10 @@ func main() {
 	flag.Parse()
 
 	if strings.EqualFold("web", *aType) {
+		// web模式运行
 		_ = routers.SetRouters().Run(":8080")
 	} else {
+		// k8s agent模式运行
 		_ = agent.Startup()
 	}
 }

@@ -12,7 +12,7 @@ import (
 func (client *Client) GetOrAddNamespace(ns *string) (*core.Namespace, error) {
 
 	kind := "Namespace"
-	apiVer := "meta"
+	apiVer := "v1"
 	namespace := applyCore.NamespaceApplyConfiguration{
 		TypeMetaApplyConfiguration: meta.TypeMetaApplyConfiguration{
 			Kind:       &kind,

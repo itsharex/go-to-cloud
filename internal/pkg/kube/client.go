@@ -4,6 +4,7 @@ import (
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 type Client struct {
@@ -13,8 +14,9 @@ type Client struct {
 
 // NewClient 创建k8s客户端对象
 func NewClient(config *string) (*Client, error) {
-	restCfg, err := clientcmd.BuildConfigFromFlags("", *config)
-
+	kubeConfig, err := clientcmd.BuildConfigFromKubeconfigGetter("", func() (*api.Config, error) {
+		return clientcmd.Load([]byte(*config))
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +26,7 @@ func NewClient(config *string) (*Client, error) {
 		Force:        true,
 	}
 
-	c, e := kubernetes.NewForConfig(restCfg)
+	c, e := kubernetes.NewForConfig(kubeConfig)
 
 	if e != nil {
 		return nil, e
