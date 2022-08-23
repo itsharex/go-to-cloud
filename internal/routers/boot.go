@@ -35,10 +35,10 @@ func SetRouters() (routers *gin.Engine) {
 			gin.Logger(),
 			middlewares.CorsHandler(),
 		)
-	}
 
-	// 构建swagger
-	buildSwagger(routers)
+		// 构建swagger
+		buildSwagger(routers)
+	}
 
 	// 构建路由
 	buildRouters(routers)
@@ -52,6 +52,6 @@ func SetRouters() (routers *gin.Engine) {
 
 // buildSwagger 创建swagger文档
 func buildSwagger(router *gin.Engine) {
-	docs.SwaggerInfo.BasePath = "/user"
+	docs.SwaggerInfo.BasePath = "/"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }

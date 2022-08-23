@@ -12,6 +12,10 @@ type Client struct {
 	defaultApplyOptions *meta.ApplyOptions
 }
 
+func (client *Client) GetClientSet() *kubernetes.Clientset {
+	return client.clientSet
+}
+
 // NewClient 创建k8s客户端对象
 func NewClient(config *string) (*Client, error) {
 	kubeConfig, err := clientcmd.BuildConfigFromKubeconfigGetter("", func() (*api.Config, error) {

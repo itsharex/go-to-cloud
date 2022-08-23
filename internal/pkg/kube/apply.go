@@ -10,15 +10,24 @@ import (
 )
 
 // ApplyDeployment kubectl apply -f yml
+// Kind: Deployment
 func (client *Client) ApplyDeployment(namespace *string, yml *applyApps.DeploymentApplyConfiguration) (*apps.Deployment, error) {
 	client.getOrCreateNamespace(namespace)
 	return client.clientSet.AppsV1().Deployments(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
 // ApplyService kubectl apply -f yml
+// Kind: Service
 func (client *Client) ApplyService(namespace *string, yml *applyCore.ServiceApplyConfiguration) (*core.Service, error) {
 	client.getOrCreateNamespace(namespace)
 	return client.clientSet.CoreV1().Services(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
+}
+
+// ApplyPod kubectl apply -f yml
+// Kind: Pod
+func (client *Client) ApplyPod(namespace *string, yml *applyCore.PodApplyConfiguration) (*core.Pod, error) {
+	client.getOrCreateNamespace(namespace)
+	return client.clientSet.CoreV1().Pods(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
 const namespace_yml = `

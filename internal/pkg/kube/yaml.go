@@ -99,6 +99,24 @@ func (cfg *AppDeployConfig) validate(args ...string) error {
 	return nil
 }
 
+func GetYamlFromPodTemplate(podTpl *PodApplyConfig) (*string, error) {
+	tpl, err := template.New("k8s").Parse(YamlTplPod)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := new(bytes.Buffer)
+	err = tpl.Execute(buf, *podTpl)
+
+	if err != nil {
+		return nil, err
+	}
+
+	yml := strings.TrimSpace(buf.String())
+
+	return &yml, nil
+}
+
 // GetYamlFromTemple 从模板创建service.yaml
 // @appName 应用名称
 // @servicePort 服务暴露端口(port）
@@ -262,6 +280,44 @@ type AppDeployConfig struct {
 	ResourceLimit *ResLimits             //	资源限制
 	Dependencies  []DependContainer      // 依赖容器
 }
+
+type PodPort struct {
+	Port     int
+	HostPort int
+}
+type PodContainer struct {
+	Image string
+	Name  string
+	TTY   bool
+	Ports []PodPort
+}
+
+type PodApplyConfig struct {
+	Name       string         // Pod名称
+	Containers []PodContainer // 容器列表
+}
+
+// YamlTplPod Pod方式Yaml模板
+const YamlTplPod = `
+apiVersion: "v1"
+kind: "Pod"
+metadata:
+  name: "{{.Name}}-pod"
+spec:
+  containers:
+{{- range .Containers}}
+  - image: "{{.Image}}"
+    name: "{{.Name}}"
+    tty: {{.TTY}}
+{{- if .Ports}}
+{{- range .Ports}}
+    ports:
+    - containerPort: {{.Port}}
+      hostPort: {{.HostPort}}
+{{- end}}
+{{- end}}
+{{- end}}
+`
 
 // YamlTplService Service ClusterIP方式Yaml模板
 const YamlTplService = `
