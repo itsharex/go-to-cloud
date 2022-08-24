@@ -1,0 +1,5 @@
+db:
+  user: 数据库用户名
+  pwd: 数据库密码
+  host: 主机地址(127.0.0.1)
+  database: gotocloud # 数据库名，默认不用修改

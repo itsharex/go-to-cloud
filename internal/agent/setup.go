@@ -7,7 +7,7 @@ import (
 	cfgcorev1 "k8s.io/client-go/applyconfigurations/core/v1"
 )
 
-// Setup 安装Pod
+// Setup 安装Agent
 func Setup(k8sConfig, namespace *string, pod *kube.AppDeployConfig) error {
 	client, err := kube.NewClient(k8sConfig)
 

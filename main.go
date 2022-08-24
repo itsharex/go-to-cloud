@@ -2,12 +2,16 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/routers"
 	"strings"
 )
 
 var aType = flag.String("type", "agent", "运行方式: agent / web")
 var aPort = flag.String("port", ":8080", "端口")
+
+var confFile *string
 
 func main() {
 	flag.Parse()
@@ -22,4 +26,11 @@ func main() {
 		// TODO: k8s agent模式运行
 		// _ = agent.Startup()
 	}
+}
+
+func init() {
+	envName := conf.Environment.GetEnvName()
+
+	var tmp string
+	tmp, confFile = fmt.Sprintf("appsettings.%s.yaml", *envName), &tmp
 }
