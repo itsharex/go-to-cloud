@@ -3,12 +3,12 @@ package agent
 import (
 	"fmt"
 	"go-to-cloud/internal/pkg/kube"
-	v1 "k8s.io/api/core/v1"
-	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
+	appv1 "k8s.io/client-go/applyconfigurations/apps/v1"
+	cfgcorev1 "k8s.io/client-go/applyconfigurations/core/v1"
 )
 
-// Setup 将Agent以静态Pod方式安装至k8s
-func Setup(k8sConfig, namespace *string, pod *kube.PodApplyConfig) (*v1.Pod, error) {
+// Setup 安装Pod
+func Setup(k8sConfig, namespace *string, pod *kube.AppDeployConfig) error {
 	client, err := kube.NewClient(k8sConfig)
 
 	_, err = client.GetOrAddNamespace(namespace)
@@ -16,16 +16,32 @@ func Setup(k8sConfig, namespace *string, pod *kube.PodApplyConfig) (*v1.Pod, err
 		panic(err)
 	}
 
-	yml, err := kube.GetYamlFromPodTemplate(pod)
+	deploy, service, err := kube.GetYamlFromTemple(pod)
 	if err != nil {
 		panic(err)
 	}
 
-	podConfig := corev1.PodApplyConfiguration{}
-	if err := kube.DecodeYaml(yml, &podConfig); err != nil {
+	deployConfig := appv1.DeploymentApplyConfiguration{}
+	if err = kube.DecodeYaml(deploy, &deployConfig); err != nil {
 		fmt.Println(err)
-		return nil, err
+		panic(err)
+
+	}
+	serviceConfig := cfgcorev1.ServiceApplyConfiguration{}
+	if err = kube.DecodeYaml(service, &serviceConfig); err != nil {
+		fmt.Println(err)
+		panic(err)
 	}
 
-	return client.ApplyPod(namespace, &podConfig)
+	if _, err = client.ApplyDeployment(namespace, &deployConfig); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+
+	if _, err = client.ApplyService(namespace, &serviceConfig); err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+
+	return nil
 }

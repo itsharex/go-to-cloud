@@ -57,7 +57,7 @@ func (cfg *AppDeployConfig) validate(args ...string) error {
 			if p.NodePort > 0 {
 				cfg.PortType = "NodePort"
 				if p.NodePort < 30000 || p.NodePort > 32767 {
-					errors.New("NodePort端口范围：30000～32767；0时表示使用ClusterIP")
+					return errors.New("NodePort端口范围：30000～32767；0时表示使用ClusterIP")
 				}
 			}
 
@@ -97,24 +97,6 @@ func (cfg *AppDeployConfig) validate(args ...string) error {
 	}
 
 	return nil
-}
-
-func GetYamlFromPodTemplate(podTpl *PodApplyConfig) (*string, error) {
-	tpl, err := template.New("k8s").Parse(YamlTplPod)
-	if err != nil {
-		return nil, err
-	}
-
-	buf := new(bytes.Buffer)
-	err = tpl.Execute(buf, *podTpl)
-
-	if err != nil {
-		return nil, err
-	}
-
-	yml := strings.TrimSpace(buf.String())
-
-	return &yml, nil
 }
 
 // GetYamlFromTemple 从模板创建service.yaml
@@ -291,33 +273,6 @@ type PodContainer struct {
 	TTY   bool
 	Ports []PodPort
 }
-
-type PodApplyConfig struct {
-	Name       string         // Pod名称
-	Containers []PodContainer // 容器列表
-}
-
-// YamlTplPod Pod方式Yaml模板
-const YamlTplPod = `
-apiVersion: "v1"
-kind: "Pod"
-metadata:
-  name: "{{.Name}}-pod"
-spec:
-  containers:
-{{- range .Containers}}
-  - image: "{{.Image}}"
-    name: "{{.Name}}"
-    tty: {{.TTY}}
-{{- if .Ports}}
-{{- range .Ports}}
-    ports:
-    - containerPort: {{.Port}}
-      hostPort: {{.HostPort}}
-{{- end}}
-{{- end}}
-{{- end}}
-`
 
 // YamlTplService Service ClusterIP方式Yaml模板
 const YamlTplService = `

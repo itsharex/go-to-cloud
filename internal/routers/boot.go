@@ -17,7 +17,7 @@ func SetRouters() (routers *gin.Engine) {
 	routers = gin.New()
 
 	// 生产模式配置
-	if conf.Enviroment.IsProduction() {
+	if conf.Environment.IsProduction() {
 		gin.SetMode(gin.ReleaseMode)   // 生产模式
 		gin.DefaultWriter = io.Discard // 禁用 gin 输出接口访问日志
 
@@ -28,7 +28,7 @@ func SetRouters() (routers *gin.Engine) {
 	}
 
 	// 开发模式配置
-	if conf.Enviroment.IsDevelopment() {
+	if conf.Environment.IsDevelopment() {
 		gin.SetMode(gin.DebugMode) // 调试模式
 		routers.Use(
 			middlewares.GenericRecovery(),

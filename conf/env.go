@@ -15,10 +15,10 @@ func (env *Env) IsProduction() bool {
 	return strings.EqualFold("Production", env.Name)
 }
 
-var Enviroment *Env
+var Environment *Env
 
 func init() {
-	Enviroment = &Env{
+	Environment = &Env{
 		Name:     "Development",
 		Debugger: false,
 	}

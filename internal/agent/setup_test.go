@@ -9,28 +9,32 @@ import (
 	"text/template"
 )
 
-var podApplyCfg = &kube.PodApplyConfig{
+var agentApplyCfg = &kube.AppDeployConfig{
 	Name: "go-to-cloud-agent",
-	Containers: []kube.PodContainer{
+	Ports: []kube.Port{
 		{
-			Image: "nginx:latest", // "go-to-cloud-docker.pkg.coding.net/devops/repo/kaniko:latest"
-			Name:  "agent",
-			TTY:   true,
-			Ports: []kube.PodPort{
-				{
-					Port:     80,
-					HostPort: 10080,
-				},
-			},
+			ServicePort:   8080,
+			ContainerPort: 8080,
+			NodePort:      31080,
+			PortName:      "go-to-cloud-agent",
 		},
 	},
+	PortType: "NodePort",
+	Image:    "nginx:latest",
+	Replicas: 1,
 }
 
 func TestSetupAgentPodYaml(t *testing.T) {
-	tpl, err := template.New("pod").Parse(kube.YamlTplPod)
+	tpl1, err := template.New("testing").Parse(kube.YamlTplService)
 	assert.NoError(t, err)
-	assert.NotNil(t, tpl)
-	err = tpl.Execute(os.Stdout, podApplyCfg)
+	assert.NotNil(t, tpl1)
+	err = tpl1.Execute(os.Stdout, agentApplyCfg)
+	assert.NoError(t, err)
+
+	tpl2, err := template.New("testing").Parse(kube.YamlTplDeployment)
+	assert.NoError(t, err)
+	assert.NotNil(t, tpl2)
+	err = tpl1.Execute(os.Stdout, agentApplyCfg)
 	assert.NoError(t, err)
 }
 
@@ -41,13 +45,11 @@ func TestSetupAgentPod(t *testing.T) {
 
 	ns := "go-to-cloud"
 
-	file, err := os.Open("k8s.config.test.yml")
+	file, err := os.Open("setup_test.yml")
 	defer file.Close()
 	k8scfgbyte, err := io.ReadAll(file)
 	assert.NoError(t, err)
 	k8scfg := string(k8scfgbyte)
 
-	pod, err := Setup(&k8scfg, &ns, podApplyCfg)
-	assert.NoError(t, err)
-	assert.NotNil(t, pod)
+	assert.NoError(t, Setup(&k8scfg, &ns, agentApplyCfg))
 }

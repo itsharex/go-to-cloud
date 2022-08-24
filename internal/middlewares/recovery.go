@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/pkg/response"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -17,7 +16,7 @@ func GenericRecovery() gin.HandlerFunc {
 	return gin.RecoveryWithWriter(DefaultErrorWriter, func(c *gin.Context, err interface{}) {
 		// 这里针对发生的panic等异常进行统一响应即
 		errStr := ""
-		if conf.Enviroment.Debugger {
+		if conf.Environment.Debugger {
 			errStr = fmt.Sprintf("%v", err)
 		}
 		response.GetResponse().SetHttpCode(http.StatusInternalServerError).FailCode(c, http.StatusInternalServerError, errStr)
@@ -33,6 +32,5 @@ func (p *PanicExceptionRecord) Write(b []byte) (n int, err error) {
 	build.WriteString(s1)
 	build.Write(b)
 	errStr := build.String()
-	log.Fatal(errors.New(errStr))
 	return len(errStr), errors.New(errStr)
 }
