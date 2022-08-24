@@ -47,7 +47,7 @@ func TestYamlTemplateParser(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, config.validate())
+	assert.Error(t, config.validate())
 
 	tpl, err := template.New("deploy").Parse(YamlTplDeployment)
 	assert.NoError(t, err)
