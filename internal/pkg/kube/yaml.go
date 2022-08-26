@@ -274,6 +274,13 @@ type PodContainer struct {
 	Ports []PodPort
 }
 
+const namespace_yml = `
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{.Namespace}}
+`
+
 // YamlTplService Service ClusterIP方式Yaml模板
 const YamlTplService = `
 apiVersion: v1

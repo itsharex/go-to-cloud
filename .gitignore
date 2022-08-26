@@ -21,8 +21,6 @@ vendor/
 docs/*.json
 docs/*.yaml
 
-# 测试文件
-internal/agent/setup_test.yml
-
 # 配置文件
 conf/appsettings.*.yaml
+internal/agent/k8s.config.test.yml
