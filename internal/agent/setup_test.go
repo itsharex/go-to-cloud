@@ -1,12 +1,13 @@
 package agent
 
 import (
-	"github.com/stretchr/testify/assert"
 	"go-to-cloud/internal/pkg/kube"
 	"io"
 	"os"
 	"testing"
 	"text/template"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var agentApplyCfg = &kube.AppDeployConfig{
@@ -51,5 +52,5 @@ func TestSetupAgentPod(t *testing.T) {
 	assert.NoError(t, err)
 	k8scfg := string(k8scfgbyte)
 
-	assert.NoError(t, Setup(&k8scfg, &ns, agentApplyCfg))
+	assert.NoError(t, kube.Setup(&k8scfg, &ns, agentApplyCfg))
 }
