@@ -8,7 +8,7 @@ import "go-to-cloud/internal/pkg/kube"
 // image: agent镜像地址
 // nodePort: agent对外服务端口
 func Startup(k8sConfig, namespace, image *string, nodePort int) error {
-	return kube.Setup(k8sConfig, namespace, &kube.AppDeployConfig{
+	return kube.Apply(k8sConfig, namespace, &kube.AppDeployConfig{
 		Name: "go-to-cloud-agent",
 		Ports: []kube.Port{
 			{

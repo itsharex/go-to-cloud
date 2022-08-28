@@ -23,8 +23,8 @@ func (client *Client) ApplyService(namespace *string, yml *applyCore.ServiceAppl
 	return client.clientSet.CoreV1().Services(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
-// Setup 安装Agent
-func Setup(k8sConfig, namespace *string, pod *AppDeployConfig) error {
+// Apply 安装Agent
+func Apply(k8sConfig, namespace *string, pod *AppDeployConfig) error {
 	client, err := NewClient(k8sConfig)
 
 	_, err = client.GetOrAddNamespace(namespace)

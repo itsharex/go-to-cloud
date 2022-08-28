@@ -1,7 +1,6 @@
-package agent
+package kube
 
 import (
-	"go-to-cloud/internal/pkg/kube"
 	"io"
 	"os"
 	"testing"
@@ -10,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var agentApplyCfg = &kube.AppDeployConfig{
+var agentApplyCfg = &AppDeployConfig{
 	Name: "go-to-cloud-agent",
-	Ports: []kube.Port{
+	Ports: []Port{
 		{
 			ServicePort:   8080,
 			ContainerPort: 8080,
@@ -26,13 +25,13 @@ var agentApplyCfg = &kube.AppDeployConfig{
 }
 
 func TestSetupAgentPodYaml(t *testing.T) {
-	tpl1, err := template.New("testing").Parse(kube.YamlTplService)
+	tpl1, err := template.New("testing").Parse(YamlTplService)
 	assert.NoError(t, err)
 	assert.NotNil(t, tpl1)
 	err = tpl1.Execute(os.Stdout, agentApplyCfg)
 	assert.NoError(t, err)
 
-	tpl2, err := template.New("testing").Parse(kube.YamlTplDeployment)
+	tpl2, err := template.New("testing").Parse(YamlTplDeployment)
 	assert.NoError(t, err)
 	assert.NotNil(t, tpl2)
 	err = tpl1.Execute(os.Stdout, agentApplyCfg)
@@ -52,5 +51,5 @@ func TestSetupAgentPod(t *testing.T) {
 	assert.NoError(t, err)
 	k8scfg := string(k8scfgbyte)
 
-	assert.NoError(t, kube.Setup(&k8scfg, &ns, agentApplyCfg))
+	assert.NoError(t, Apply(&k8scfg, &ns, agentApplyCfg))
 }
