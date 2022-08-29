@@ -14,9 +14,10 @@ func getDbConnectionString(c *Conf) *string {
 }
 
 // GetDbClient 获取数据库连接对象
-func GetDbClient(file *string) *gorm.DB {
+func GetDbClient() *gorm.DB {
 	if dsn == nil {
-		dsn = getDbConnectionString(getConfiguration(file))
+		filePath := getConfFilePath()
+		dsn = getDbConnectionString(getConfiguration(filePath))
 	}
 
 	db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{})

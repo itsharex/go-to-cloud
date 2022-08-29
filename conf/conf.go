@@ -7,10 +7,10 @@ import (
 
 type Conf struct {
 	Db struct {
-		User     string `yaml:"user"`
-		Password string `yaml:"pwd"`
-		Host     string `yaml:"host"`
-		Schema   string `yaml:"database"`
+		User     string
+		Password string
+		Host     string
+		Schema   string
 	}
 }
 

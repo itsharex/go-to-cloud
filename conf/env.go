@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -20,6 +21,11 @@ func (env *Env) IsProduction() bool {
 
 func (env *Env) GetEnvName() *string {
 	return &env.Name
+}
+
+func getConfFilePath() *string {
+	path := fmt.Sprintf("appsettings.%s.yaml", strings.ToLower(Environment.Name))
+	return &path
 }
 
 var Environment *Env
