@@ -4,16 +4,17 @@ import (
 	"encoding/base64"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/utils"
+	"gorm.io/gorm"
 )
 
 // Infrastructure 基础设施
 type Infrastructure struct {
-	AddOn
-	OrgId         int64      `json:"org_id" gorm:"column:org_id"`                 // 所属组织
-	Remark        string     `json:"remark" gorm:"column:remark"`                 // 设施备注
-	EncodedConfig string     `json:"encoded_config" gorm:"column:encoded_config"` // 编码后的配置内容
-	Type          InfraTypes `json:"type" gorm:"column:type"`                     // 设施分类；1：k8s；2：registry；
-	Config        *string    // Config原文
+	gorm.Model
+	OrgId         int64      `json:"org_id" gorm:"column:org_id;not null"`                 // 所属组织
+	Remark        string     `json:"remark" gorm:"column:remark"`                          // 设施备注
+	EncodedConfig string     `json:"encoded_config" gorm:"column:encoded_config;not null"` // 编码后的配置内容
+	Type          InfraTypes `json:"type" gorm:"column:type;not null"`                     // 设施分类；1：k8s；2：registry；
+	Config        *string    `gorm:"-"`                                                    // Config原文
 }
 
 func (m *Infrastructure) TableName() string {

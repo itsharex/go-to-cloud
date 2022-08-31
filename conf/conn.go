@@ -20,7 +20,9 @@ func GetDbClient() *gorm.DB {
 		dsn = getDbConnectionString(getConfiguration(filePath))
 	}
 
-	db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+	})
 	if err != nil {
 		panic(err)
 	}
