@@ -8,7 +8,7 @@ func FetchUsersByOrg(orgId uint) ([]*User, error) {
 	db := conf.GetDbClient()
 
 	var org Org
-	err := db.Debug().Preload("Users").Where([]uint{orgId}).First(&org).Error
+	err := db.Preload("Users").Where([]uint{orgId}).First(&org).Error
 
 	return org.Users, err
 }
