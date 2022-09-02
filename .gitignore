@@ -26,3 +26,4 @@ appsettings.*.yaml
 /internal/pkg/kube/apply_test.yml
 
 go.sum
+/go-to-cloud
