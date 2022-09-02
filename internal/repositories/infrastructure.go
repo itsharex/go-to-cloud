@@ -35,16 +35,38 @@ type InfraTypes int8
 const (
 	InfraTypeAll      InfraTypes = 0
 	InfraTypeK8s      InfraTypes = 1 // K8s配置
-	InfraTypeRegistry InfraTypes = 2 // 容器Registry
-	InfraTypeAgent    InfraTypes = 3 // 代理
+	InfraTypeRegistry InfraTypes = 2 // 镜像Registry
+	InfraTypeAgent    InfraTypes = 3 // go-to-cloud代理
 )
 
-// FetchInfrastructures 获取指定类型的基础设施
+func GetInfra(orgID uint) ([]Infrastructure, error) {
+	return getInfrastructures(orgID, InfraTypeAll)
+}
+
+func GetRegistries(orgID uint) ([]Infrastructure, error) {
+	return getInfrastructures(orgID, InfraTypeRegistry)
+}
+
+func GetK8s(orgID uint) ([]Infrastructure, error) {
+	return getInfrastructures(orgID, InfraTypeK8s)
+}
+
+func GetAgents(orgID uint) ([]Infrastructure, error) {
+	return getInfrastructures(orgID, InfraTypeAgent)
+}
+
+// getInfrastructures 获取指定类型的基础设施
 // orgId：所属组织
 // infraType：基础设施类型；1：k8s；2：registry；3: 代理 0：所有
-func FetchInfrastructures(orgId uint, infraType InfraTypes) ([]Infrastructure, error) {
+func getInfrastructures(orgId uint, infraType InfraTypes) ([]Infrastructure, error) {
 	db := conf.GetDbClient()
 	var org Org
-	err := db.Preload("Infrastructures", "Type = ?", infraType).First(&org, orgId).Error
+	var err error
+
+	if infraType > 0 {
+		err = db.Preload("Infrastructures", "Type = ?", infraType).First(&org, orgId).Error
+	} else {
+		err = db.Preload("Infrastructures").First(&org, orgId).Error
+	}
 	return org.Infrastructures, err
 }

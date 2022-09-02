@@ -10,48 +10,34 @@ type Migration20220831 struct {
 
 func (m *Migration20220831) Up(db *gorm.DB) {
 
-	userOrgsRel := false
+	userOrgRelNotExists := false
 	if !db.Migrator().HasTable(&repo.Infrastructure{}) {
 		db.AutoMigrate(&repo.Infrastructure{})
 	}
 	if !db.Migrator().HasTable(&repo.User{}) {
 		db.AutoMigrate(&repo.User{})
-		userOrgsRel = true
+		userOrgRelNotExists = true
 	}
 	if !db.Migrator().HasTable(&repo.Org{}) {
 		db.AutoMigrate(&repo.Org{})
-		userOrgsRel = true
+		userOrgRelNotExists = true
 	}
 
-	if userOrgsRel {
-		orgs := []*repo.Org{
-			{
-				Name: "a",
+	if userOrgRelNotExists {
+		org := &repo.Org{
+			Model: gorm.Model{
+				ID: uint(0),
 			},
-			{
-				Name: "b",
-			},
+			Name: "ROOT",
 		}
-		db.Debug().Create(orgs)
+		db.Debug().Create(org)
 
-		user := []repo.User{
-			{
-				Account:     "aaa",
-				Password:    "bbb",
-				Email:       "cccc",
-				Mobile:      "133",
-				LastLoginAt: nil,
-				Orgs:        orgs,
-			},
-			{
-				Account:     "123",
-				Password:    "456",
-				Email:       "8888",
-				Mobile:      "abb",
-				LastLoginAt: nil,
-				Orgs:        orgs,
-			},
+		user := &repo.User{
+			Account: "root",
+			Orgs:    []*repo.Org{org},
 		}
+		initRootPassword := "root"
+		user.SetPassword(&initRootPassword)
 
 		db.Debug().Create(user)
 		db.Debug().Save(user)

@@ -8,7 +8,7 @@ import (
 // Setup 安装agent至指定组织
 func Setup(orgID uint) error {
 	// 读取配置
-	infra, err := repositories.FetchInfrastructures(orgID, repositories.InfraTypeAgent)
+	infra, err := repositories.GetAgents(orgID)
 
 	if err != nil {
 		return err

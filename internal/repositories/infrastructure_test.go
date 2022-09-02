@@ -10,7 +10,7 @@ func TestFetchInfrastructures(t *testing.T) {
 		t.Skip("skipped due to ci is seperated from DB")
 	}
 
-	infra, err := FetchInfrastructures(1, InfraTypeK8s)
+	infra, err := GetK8s(1)
 	assert.NoError(t, err)
 	assert.Greater(t, len(infra), 0)
 	for _, inf := range infra {

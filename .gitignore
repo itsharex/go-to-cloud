@@ -24,3 +24,5 @@ docs/*.yaml
 # 配置文件
 appsettings.*.yaml
 /internal/pkg/kube/apply_test.yml
+
+go.sum
