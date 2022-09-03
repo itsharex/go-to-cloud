@@ -13,7 +13,7 @@
 
 - 首次使用需要安装swag
 ```shell
-go install github.com/swaggo/swag/cmd/swag
+go install github.com/swaggo/swag/cmd/swag@latest
 ```
 
 - 创建（或更新）swagger文档

@@ -38,6 +38,26 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/index/jump": {
+            "get": {
+                "description": "跳转引导，如果首次登录，则跳转至init，如果未登录，则跳转至login，否则进入home",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Index"
+                ],
+                "summary": "跳转引导",
+                "responses": {
+                    "302": {
+                        "description": "Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`

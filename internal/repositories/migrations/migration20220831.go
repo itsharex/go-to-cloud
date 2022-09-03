@@ -25,9 +25,6 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 
 	if userOrgRelNotExists {
 		org := &repo.Org{
-			Model: gorm.Model{
-				ID: uint(0),
-			},
 			Name: "ROOT",
 		}
 		db.Debug().Create(org)
