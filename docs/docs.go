@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/api/user/Login": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
                 "description": "do ping",
                 "consumes": [
                     "application/json"
@@ -26,7 +31,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "User"
                 ],
                 "summary": "用户登录",
                 "responses": {
@@ -39,16 +44,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/index/jump": {
+        "/index": {
             "get": {
-                "description": "跳转引导，如果首次登录，则跳转至init，如果未登录，则跳转至login，否则进入home",
                 "consumes": [
                     "application/json"
                 ],
                 "tags": [
                     "Index"
                 ],
-                "summary": "跳转引导",
                 "responses": {
                     "302": {
                         "description": "Found",
@@ -58,6 +61,13 @@ const docTemplate = `{
                     }
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "JWT": {
+            "type": "apiKey",
+            "name": "Bearer",
+            "in": "header"
         }
     }
 }`

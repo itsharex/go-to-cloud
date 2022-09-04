@@ -12,6 +12,11 @@ type Conf struct {
 		Host     string
 		Schema   string
 	}
+	Jwt struct {
+		Security string // 私钥
+		Realm    string // Realm
+		IdKey    string // IdentityKey
+	}
 }
 
 // getConfiguration 读取配置

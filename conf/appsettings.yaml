@@ -3,3 +3,7 @@ db:
   password: 数据库密码
   host: 主机地址(127.0.0.1)
   schema: gotocloud # 数据库名，默认不用修改
+jwt:
+  security: thisisunsafeuntilyouchangit
+  realm: GOTOCLOUD
+  idkey: id

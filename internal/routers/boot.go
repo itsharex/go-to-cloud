@@ -16,29 +16,29 @@ import (
 func SetRouters() (routers *gin.Engine) {
 	routers = gin.New()
 
+	// 中间件
+	handlers := make([]gin.HandlerFunc, 0)
+	handlers = append(handlers, middlewares.GenericRecovery())
+	if conf.Environment.IsDevelopment() {
+		handlers = append(handlers, gin.Logger())
+	}
+	handlers = append(handlers, middlewares.CorsHandler())
+	handlers = append(handlers, middlewares.AuthHandler())
+
 	// 生产模式配置
 	if conf.Environment.IsProduction() {
 		gin.SetMode(gin.ReleaseMode)   // 生产模式
 		gin.DefaultWriter = io.Discard // 禁用 gin 输出接口访问日志
-
-		routers.Use(
-			middlewares.GenericRecovery(),
-			middlewares.CorsHandler(),
-		)
 	}
 
 	// 开发模式配置
 	if conf.Environment.IsDevelopment() {
 		gin.SetMode(gin.DebugMode) // 调试模式
-		routers.Use(
-			middlewares.GenericRecovery(),
-			gin.Logger(),
-			middlewares.CorsHandler(),
-		)
-
-		// 构建swagger
-		buildSwagger(routers)
+		buildSwagger(routers)      // 构建swagger
 	}
+
+	// 加载中间件
+	routers.Use(handlers...)
 
 	// 构建路由
 	buildRouters(routers)

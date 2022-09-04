@@ -13,6 +13,9 @@ var aPort = flag.String("port", ":8080", "端口")
 
 var confFile *string
 
+// @securityDefinitions.apikey JWT
+// @in header
+// @name Bearer
 func main() {
 	flag.Parse()
 
@@ -32,5 +35,5 @@ func init() {
 	envName := conf.Environment.GetEnvName()
 
 	var tmp string
-	tmp, confFile = fmt.Sprintf("appsettings.%s.yaml", *envName), &tmp
+	tmp, confFile = fmt.Sprintf("conf/appsettings.%s.yaml", *envName), &tmp
 }

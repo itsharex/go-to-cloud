@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"errors"
+	"go-to-cloud/conf"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"strings"
@@ -37,8 +38,22 @@ func (m *User) SetPassword(origPassword *string) error {
 	}
 }
 
-// ComparePassword 比较密码
-func (m *User) ComparePassword(password *string) bool {
+// GetUser by account AND password
+func GetUser(account, password *string) *User {
+	db := conf.GetDbClient()
+
+	var user User
+	if db.Debug().Where(&User{Account: *account}).First(&user).Error != nil {
+		return nil
+	}
+	if user.comparePassword(password) {
+		return &user
+	}
+	return nil
+}
+
+// comparePassword 比较密码
+func (m *User) comparePassword(password *string) bool {
 	lowerPassword := strings.ToLower(*password)
 	return nil == bcrypt.CompareHashAndPassword([]byte(m.HashedPassword), []byte(lowerPassword))
 }

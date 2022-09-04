@@ -10,15 +10,15 @@ func TestPasswordGenAndCompare(t *testing.T) {
 
 	pwd := "OJBK"
 	u.SetPassword(&pwd)
-	assert.True(t, u.ComparePassword(&pwd))
+	assert.True(t, u.comparePassword(&pwd))
 
 	pwd1 := "Ojbk"
-	assert.True(t, u.ComparePassword(&pwd1))
+	assert.True(t, u.comparePassword(&pwd1))
 
 	pwd2 := "Ojbk "
-	assert.False(t, u.ComparePassword(&pwd2))
+	assert.False(t, u.comparePassword(&pwd2))
 
 	pwd3 := ""
 	assert.Error(t, u.SetPassword(&pwd3))
-	assert.False(t, u.ComparePassword(&pwd3))
+	assert.False(t, u.comparePassword(&pwd3))
 }

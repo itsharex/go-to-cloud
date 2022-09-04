@@ -12,11 +12,11 @@ type Env struct {
 }
 
 func (env *Env) IsDevelopment() bool {
-	return strings.EqualFold("Development", env.Name)
+	return strings.EqualFold("dev", env.Name)
 }
 
 func (env *Env) IsProduction() bool {
-	return strings.EqualFold("Production", env.Name)
+	return strings.EqualFold("prod", env.Name)
 }
 
 func (env *Env) GetEnvName() *string {
@@ -24,7 +24,7 @@ func (env *Env) GetEnvName() *string {
 }
 
 func getConfFilePath() *string {
-	path := fmt.Sprintf("appsettings.%s.yaml", strings.ToLower(Environment.Name))
+	path := fmt.Sprintf("conf/appsettings.%s.yaml", strings.ToLower(Environment.Name))
 	return &path
 }
 

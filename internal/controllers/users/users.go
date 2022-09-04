@@ -11,11 +11,12 @@ import (
 // @Summary 用户登录
 // @Schemes
 // @Description do ping
-// @Tags example
+// @Tags User
 // @Accept json
 // @Produce json
 // @Success 200 {string} Login
 // @Router /api/user/Login [get]
+// @Security JWT
 func Login(ctx *gin.Context) {
 	response.Success(ctx, gin.H{
 		"username":    "admin",
@@ -26,6 +27,9 @@ func Login(ctx *gin.Context) {
 	})
 }
 
+// Info
+// @BasePath /api
+// @Tags User
 func Info(ctx *gin.Context) {
 	response.Success(ctx, gin.H{
 		"name":   "Hello",
