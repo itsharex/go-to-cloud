@@ -23,7 +23,6 @@ func SetRouters() (routers *gin.Engine) {
 		handlers = append(handlers, gin.Logger())
 	}
 	handlers = append(handlers, middlewares.CorsHandler())
-	handlers = append(handlers, middlewares.AuthHandler())
 
 	// 生产模式配置
 	if conf.Environment.IsProduction() {

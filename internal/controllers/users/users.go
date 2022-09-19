@@ -5,31 +5,13 @@ import (
 	"go-to-cloud/internal/pkg/response"
 )
 
-// Login 一个跑通全流程的示例，业务代码未补充完整
-// @BasePath /api
-// Login 登录 godoc
-// @Summary 用户登录
-// @Schemes
-// @Description do ping
-// @Tags User
-// @Accept json
-// @Produce json
-// @Success 200 {string} Login
-// @Router /api/user/Login [get]
-// @Security JWT
-func Login(ctx *gin.Context) {
-	response.Success(ctx, gin.H{
-		"username":    "admin",
-		"password":    "admin",
-		"role":        "admin",
-		"roleId":      "1",
-		"permissions": []string{"*.*.*"},
-	})
-}
-
 // Info
 // @BasePath /api
 // @Tags User
+// @Description 查看用户信息
+// @Success 200
+// @Router /api/user/info [get]
+// @Security JWT
 func Info(ctx *gin.Context) {
 	response.Success(ctx, gin.H{
 		"name":   "Hello",
@@ -37,6 +19,13 @@ func Info(ctx *gin.Context) {
 	})
 }
 
+// Logout
+// @BasePath /api
+// @Tags User
+// @Description 注销登录
+// @Success 200
+// @Router /api/user/logout [post]
+// @Security JWT
 func Logout(ctx *gin.Context) {
 	response.Success(ctx, gin.H{
 		"code": 20000,

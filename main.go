@@ -15,7 +15,7 @@ var confFile *string
 
 // @securityDefinitions.apikey JWT
 // @in header
-// @name Bearer
+// @name Authorization
 func main() {
 	flag.Parse()
 

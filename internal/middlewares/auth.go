@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/conf"
 	repo "go-to-cloud/internal/repositories"
-	"net/http"
 	"time"
 )
 
@@ -37,6 +36,7 @@ func AuthHandler() gin.HandlerFunc {
 			}
 			return jwt.MapClaims{}
 		},
+		// 认证
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginVal login
 			if err := c.ShouldBind(&loginVal); err != nil {
@@ -53,8 +53,9 @@ func AuthHandler() gin.HandlerFunc {
 
 			return nil, jwt.ErrFailedAuthentication
 		},
+		// 鉴权
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if v, ok := data.(*repo.User); ok && v.ID > 0 {
+			if v, ok := data.(float64); ok && v > float64(0) {
 				return true
 			}
 
@@ -66,12 +67,9 @@ func AuthHandler() gin.HandlerFunc {
 				"message": message,
 			})
 		},
-		LoginResponse: func(c *gin.Context, code int, message string, time time.Time) {
-			c.AbortWithStatus(http.StatusTemporaryRedirect)
-			c.Redirect(http.StatusTemporaryRedirect, "/login")
-		},
-		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
-		TokenHeadName: "Bearer:",
+		TokenLookup:   "header: Authorization, query: token",
+		TokenHeadName: "Bearer",
+		TimeFunc:      time.Now,
 	})
 
 	jwtMiddleware = m
