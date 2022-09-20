@@ -38,8 +38,9 @@ func AuthHandler() gin.HandlerFunc {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*repo.User); ok {
 				return jwt.MapClaims{
-					"jti": v.ID,
-					"sub": v.Account,
+					"jti":  v.ID,
+					"sub":  v.Account,
+					"kind": v.Kind,
 				}
 			}
 			return jwt.MapClaims{}
@@ -64,11 +65,22 @@ func AuthHandler() gin.HandlerFunc {
 		// 鉴权
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			claims, _ := jwtMiddleware.GetClaimsFromJWT(c)
-			ok, err := enforcer.Enforce(claims["sub"], c.Request.URL.Path, c.Request.Method)
-			if err != nil {
-				log.Fatal(err)
+			ok, ex := enforcer.Enforce(claims["sub"], c.Request.URL.Path, c.Request.Method)
+			if ok {
+				return true
 			}
-			return ok
+
+			kind := claims["kind"].([]interface{})
+			for _, s := range kind {
+				ok, ex = enforcer.Enforce(s, c.Request.URL.Path, c.Request.Method)
+				if ex != nil {
+					log.Fatal(ex)
+				}
+				if ok {
+					return true
+				}
+			}
+			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, gin.H{

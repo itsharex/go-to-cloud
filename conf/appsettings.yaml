@@ -7,3 +7,9 @@ jwt:
   security: thisisunsafeuntilyouchangit
   realm: GOTOCLOUD
   idkey: id
+kind:
+  - admin # 管理员
+  - pm    # 项目经理
+  - dev   # 开发
+  - qa    # 质量
+  - op    # 运维

@@ -17,6 +17,7 @@ type Conf struct {
 		Realm    string // Realm
 		IdKey    string // IdentityKey
 	}
+	Kind []string // 用户分类
 }
 
 // getConfiguration 读取配置
