@@ -20,7 +20,6 @@ func Info(ctx *gin.Context) {
 }
 
 // Logout
-// @BasePath /api
 // @Tags User
 // @Description 注销登录
 // @Success 200

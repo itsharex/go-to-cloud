@@ -16,6 +16,7 @@ func init() {
 	// 迁移对象必需按从旧到新的顺序添加
 	migrations = []Migration{
 		&Migration20220831{},
+		&migration20220921{},
 	}
 }
 

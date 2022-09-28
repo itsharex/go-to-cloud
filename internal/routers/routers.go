@@ -11,9 +11,10 @@ import (
 // buildRouters 构建路由表
 func buildRouters(router *gin.Engine) {
 
-	router.POST("/login", auth.Login)
-
 	api := router.Group("/api")
+
+	api.POST("/login", auth.Login)
+
 	api.Use(middlewares.AuthHandler())
 	{
 		user := api.Group("/user")
