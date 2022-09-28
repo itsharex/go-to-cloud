@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/auth"
+	"go-to-cloud/internal/controllers/configure"
 	"go-to-cloud/internal/controllers/users"
 	"go-to-cloud/internal/middlewares"
 )
@@ -18,5 +19,8 @@ func buildRouters(router *gin.Engine) {
 		user := api.Group("/user")
 		user.GET("/info", users.Info)
 		user.POST("/logout", users.Logout)
+
+		conf := api.Group("/configure")
+		conf.GET("/coderepo", configure.GetCodeRepos)
 	}
 }
