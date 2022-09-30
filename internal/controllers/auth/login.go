@@ -7,7 +7,7 @@ import (
 
 // Login
 // @Tags User
-// @Description 查看用户信息
+// @Description 登录
 // @Accept json
 // @Product json
 // @Param login body models.LoginModel true "Login Model"
