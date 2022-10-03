@@ -19,6 +19,9 @@ func GetResponse() *Response {
 		},
 	}
 }
+func BadRequest(ctx *gin.Context, data ...any) {
+	GetResponse().WithDataFailure(http.StatusBadRequest, ctx, data)
+}
 
 // Success 业务成功响应
 func Success(ctx *gin.Context, data ...any) {
@@ -27,15 +30,6 @@ func Success(ctx *gin.Context, data ...any) {
 		return
 	}
 	GetResponse().Success(ctx)
-}
-
-// FailCode 业务失败响应
-func FailCode(ctx *gin.Context, code int, data ...any) {
-	if data != nil {
-		GetResponse().WithData(data[0]).FailCode(ctx, code)
-		return
-	}
-	GetResponse().FailCode(ctx, code)
 }
 
 // Fail 业务失败响应
@@ -84,6 +78,14 @@ func (r *Response) Success(ctx *gin.Context) {
 func (r *Response) WithDataSuccess(ctx *gin.Context, data interface{}) {
 	r.SetCode(http.StatusOK)
 	r.WithData(data)
+	r.json(ctx)
+}
+
+func (r *Response) WithDataFailure(code int, ctx *gin.Context, data interface{}) {
+	r.SetHttpCode(code)
+	if data != nil {
+		r.WithData(data)
+	}
 	r.json(ctx)
 }
 

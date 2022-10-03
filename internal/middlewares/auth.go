@@ -37,10 +37,15 @@ func AuthHandler() gin.HandlerFunc {
 		IdentityKey: "jti",
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*repo.User); ok {
+				orgs := make([]uint, len(v.Orgs))
+				for _, org := range v.Orgs {
+					orgs = append(orgs, org.ID)
+				}
 				return jwt.MapClaims{
 					"jti":  v.ID,
 					"sub":  v.Account,
 					"kind": v.Kind,
+					"orgs": orgs,
 				}
 			}
 			return jwt.MapClaims{}

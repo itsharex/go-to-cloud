@@ -43,6 +43,7 @@ func runMode() (bool, string) {
 // @securityDefinitions.apikey JWT
 // @in header
 // @name Authorization
+// @BasePath /api
 func main() {
 	runType, port := runMode()
 	if runType {

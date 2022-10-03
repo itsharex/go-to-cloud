@@ -7,7 +7,6 @@ import (
 )
 
 // List
-// @BasePath /api
 // @Tags Projects
 // @Description 查看项目信息
 // @Success 200

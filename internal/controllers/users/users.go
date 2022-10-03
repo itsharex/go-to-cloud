@@ -6,7 +6,6 @@ import (
 )
 
 // Info
-// @BasePath /api
 // @Tags User
 // @Description 查看用户信息
 // @Success 200
