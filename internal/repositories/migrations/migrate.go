@@ -17,6 +17,7 @@ func init() {
 	migrations = []Migration{
 		&Migration20220831{},
 		&migration20220921{},
+		&migration20221004{},
 	}
 }
 

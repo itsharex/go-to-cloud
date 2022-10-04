@@ -18,6 +18,7 @@ type ScmTesting struct {
 
 type Scm struct {
 	ScmTesting
-	Name   string `json:"name"`
-	Remark string `json:"remark"`
+	Name   string  `json:"name"`
+	Orgs   []int64 `json:"orgs"`
+	Remark string  `json:"remark"`
 }

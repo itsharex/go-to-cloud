@@ -6,6 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"strings"
 	"time"
 )
@@ -45,7 +46,7 @@ func GetUser(account, password *string) *User {
 	db := conf.GetDbClient()
 
 	var user User
-	if db.Debug().Where(&User{Account: *account}).First(&user).Error != nil {
+	if db.Debug().Preload(clause.Associations).Where(&User{Account: *account}).First(&user).Error != nil {
 		return nil
 	}
 	if user.comparePassword(password) {

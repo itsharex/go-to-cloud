@@ -24,7 +24,7 @@ func buildRouters(router *gin.Engine) {
 
 		conf := api.Group("/configure")
 		conf.GET("/coderepo", scm.GetCodeRepos)
-		conf.POST("/coderepo", scm.CreateCodeRepo)
+		conf.POST("/coderepo/bind", scm.BindCodeRepo)
 		conf.POST("/coderepo/testing", scm.Testing)
 
 		project := api.Group("/projects")
