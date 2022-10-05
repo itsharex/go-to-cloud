@@ -16,18 +16,34 @@ import (
 // @Router /api/configure/coderepo [get]
 // @Security JWT
 func GetCodeRepos(ctx *gin.Context) {
-	exists, userId, userName, orgs := util.CurrentUser(ctx)
+	exists, userId, _, orgs := util.CurrentUser(ctx)
 
 	if !exists {
-		response.Fail(ctx, http.StatusUnauthorized, "unauthorized")
+		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
-	response.Success(ctx, gin.H{
-		"userId":   userId,
-		"userName": userName,
-		"orgs":     orgs,
-	})
+	var query models.ScmQuery
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		response.Fail(ctx, http.StatusBadRequest, nil)
+		return
+	}
+
+	orgsId := make([]int64, len(orgs))
+	idx := int64(0)
+	for key, _ := range orgs {
+		orgsId[idx] = key
+		idx++
+	}
+	result, err := scm.List(userId, orgsId, &query)
+
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+		return
+	}
+
+	response.Success(ctx, result)
 }
 
 // BindCodeRepo 绑定代码仓库
@@ -44,25 +60,27 @@ func BindCodeRepo(ctx *gin.Context) {
 	}
 	success, err := scm.Ping(&req.ScmTesting)
 	if err != nil {
-		response.Fail(ctx, http.StatusForbidden, err.Error())
+		msg := err.Error()
+		response.Fail(ctx, http.StatusForbidden, &msg)
 		return
 	}
 	if !success {
-		response.Fail(ctx, http.StatusForbidden, "scm connection failed")
+		response.Fail(ctx, http.StatusForbidden, nil)
 		return
 	}
 
 	exists, userId, _, orgs := util.CurrentUser(ctx)
 
 	if !exists {
-		response.Fail(ctx, http.StatusUnauthorized, "unauthorized")
+		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
 	err = scm.Bind(&req, userId, orgs)
 
 	if err != nil {
-		response.Fail(ctx, http.StatusInternalServerError, err.Error())
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
 		return
 	}
 

@@ -18,7 +18,12 @@ type ScmTesting struct {
 
 type Scm struct {
 	ScmTesting
-	Name   string  `json:"name"`
-	Orgs   []int64 `json:"orgs"`
+	Name   string  `json:"name" form:"name"`
+	Orgs   []int64 `json:"orgs" form:"orgs"`
 	Remark string  `json:"remark"`
+}
+
+type ScmQuery struct {
+	Pager
+	Scm
 }

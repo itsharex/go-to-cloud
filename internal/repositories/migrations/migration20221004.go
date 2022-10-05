@@ -10,8 +10,8 @@ type migration20221004 struct {
 
 func (m *migration20221004) Up(db *gorm.DB) {
 
-	if !db.Migrator().HasTable(&repo.Coderepo{}) {
-		err := db.AutoMigrate(&repo.Coderepo{})
+	if !db.Migrator().HasTable(&repo.CodeRepo{}) {
+		err := db.AutoMigrate(&repo.CodeRepo{})
 		if err != nil {
 			panic(err)
 		}
@@ -20,7 +20,7 @@ func (m *migration20221004) Up(db *gorm.DB) {
 
 func (m *migration20221004) Down(db *gorm.DB) {
 	err := db.Migrator().DropTable(
-		&repo.Coderepo{},
+		&repo.CodeRepo{},
 	)
 	if err != nil {
 		panic(err)

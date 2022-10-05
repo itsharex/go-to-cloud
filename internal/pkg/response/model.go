@@ -33,12 +33,12 @@ func Success(ctx *gin.Context, data ...any) {
 }
 
 // Fail 业务失败响应
-func Fail(ctx *gin.Context, code int, message string, data ...any) {
+func Fail(ctx *gin.Context, code int, message *string, data ...any) {
 	if data != nil {
-		GetResponse().WithData(data[0]).FailCode(ctx, code, message)
+		GetResponse().WithData(data[0]).FailCode(ctx, code, *message)
 		return
 	}
-	GetResponse().FailCode(ctx, code, message)
+	GetResponse().FailCode(ctx, code)
 }
 
 type result struct {

@@ -25,7 +25,8 @@ func Testing(ctx *gin.Context) {
 	}
 
 	if success, err := scm.Ping(&req); err != nil {
-		response.Fail(ctx, http.StatusForbidden, err.Error())
+		msg := err.Error()
+		response.Fail(ctx, http.StatusForbidden, &msg)
 		return
 	} else {
 		response.Success(ctx, gin.H{

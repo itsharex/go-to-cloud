@@ -17,7 +17,7 @@ func Info(ctx *gin.Context) {
 	exists, userId, userName, orgs := util.CurrentUser(ctx)
 
 	if !exists {
-		response.Fail(ctx, http.StatusUnauthorized, "unauthorized")
+		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
