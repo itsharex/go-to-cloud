@@ -6,10 +6,10 @@ import (
 )
 
 // Bind 绑定代码仓库
-func Bind(model *models.Scm, userId int64, orgs map[int64]string) error {
-	orgId := make([]int64, 0)
-	for i, _ := range orgs {
+func Bind(model *models.Scm, userId uint, orgs map[uint]string) error {
+	orgId := make([]uint, 0)
+	for i := range orgs {
 		orgId = append(orgId, i)
 	}
-	return repositories.BindCodeRepo(model, userId, orgId)
+	return repositories.BindCodeRepo(model, userId, intersect(model.Orgs, orgId))
 }

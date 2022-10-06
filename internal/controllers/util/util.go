@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func CurrentUser(ctx *gin.Context) (exists bool, userId int64, user *string, orgs map[int64]string) {
+func CurrentUser(ctx *gin.Context) (exists bool, userId uint, user *string, orgs map[uint]string) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -23,14 +23,14 @@ func CurrentUser(ctx *gin.Context) (exists bool, userId int64, user *string, org
 	if orgsMaps != nil {
 		maps := orgsMaps.(map[string]interface{})
 		if sz := len(maps); sz > 0 {
-			orgs = make(map[int64]string, sz)
+			orgs = make(map[uint]string, sz)
 			for key, val := range maps {
-				orgId, _ := strconv.ParseInt(key, 10, 64)
-				orgs[orgId] = val.(string)
+				orgId, _ := strconv.ParseUint(key, 10, 64)
+				orgs[uint(orgId)] = val.(string)
 			}
 		}
 	}
-	userId = int64(jti)
+	userId = uint(jti)
 	user = &sub
 
 	exists = true

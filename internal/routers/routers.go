@@ -23,8 +23,10 @@ func buildRouters(router *gin.Engine) {
 		user.POST("/logout", users.Logout)
 
 		conf := api.Group("/configure")
-		conf.GET("/coderepo", scm.GetCodeRepos)
+		conf.GET("/coderepo", scm.QueryCodeRepos)
 		conf.POST("/coderepo/bind", scm.BindCodeRepo)
+		conf.PUT("/coderepo/bind", scm.UpdateCodeRepo)
+		conf.DELETE("/coderepo/:id", scm.RemoveCodeRepo)
 		conf.POST("/coderepo/testing", scm.Testing)
 
 		project := api.Group("/projects")

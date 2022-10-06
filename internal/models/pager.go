@@ -1,6 +1,6 @@
 package models
 
 type Pager struct {
-	PageIndex uint `form:"pageIndex"`
-	PageSize  uint `form:"pageSize"`
+	PageIndex int `form:"pageIndex"`
+	PageSize  int `form:"pageSize"`
 }

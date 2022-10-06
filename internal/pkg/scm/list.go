@@ -5,9 +5,13 @@ import (
 	"go-to-cloud/internal/repositories"
 )
 
-// List 读取指定用户、组织下的仓库
-func List(userId int64, orgs []int64, query *models.ScmQuery) ([]models.Scm, error) {
-	var orgId []int64
+// List 读取仓库
+// @Params:
+//
+//	orgs: 当前用户所在组织
+//	query: 查询条件
+func List(orgs []uint, query *models.ScmQuery) ([]models.Scm, error) {
+	var orgId []uint
 	if len(query.Orgs) == 0 {
 		//	默认取当前用户所属全体组织
 		orgId = orgs
@@ -16,16 +20,39 @@ func List(userId int64, orgs []int64, query *models.ScmQuery) ([]models.Scm, err
 		orgId = intersect(orgs, query.Orgs)
 	}
 
-	if _, err := repositories.ReadCodeRepo(orgId, query.Name); err != nil {
+	if merged, err := repositories.QueryCodeRepo(orgId, query.Name, &query.Pager); err != nil {
 		return nil, err
 	} else {
-		return nil, err
+		rlt := make([]models.Scm, len(merged))
+		for i, m := range merged {
+			orgLites := make([]models.OrgLite, len(m.Org))
+			for i, lite := range m.Org {
+				orgLites[i] = models.OrgLite{
+					OrgId:   lite.OrgId,
+					OrgName: lite.OrgName,
+				}
+			}
+			rlt[i] = models.Scm{
+				ScmTesting: models.ScmTesting{
+					Id:       m.ID,
+					Origin:   models.ScmType(m.ScmOrigin),
+					IsPublic: m.IsPublic != 0,
+					Url:      m.Url,
+					Token:    &merged[i].AccessToken,
+				},
+				Name:      m.Name,
+				OrgLites:  orgLites,
+				Remark:    m.Remark,
+				UpdatedAt: m.UpdatedAt.Format("2006-01-02"),
+			}
+		}
+		return rlt, err
 	}
 }
 
-func intersect(orgA, orgB []int64) []int64 {
-	counter := make(map[int64]int)
-	rlt := make([]int64, 0)
+func intersect(orgA, orgB []uint) []uint {
+	counter := make(map[uint]int)
+	rlt := make([]uint, 0)
 	for _, a := range orgA {
 		counter[a]++
 	}
