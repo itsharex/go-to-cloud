@@ -1,7 +1,7 @@
 package scm
 
 import (
-	"go-to-cloud/internal/models"
+	"go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -10,7 +10,7 @@ import (
 //
 //	orgs: 当前用户所在组织
 //	query: 查询条件
-func List(orgs []uint, query *models.ScmQuery) ([]models.Scm, error) {
+func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 	var orgId []uint
 	if len(query.Orgs) == 0 {
 		//	默认取当前用户所属全体组织
@@ -23,19 +23,19 @@ func List(orgs []uint, query *models.ScmQuery) ([]models.Scm, error) {
 	if merged, err := repositories.QueryCodeRepo(orgId, query.Name, &query.Pager); err != nil {
 		return nil, err
 	} else {
-		rlt := make([]models.Scm, len(merged))
+		rlt := make([]scm.Scm, len(merged))
 		for i, m := range merged {
-			orgLites := make([]models.OrgLite, len(m.Org))
+			orgLites := make([]scm.OrgLite, len(m.Org))
 			for i, lite := range m.Org {
-				orgLites[i] = models.OrgLite{
+				orgLites[i] = scm.OrgLite{
 					OrgId:   lite.OrgId,
 					OrgName: lite.OrgName,
 				}
 			}
-			rlt[i] = models.Scm{
-				ScmTesting: models.ScmTesting{
+			rlt[i] = scm.Scm{
+				Testing: scm.Testing{
 					Id:       m.ID,
-					Origin:   models.ScmType(m.ScmOrigin),
+					Origin:   scm.Type(m.ScmOrigin),
 					IsPublic: m.IsPublic != 0,
 					Url:      m.Url,
 					Token:    &merged[i].AccessToken,

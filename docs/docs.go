@@ -16,8 +16,79 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/configure/artifact/testing": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/artifact.Testing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/coderepo": {
             "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "代码仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/coderepo/:id": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "代码仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/coderepo/bind": {
+            "put": {
                 "security": [
                     {
                         "JWT": []
@@ -74,7 +145,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ScmTesting"
+                            "$ref": "#/definitions/scm.Testing"
                         }
                     }
                 ],
@@ -168,6 +239,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "artifact.Testing": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isSecurity": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
         "models.LoginModel": {
             "type": "object",
             "properties": {
@@ -179,9 +273,12 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ScmTesting": {
+        "scm.Testing": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "isPublic": {
                     "type": "boolean"
                 },

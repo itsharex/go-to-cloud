@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models"
+	"go-to-cloud/internal/models/scm"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"time"
@@ -117,7 +118,7 @@ func merge(repos []CodeRepoWithOrg) ([]MergedCodeRepoWithOrg, error) {
 	return rlt, nil
 }
 
-func buildCodeRepo(model *models.Scm, userId uint, orgs []uint, gormModel *gorm.Model) (*CodeRepo, error) {
+func buildCodeRepo(model *scm.Scm, userId uint, orgs []uint, gormModel *gorm.Model) (*CodeRepo, error) {
 	isPublic := int8(0)
 	if model.IsPublic {
 		isPublic = 1
@@ -144,7 +145,7 @@ func buildCodeRepo(model *models.Scm, userId uint, orgs []uint, gormModel *gorm.
 }
 
 // BindCodeRepo 绑定代码仓库
-func BindCodeRepo(model *models.Scm, userId uint, orgs []uint) error {
+func BindCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
 	g := &gorm.Model{
 		CreatedAt: time.Now(),
 	}
@@ -163,7 +164,7 @@ func BindCodeRepo(model *models.Scm, userId uint, orgs []uint) error {
 }
 
 // UpdateCodeRepo 更新代码仓库
-func UpdateCodeRepo(model *models.Scm, userId uint, orgs []uint) error {
+func UpdateCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
 	g := &gorm.Model{
 		UpdatedAt: time.Now(),
 	}

@@ -1,4 +1,4 @@
-package models
+package project
 
 type ProjectDataModel struct {
 	Id   int64  `json:"id"`

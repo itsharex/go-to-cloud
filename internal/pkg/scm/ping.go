@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"github.com/drone/go-scm/scm"
-	"go-to-cloud/internal/models"
+	scmModels "go-to-cloud/internal/models/scm"
 	"net/http"
 	"strconv"
 )
 
 // Ping 测试SCM服务是否可用
-func Ping(testing *models.ScmTesting) (bool, error) {
+func Ping(testing *scmModels.Testing) (bool, error) {
 	if client, err := newClient(testing.Origin, testing.IsPublic, &testing.Url, testing.Token); err != nil {
 		return false, err
 	} else {

@@ -7,24 +7,24 @@ import (
 	"github.com/drone/go-scm/scm/driver/github"
 	"github.com/drone/go-scm/scm/driver/gitlab"
 	"github.com/drone/go-scm/scm/transport"
-	"go-to-cloud/internal/models"
+	scm2 "go-to-cloud/internal/models/scm"
 	"net/http"
 	"strings"
 )
 
 // newClient 获取scm客户端
-func newClient(origin models.ScmType, isPublic bool, uri, token *string) (client *scm.Client, err error) {
+func newClient(origin scm2.Type, isPublic bool, uri, token *string) (client *scm.Client, err error) {
 	switch origin {
-	case models.Github:
+	case scm2.Github:
 		client = github.NewDefault()
 		break
-	case models.Gitlab:
+	case scm2.Gitlab:
 		client, err = gitlab.New(*uri)
 		break
-	case models.Gitee:
+	case scm2.Gitee:
 		client = gitee.NewDefault()
 		break
-	case models.Gitea:
+	case scm2.Gitea:
 		client, err = gitea.New(*uri)
 	}
 
@@ -34,13 +34,13 @@ func newClient(origin models.ScmType, isPublic bool, uri, token *string) (client
 	return
 }
 
-func scmHttpClient(origin models.ScmType, isPublic bool, token *string) *http.Client {
+func scmHttpClient(origin scm2.Type, isPublic bool, token *string) *http.Client {
 	if isPublic || token == nil || len(strings.TrimSpace(*token)) == 0 {
 		return &http.Client{}
 	}
 
 	switch origin {
-	case models.Gitlab:
+	case scm2.Gitlab:
 		return &http.Client{
 			Transport: &transport.PrivateToken{Token: *token},
 		}

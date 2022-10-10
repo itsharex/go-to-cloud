@@ -2,7 +2,7 @@ package projects
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/models"
+	"go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/response"
 )
 
@@ -13,12 +13,12 @@ import (
 // @Router /api/projects/list [get]
 // @Security JWT
 func List(ctx *gin.Context) {
-	m := make([]models.ProjectDataModel, 0)
-	m = append(m, models.ProjectDataModel{
+	m := make([]project.ProjectDataModel, 0)
+	m = append(m, project.ProjectDataModel{
 		Id:   0,
 		Name: "aaa",
 	})
-	m = append(m, models.ProjectDataModel{
+	m = append(m, project.ProjectDataModel{
 		Id:   1,
 		Name: "bbb",
 	})

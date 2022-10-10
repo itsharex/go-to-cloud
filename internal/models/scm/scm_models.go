@@ -1,17 +1,19 @@
-package models
+package scm
 
-type ScmType int
+import "go-to-cloud/internal/models"
+
+type Type int
 
 const (
-	Gitlab ScmType = iota
+	Gitlab Type = iota
 	Github
 	Gitee
 	Gitea
 )
 
-type ScmTesting struct {
+type Testing struct {
 	Id       uint    `json:"id"`
-	Origin   ScmType `json:"origin"`
+	Origin   Type    `json:"origin"`
 	IsPublic bool    `json:"isPublic"`
 	Url      string  `json:"url"`
 	Token    *string `json:"token"`
@@ -23,7 +25,7 @@ type OrgLite struct {
 }
 
 type Scm struct {
-	ScmTesting
+	Testing
 	Name      string    `json:"name" form:"name"`
 	Orgs      []uint    `json:"orgs" form:"orgs"`
 	OrgLites  []OrgLite `json:"orgLites"`
@@ -31,7 +33,7 @@ type Scm struct {
 	UpdatedAt string    `json:"updatedAt"`
 }
 
-type ScmQuery struct {
-	Pager
+type Query struct {
+	models.Pager
 	Scm
 }

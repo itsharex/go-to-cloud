@@ -3,7 +3,7 @@ package scm
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/util"
-	"go-to-cloud/internal/models"
+	scm2 "go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/pkg/scm"
 	"net/http"
@@ -24,7 +24,7 @@ func QueryCodeRepos(ctx *gin.Context) {
 		return
 	}
 
-	var query models.ScmQuery
+	var query scm2.Query
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		response.Fail(ctx, http.StatusBadRequest, nil)
 		return
@@ -54,12 +54,12 @@ func QueryCodeRepos(ctx *gin.Context) {
 // @Router /api/configure/coderepo/bind [post]
 // @Security JWT
 func BindCodeRepo(ctx *gin.Context) {
-	var req models.Scm
+	var req scm2.Scm
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return
 	}
-	success, err := scm.Ping(&req.ScmTesting)
+	success, err := scm.Ping(&req.Testing)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusForbidden, &msg)
@@ -97,12 +97,12 @@ func BindCodeRepo(ctx *gin.Context) {
 // @Router /api/configure/coderepo/bind [put]
 // @Security JWT
 func UpdateCodeRepo(ctx *gin.Context) {
-	var req models.Scm
+	var req scm2.Scm
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return
 	}
-	success, err := scm.Ping(&req.ScmTesting)
+	success, err := scm.Ping(&req.Testing)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusOK, &msg)
