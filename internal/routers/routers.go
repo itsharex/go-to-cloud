@@ -32,6 +32,7 @@ func buildRouters(router *gin.Engine) {
 
 		confArtifact := api.Group("/configure/artifact")
 		confArtifact.POST("/testing", artifact.Testing)
+		confArtifact.POST("/bind", artifact.BindArtifactRepo)
 
 		project := api.Group("/projects")
 		project.GET("/list", projects.List)

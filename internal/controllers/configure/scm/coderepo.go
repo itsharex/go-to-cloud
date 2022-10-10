@@ -51,6 +51,7 @@ func QueryCodeRepos(ctx *gin.Context) {
 // @Tags Configure
 // @Description 代码仓库配置
 // @Success 200
+// @Param   ContentBody     body     scm.Scm     true  "Request"     example(scm.Scm)
 // @Router /api/configure/coderepo/bind [post]
 // @Security JWT
 func BindCodeRepo(ctx *gin.Context) {
@@ -94,6 +95,7 @@ func BindCodeRepo(ctx *gin.Context) {
 // @Tags Configure
 // @Description 代码仓库配置
 // @Success 200
+// @Param   ContentBody     body     scm.Scm     true  "Request"     example(scm.Scm)
 // @Router /api/configure/coderepo/bind [put]
 // @Security JWT
 func UpdateCodeRepo(ctx *gin.Context) {
@@ -138,6 +140,7 @@ func UpdateCodeRepo(ctx *gin.Context) {
 // @Description 代码仓库配置
 // @Success 200
 // @Router /api/configure/coderepo/:id [delete]
+// @Param   coderepo_id     path     int     true	"CodeRepo.ID"
 // @Security JWT
 func RemoveCodeRepo(ctx *gin.Context) {
 	val := ctx.Param("id")

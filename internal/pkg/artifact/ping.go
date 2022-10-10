@@ -16,5 +16,8 @@ func Ping(testing *artifact.Testing) (bool, error) {
 	registryUrl := fmt.Sprintf("%s://%s", schema, strings.TrimSuffix(testing.Url, "/"))
 	hub, err := registry.New(registryUrl, testing.User, testing.Password)
 
+	repos, err := hub.Repositories()
+
+	_ = repos
 	return hub != nil, err
 }

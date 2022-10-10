@@ -16,6 +16,35 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/configure/artifact/bind": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/artifact.Artifact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/artifact/testing": {
             "post": {
                 "security": [
@@ -80,6 +109,15 @@ const docTemplate = `{
                 "tags": [
                     "Configure"
                 ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "CodeRepo.ID",
+                        "name": "coderepo_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -98,6 +136,17 @@ const docTemplate = `{
                 "tags": [
                     "Configure"
                 ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/scm.Scm"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -113,6 +162,17 @@ const docTemplate = `{
                 "description": "代码仓库配置",
                 "tags": [
                     "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/scm.Scm"
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -239,6 +299,61 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "artifact.Artifact": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isSecurity": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgLites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/artifact.OrgLite"
+                    }
+                },
+                "orgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "artifact.OrgLite": {
+            "type": "object",
+            "properties": {
+                "orgId": {
+                    "type": "integer"
+                },
+                "orgName": {
+                    "type": "string"
+                }
+            }
+        },
         "artifact.Testing": {
             "type": "object",
             "properties": {
@@ -269,6 +384,58 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "scm.OrgLite": {
+            "type": "object",
+            "properties": {
+                "orgId": {
+                    "type": "integer"
+                },
+                "orgName": {
+                    "type": "string"
+                }
+            }
+        },
+        "scm.Scm": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "isPublic": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgLites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/scm.OrgLite"
+                    }
+                },
+                "orgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "origin": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
                     "type": "string"
                 }
             }
