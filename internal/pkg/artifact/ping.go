@@ -2,8 +2,8 @@ package artifact
 
 import (
 	"fmt"
+	"github.com/heroku/docker-registry-client/registry"
 	"go-to-cloud/internal/models/artifact"
-	"net/http"
 	"strings"
 )
 
@@ -14,11 +14,7 @@ func Ping(testing *artifact.Testing) (bool, error) {
 	}
 
 	registryUrl := fmt.Sprintf("%s://%s", schema, strings.TrimSuffix(testing.Url, "/"))
-	_, err := http.Get(registryUrl)
-	if err != nil {
-		return false, err
-	}
+	hub, err := registry.New(registryUrl, testing.User, testing.Password)
 
-	// TODO: check if 401
-	return false, nil
+	return hub != nil, err
 }
