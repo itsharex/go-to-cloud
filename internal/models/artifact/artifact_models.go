@@ -33,3 +33,7 @@ type OrgLite struct {
 	OrgId   uint   `json:"orgId"`
 	OrgName string `json:"orgName"`
 }
+
+type Query struct {
+	Artifact
+}

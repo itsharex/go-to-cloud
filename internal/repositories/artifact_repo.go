@@ -71,3 +71,27 @@ func BindArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error 
 	err = tx.Omit("updated_at").Create(&repo).Error
 	return err
 }
+
+// QueryArtifactRepo 查询制品仓库
+func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]ArtifactRepo, error) {
+	var repo []ArtifactRepo
+
+	tx := conf.GetDbClient().Model(&ArtifactRepo{})
+
+	tx = tx.Select("artifact_repo.*, org.Id AS orgId, org.Name AS orgName")
+	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(artifact_repo.belongs_to, cast(org.id as JSON), '$')")
+	tx = tx.Where("org.ID IN ? AND org.deleted_at IS NULL", orgs)
+
+	if len(repoNamePattern) > 0 {
+		tx = tx.Where("artifact_repo.name like ?", repoNamePattern+"%")
+	}
+
+	tx = tx.Order("created_at desc")
+
+	// TODO: os.Env
+	tx = tx.Debug()
+
+	err := tx.Scan(&repo).Error
+
+	return repo, err
+}
