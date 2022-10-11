@@ -1,6 +1,8 @@
 package registry
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"go-to-cloud/internal/repositories"
 	"testing"
@@ -25,10 +27,21 @@ func TestListRepositoriesShouldSuccess(t *testing.T) {
 
 	hub, err := GetRegistryHub(isSecurity, url, user, password)
 	for _, s := range r {
-		tags, _ := hub.Tags(s)
-		for _, tag := range tags {
-			m, _ := hub.ManifestV2(s, tag)
-			_ = m
-		}
+		reader, _ := hub.DownloadBlob(s, "sha256:1e45b6ec54a62f828a4066ddc934fff9467911fb0b0ebbb4660bd36340eb4a86")
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(reader)
+		reader.Close()
+		newStr := buf.String()
+		fmt.Println(newStr)
+		//tags, _ := hub.Tags(s)
+		//for _, tag := range tags {
+		//	m, _ := hub.ManifestV2(s, tag)
+		//	reader, _ := hub.DownloadBlob(s, "sha256:1e45b6ec54a62f828a4066ddc934fff9467911fb0b0ebbb4660bd36340eb4a86")
+		//	buf := new(bytes.Buffer)
+		//	buf.ReadFrom(reader)
+		//	reader.Close()
+		//	newStr := buf.String()
+		//	fmt.Println(newStr)
+		//}
 	}
 }
