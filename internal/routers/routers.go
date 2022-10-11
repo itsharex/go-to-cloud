@@ -36,6 +36,7 @@ func buildRouters(router *gin.Engine) {
 		confArtifact.POST("/bind", artifact.BindArtifactRepo)
 		confArtifact.PUT("/", artifact.UpdateArtifactRepo)
 		confArtifact.GET("/", artifact.QueryArtifactRepos)
+		confArtifact.DELETE("/:id", artifact.RemoveArtifactRepo)
 		confArtifact.GET("/registry/:id", registry.ListRepositories)
 
 		project := api.Group("/projects")
