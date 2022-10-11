@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/configure/artifact"
+	"go-to-cloud/internal/controllers/configure/artifact/registry"
 	"go-to-cloud/internal/controllers/configure/scm"
 	"go-to-cloud/internal/controllers/projects"
 	"go-to-cloud/internal/controllers/users"
@@ -26,14 +27,16 @@ func buildRouters(router *gin.Engine) {
 		confCodeRepo := api.Group("/configure/coderepo")
 		confCodeRepo.GET("/", scm.QueryCodeRepos)
 		confCodeRepo.POST("/bind", scm.BindCodeRepo)
-		confCodeRepo.PUT("/bind", scm.UpdateCodeRepo)
+		confCodeRepo.PUT("/", scm.UpdateCodeRepo)
 		confCodeRepo.DELETE("/:id", scm.RemoveCodeRepo)
 		confCodeRepo.POST("/testing", scm.Testing)
 
 		confArtifact := api.Group("/configure/artifact")
 		confArtifact.POST("/testing", artifact.Testing)
 		confArtifact.POST("/bind", artifact.BindArtifactRepo)
+		confArtifact.PUT("/", artifact.UpdateArtifactRepo)
 		confArtifact.GET("/", artifact.QueryArtifactRepos)
+		confArtifact.GET("/registry/:id", registry.ListRepositories)
 
 		project := api.Group("/projects")
 		project.GET("/list", projects.List)

@@ -1,28 +1,28 @@
-package scm
+package artifact
 
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/util"
-	scm2 "go-to-cloud/internal/models/scm"
+	artifactModels "go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/artifact"
 	"go-to-cloud/internal/pkg/response"
-	"go-to-cloud/internal/pkg/scm"
 	"net/http"
 )
 
-// UpdateCodeRepo 更新代码仓库
+// UpdateArtifactRepo 更新制品仓库
 // @Tags Configure
-// @Description 代码仓库配置
+// @Description 制品仓库配置
 // @Success 200
-// @Param   ContentBody     body     scm.Scm     true  "Request"     example(scm.Scm)
-// @Router /api/configure/coderepo [put]
+// @Param   ContentBody     body     artifact.Artifact     true  "Request"     example(artifact.Artifact)
+// @Router /api/configure/artifact [put]
 // @Security JWT
-func UpdateCodeRepo(ctx *gin.Context) {
-	var req scm2.Scm
+func UpdateArtifactRepo(ctx *gin.Context) {
+	var req artifactModels.Artifact
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return
 	}
-	success, err := scm.Ping(&req.Testing)
+	success, err := artifact.Ping(&req.Testing)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusOK, &msg)
@@ -40,7 +40,7 @@ func UpdateCodeRepo(ctx *gin.Context) {
 		return
 	}
 
-	err = scm.Update(&req, userId, orgs)
+	err = artifact.Update(&req, userId, orgs)
 
 	if err != nil {
 		msg := err.Error()

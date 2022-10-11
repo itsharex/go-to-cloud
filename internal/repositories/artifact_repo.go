@@ -156,3 +156,63 @@ func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]MergedArtifactRep
 		return nil, err
 	}
 }
+
+// UpdateArtifactRepo 更新制品仓库
+func UpdateArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error {
+	g := &gorm.Model{
+		UpdatedAt: time.Now(),
+	}
+
+	repo, err := buildArtifactRepo(model, userId, orgs, g)
+	if err != nil {
+		return err
+	}
+
+	tx := conf.GetDbClient()
+
+	// TODO: os.Env
+	tx = tx.Debug()
+
+	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
+	return err
+}
+
+func DeleteArtifactRepo(userId, repoId uint) error {
+
+	tx := conf.GetDbClient()
+
+	// TODO: os.Env
+	tx = tx.Debug()
+
+	// TODO: 校验当前userId是否拥有数据删除权限
+
+	err := tx.Delete(&ArtifactRepo{
+		Model: gorm.Model{
+			ID: repoId,
+		},
+	}).Error
+
+	return err
+}
+
+func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurity bool, err error) {
+	tx := conf.GetDbClient()
+
+	// TODO: os.Env
+	tx = tx.Debug()
+
+	var repo ArtifactRepo
+	err = tx.Where(&ArtifactRepo{
+		Model: gorm.Model{
+			ID: repoID,
+		},
+	}).First(&repo).Error
+
+	if err == nil {
+		url = &repo.Url
+		account = &repo.Account
+		password = &repo.Password
+		isSecurity = repo.IsSecurity != 0
+	}
+	return
+}
