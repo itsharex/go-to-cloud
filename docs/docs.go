@@ -16,6 +16,27 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/configure/artifact": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/artifact.Artifact"
+                        }
+                    }
+                }
+            }
+        },
         "/api/configure/artifact/bind": {
             "post": {
                 "security": [
@@ -93,7 +114,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/scm.Scm"
+                        }
                     }
                 }
             }

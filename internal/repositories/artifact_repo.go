@@ -26,6 +26,63 @@ func (m *ArtifactRepo) TableName() string {
 	return "artifact_repo"
 }
 
+type MergedArtifactRepoWithOrg struct {
+	ArtifactRepo
+	Org []OrgLite
+}
+
+type ArtifactRepoWithOrg struct {
+	ArtifactRepo
+	OrgLite
+}
+
+func mergeArtifactRepoOrg(repos []ArtifactRepoWithOrg) ([]MergedArtifactRepoWithOrg, error) {
+	r := make(map[uint][]OrgLite)
+	for _, repo := range repos {
+		x := r[repo.ID]
+		if x == nil {
+			r[repo.ID] = make([]OrgLite, 0)
+		}
+		r[repo.ID] = append(r[repo.ID], OrgLite{
+			OrgId:   repo.OrgId,
+			OrgName: repo.OrgName,
+		})
+	}
+
+	merged := make(map[uint]*MergedArtifactRepoWithOrg)
+	for _, repo := range repos {
+		if merged[repo.ID] == nil {
+			merged[repo.ID] = &MergedArtifactRepoWithOrg{
+				ArtifactRepo: ArtifactRepo{
+					Model: gorm.Model{
+						ID:        repo.ID,
+						CreatedAt: repo.CreatedAt,
+						UpdatedAt: repo.UpdatedAt,
+						DeletedAt: repo.DeletedAt,
+					},
+					Name:           repo.Name,
+					ArtifactOrigin: repo.ArtifactOrigin,
+					IsSecurity:     repo.IsSecurity,
+					Account:        repo.Account,
+					Password:       repo.Password,
+					Url:            repo.Url,
+					CreatedBy:      repo.CreatedBy,
+					BelongsTo:      datatypes.JSON{},
+					Remark:         repo.Remark,
+				},
+				Org: r[repo.ID],
+			}
+		}
+	}
+	rlt := make([]MergedArtifactRepoWithOrg, len(merged))
+	counter := 0
+	for _, m := range merged {
+		rlt[counter] = *m
+		counter++
+	}
+	return rlt, nil
+}
+
 func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormModel *gorm.Model) (*ArtifactRepo, error) {
 	isSecurity := int8(0)
 	if model.IsSecurity {
@@ -73,8 +130,8 @@ func BindArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error 
 }
 
 // QueryArtifactRepo 查询制品仓库
-func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]ArtifactRepo, error) {
-	var repo []ArtifactRepo
+func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]MergedArtifactRepoWithOrg, error) {
+	var repo []ArtifactRepoWithOrg
 
 	tx := conf.GetDbClient().Model(&ArtifactRepo{})
 
@@ -93,5 +150,9 @@ func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]ArtifactRepo, err
 
 	err := tx.Scan(&repo).Error
 
-	return repo, err
+	if err == nil {
+		return mergeArtifactRepoOrg(repo)
+	} else {
+		return nil, err
+	}
 }

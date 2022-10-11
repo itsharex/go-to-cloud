@@ -26,11 +26,6 @@ func (m *CodeRepo) TableName() string {
 	return "code_repo"
 }
 
-type OrgLite struct {
-	OrgId   uint   `gorm:"column:orgId"`
-	OrgName string `gorm:"column:orgName"`
-}
-
 type CodeRepoWithOrg struct {
 	CodeRepo
 	OrgLite
@@ -66,13 +61,13 @@ func QueryCodeRepo(orgs []uint, repoNamePattern string, pager *models.Pager) ([]
 	err := tx.Scan(&repo).Error
 
 	if err == nil {
-		return merge(repo)
+		return mergeCodeRepoOrg(repo)
 	} else {
 		return nil, err
 	}
 }
 
-func merge(repos []CodeRepoWithOrg) ([]MergedCodeRepoWithOrg, error) {
+func mergeCodeRepoOrg(repos []CodeRepoWithOrg) ([]MergedCodeRepoWithOrg, error) {
 	r := make(map[uint][]OrgLite)
 	for _, repo := range repos {
 		x := r[repo.ID]

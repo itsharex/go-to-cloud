@@ -25,14 +25,13 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 	} else {
 		rlt := make([]artifact.Artifact, len(merged))
 		for i, m := range merged {
-			// TODO: uncomment
-			//orgLites := make([]artifact.OrgLite, len(m.Org))
-			//for i, lite := range m.Org {
-			//	orgLites[i] = artifact.OrgLite{
-			//		OrgId:   lite.OrgId,
-			//		OrgName: lite.OrgName,
-			//	}
-			//}
+			orgLites := make([]artifact.OrgLite, len(m.Org))
+			for i, lite := range m.Org {
+				orgLites[i] = artifact.OrgLite{
+					OrgId:   lite.OrgId,
+					OrgName: lite.OrgName,
+				}
+			}
 			rlt[i] = artifact.Artifact{
 				Testing: artifact.Testing{
 					Id:         m.ID,
@@ -42,9 +41,8 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 					User:       m.Account,
 					Password:   m.Password,
 				},
-				Name: m.Name,
-				// TODO: uncomment
-				//OrgLites:  orgLites,
+				Name:      m.Name,
+				OrgLites:  orgLites,
 				Remark:    m.Remark,
 				UpdatedAt: m.UpdatedAt.Format("2006-01-02"),
 			}

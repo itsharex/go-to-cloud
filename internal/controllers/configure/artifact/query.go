@@ -12,7 +12,7 @@ import (
 // QueryArtifactRepos
 // @Tags Configure
 // @Description 制品仓库配置
-// @Success 200
+// @Success 200 {object} artifact.Artifact
 // @Router /api/configure/artifact [get]
 // @Security JWT
 func QueryArtifactRepos(ctx *gin.Context) {

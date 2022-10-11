@@ -12,7 +12,7 @@ import (
 // QueryCodeRepos
 // @Tags Configure
 // @Description 代码仓库配置
-// @Success 200
+// @Success 200 {object} scm.Scm
 // @Router /api/configure/coderepo [get]
 // @Security JWT
 func QueryCodeRepos(ctx *gin.Context) {
