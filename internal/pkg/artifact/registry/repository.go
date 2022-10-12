@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"fmt"
 	registryModels "go-to-cloud/internal/models/artifact/registry"
 	"go-to-cloud/internal/repositories"
 	"strings"
@@ -37,7 +38,10 @@ func ListRepositories(repoId uint) (images []registryModels.Image, err error) {
 				images[i] = registryModels.Image{
 					Name:     *extractNameFromRepo(&repo),
 					FullName: repo,
-					Tags:     tags,
+				}
+				for _, tag := range tags {
+					manifest, _ := hub.ManifestV2(repo, tag)
+					fmt.Println(manifest.MediaType)
 				}
 			}
 		}
