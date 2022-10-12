@@ -13,7 +13,7 @@ func TestListRepositoriesShouldSuccess(t *testing.T) {
 		t.Skip()
 	}
 
-	repoID := uint(2)
+	repoID := uint(3)
 
 	r, err := ListRepositories(repoID)
 

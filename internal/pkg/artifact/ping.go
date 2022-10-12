@@ -8,6 +8,9 @@ import (
 func Ping(testing *artifact.Testing) (bool, error) {
 
 	hub, err := pkgRegistry.GetRegistryHub(testing.IsSecurity, &testing.Url, &testing.User, &testing.Password)
-
-	return hub != nil, err
+	if err == nil && hub != nil {
+		return true, hub.Ping()
+	} else {
+		return false, err
+	}
 }
