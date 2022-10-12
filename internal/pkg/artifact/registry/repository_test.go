@@ -32,7 +32,7 @@ func TestListRepositoriesShouldSuccess(t *testing.T) {
 		//reader.Close()
 		//newStr := buf.String()
 		//fmt.Println(newStr)
-		tags, _ := hub.Tags(s)
+		tags, _ := hub.Tags(s.FullName)
 		for _, tag := range tags {
 			fmt.Println(tag)
 			//	m, _ := hub.ManifestV2(s, tag)
