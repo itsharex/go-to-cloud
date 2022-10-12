@@ -30,7 +30,7 @@ func runMode() (bool, string) {
 	}
 
 	if len(*aPort) == 0 {
-		*aPort = ":8080"
+		*aPort = ":80"
 	}
 
 	if !strings.HasPrefix(*aPort, ":") {
