@@ -13,7 +13,7 @@ type ArtifactRepo struct {
 	gorm.Model
 	Name           string         `json:"name" gorm:"column:name"`
 	ArtifactOrigin int            `json:"artifactOrigin" gorm:"column:artifact_origin"` // 制品仓库来源；Docker(1);
-	IsSecurity     int8           `json:"isSecurity" gorm:"column:is_security"`         // 是否使用https
+	IsSecurity     bool           `json:"isSecurity" gorm:"column:is_security"`         // 是否使用https
 	Account        string         `json:"account" gorm:"column:account"`                // 用户名
 	Password       string         `json:"password" gorm:"column:password"`              // 密码
 	Url            string         `json:"url" gorm:"column:url"`                        // 制品仓库平台地址
@@ -84,12 +84,6 @@ func mergeArtifactRepoOrg(repos []ArtifactRepoWithOrg) ([]MergedArtifactRepoWith
 }
 
 func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormModel *gorm.Model) (*ArtifactRepo, error) {
-	isSecurity := int8(0)
-	if model.IsSecurity {
-		isSecurity = 1
-	} else {
-		isSecurity = 0
-	}
 	belongs, err := json.Marshal(orgs)
 	if err != nil {
 		return nil, err
@@ -98,7 +92,7 @@ func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormM
 		Model:          *gormModel,
 		ArtifactOrigin: int(model.Type),
 		Name:           model.Name,
-		IsSecurity:     isSecurity,
+		IsSecurity:     model.IsSecurity,
 		Account:        model.User,
 		Password:       model.Password,
 		Url:            model.Url,
@@ -173,7 +167,7 @@ func UpdateArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) erro
 	// TODO: os.Env
 	tx = tx.Debug()
 
-	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
+	err = tx.Omit("created_at", "created_by", "updated_at").Where("id = ?", model.Id).Updates(&repo).Error
 	return err
 }
 
@@ -212,7 +206,7 @@ func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurit
 		url = &repo.Url
 		account = &repo.Account
 		password = &repo.Password
-		isSecurity = repo.IsSecurity != 0
+		isSecurity = repo.IsSecurity
 	}
 	return
 }

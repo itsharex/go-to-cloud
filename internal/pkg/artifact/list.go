@@ -3,6 +3,8 @@ package artifact
 import (
 	"go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
+	"time"
 )
 
 // List 读取制品仓库
@@ -36,7 +38,7 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 				Testing: artifact.Testing{
 					Id:         m.ID,
 					Type:       artifact.Type(m.ArtifactOrigin),
-					IsSecurity: m.IsSecurity != 0,
+					IsSecurity: m.IsSecurity,
 					Url:        m.Url,
 					User:       m.Account,
 					Password:   m.Password,
@@ -49,4 +51,13 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 		}
 		return rlt, err
 	}
+}
+
+func ItemsList(artifactID uint) ([]artifact.Image, error) {
+	items := make([]artifact.Image, 1)
+	items[0].Id = 1
+	items[0].Name = "test"
+	items[0].PublishedAt = utils.JsonTime(time.Now())
+	items[0].PublishCounter = 3
+	return items, nil
 }

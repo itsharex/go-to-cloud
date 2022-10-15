@@ -16,11 +16,19 @@ func (m *migration20221004) Up(db *gorm.DB) {
 			panic(err)
 		}
 	}
+
+	if !db.Migrator().HasTable(&repo.ArtifactRepo{}) {
+		err := db.AutoMigrate(&repo.ArtifactRepo{})
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (m *migration20221004) Down(db *gorm.DB) {
 	err := db.Migrator().DropTable(
 		&repo.CodeRepo{},
+		&repo.ArtifactRepo{},
 	)
 	if err != nil {
 		panic(err)

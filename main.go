@@ -22,7 +22,7 @@ func runMode() (bool, string) {
 	}
 
 	if len(*aPort) == 0 {
-		*aPort = os.Getenv("port")
+		*aPort = os.Getenv("Port")
 	}
 
 	if len(*aType) == 0 {

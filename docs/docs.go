@@ -31,8 +31,38 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/artifact.Artifact"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
                             "$ref": "#/definitions/artifact.Artifact"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -101,6 +131,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/artifact/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ArtifactRepo.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/coderepo": {
             "get": {
                 "security": [
@@ -120,36 +177,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/configure/coderepo/:id": {
-            "delete": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "代码仓库配置",
-                "tags": [
-                    "Configure"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "CodeRepo.ID",
-                        "name": "coderepo_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/configure/coderepo/bind": {
+            },
             "put": {
                 "security": [
                     {
@@ -176,7 +204,9 @@ const docTemplate = `{
                         "description": "OK"
                     }
                 }
-            },
+            }
+        },
+        "/api/configure/coderepo/bind": {
             "post": {
                 "security": [
                     {
@@ -236,6 +266,66 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/coderepo/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "代码仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "CodeRepo.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ArtifactRepo.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/artifact.Artifact"
+                            }
+                        }
                     }
                 }
             }
@@ -332,6 +422,12 @@ const docTemplate = `{
                 "isSecurity": {
                     "type": "boolean"
                 },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/artifact.Image"
+                    }
+                },
                 "name": {
                     "type": "string"
                 },
@@ -363,6 +459,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "artifact.Image": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "latestVersion": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "publishCounter": {
+                    "type": "integer"
+                },
+                "publishedAt": {
                     "type": "string"
                 }
             }

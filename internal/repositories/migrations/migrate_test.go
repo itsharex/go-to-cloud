@@ -54,7 +54,6 @@ func TestMigrate(t *testing.T) {
 		assert.Equal(t, 1, sortedUp[0])
 		assert.Equal(t, 2, sortedUp[1])
 	}
-
 }
 
 func TestRollback(t *testing.T) {

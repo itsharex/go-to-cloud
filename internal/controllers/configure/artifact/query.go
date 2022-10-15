@@ -7,15 +7,16 @@ import (
 	"go-to-cloud/internal/pkg/artifact"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
+	"strconv"
 )
 
-// QueryArtifactRepos
+// QueryArtifactRepo
 // @Tags Configure
 // @Description 制品仓库配置
-// @Success 200 {object} artifact.Artifact
+// @Success 200 {array} artifact.Artifact
 // @Router /api/configure/artifact [get]
 // @Security JWT
-func QueryArtifactRepos(ctx *gin.Context) {
+func QueryArtifactRepo(ctx *gin.Context) {
 	exists, _, _, orgs := util.CurrentUser(ctx)
 
 	if !exists {
@@ -36,6 +37,47 @@ func QueryArtifactRepos(ctx *gin.Context) {
 		idx++
 	}
 	result, err := artifact.List(orgsId, &query)
+
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+		return
+	}
+
+	if len(result) > 0 {
+		if items, err := artifact.ItemsList(result[0].Id); err == nil {
+			result[0].Items = items
+		}
+	}
+
+	response.Success(ctx, result)
+}
+
+// QueryArtifactItems 获取仓库里的制品
+// @Tags Configure
+// @Description 制品仓库配置
+// @Success 200 {array} artifact.Artifact
+// @Router /api/configure/{id} [get]
+// @Param   id     path     int     true	"ArtifactRepo.ID"
+// @Security JWT
+func QueryArtifactItems(ctx *gin.Context) {
+	exists, _, _, _ := util.CurrentUser(ctx)
+
+	if !exists {
+		response.Fail(ctx, http.StatusUnauthorized, nil)
+		return
+	}
+
+	val := ctx.Param("id")
+
+	repoId, err := strconv.ParseUint(val, 10, 64)
+
+	if err != nil {
+		response.BadRequest(ctx, err.Error())
+		return
+	}
+
+	result, err := artifact.ItemsList(uint(repoId))
 
 	if err != nil {
 		msg := err.Error()

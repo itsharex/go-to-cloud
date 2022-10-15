@@ -1,5 +1,7 @@
 package artifact
 
+import "go-to-cloud/internal/utils"
+
 type Type int
 
 const (
@@ -20,6 +22,14 @@ type Testing struct {
 	Password   string `json:"password"`
 }
 
+type Image struct {
+	Id             uint           `json:"id"`
+	Name           string         `json:"name"`
+	LatestVersion  string         `json:"latestVersion"`
+	PublishedAt    utils.JsonTime `json:"publishedAt"`
+	PublishCounter int            `json:"publishCounter"`
+}
+
 type Artifact struct {
 	Testing
 	Name      string    `json:"name" form:"name"`
@@ -27,6 +37,7 @@ type Artifact struct {
 	OrgLites  []OrgLite `json:"orgLites"`
 	Remark    string    `json:"remark"`
 	UpdatedAt string    `json:"updatedAt"`
+	Items     []Image   `json:"items"`
 }
 
 type OrgLite struct {
