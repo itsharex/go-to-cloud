@@ -1,10 +1,16 @@
 package docker_image
 
-import "go-to-cloud/internal/utils"
+import (
+	"go-to-cloud/internal/utils"
+	"time"
+)
 
 type Image struct {
-	Name        string   // 镜像名
-	FullName    string   // 完整路径，包含项目名称，e.g. library/mysql
-	Tags        []string // Tag
-	PublishedAt utils.JsonTime
+	Hash            string         `json:"hashId"`
+	Name            string         `json:"name"`     // 镜像名
+	FullName        string         `json:"fullName"` // 完整路径，包含项目名称，e.g. library/mysql:latest
+	Tags            []string       `json:"tags"`     // Tag
+	LatestVer       string         `json:"latestVersion"`
+	LatestPublishAt time.Time      `json:"-"`
+	PublishedAt     utils.JsonTime `json:"publishedAt"`
 }
