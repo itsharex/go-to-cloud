@@ -1,10 +1,11 @@
 package artifact
 
 import (
+	"errors"
+	"fmt"
 	"go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/artifact/registry"
 	"go-to-cloud/internal/repositories"
-	"go-to-cloud/internal/utils"
-	"time"
 )
 
 // List 读取制品仓库
@@ -53,11 +54,16 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 	}
 }
 
-func ItemsList(artifactID uint) ([]artifact.Image, error) {
-	items := make([]artifact.Image, 1)
-	items[0].Id = 1
-	items[0].Name = "test"
-	items[0].PublishedAt = utils.JsonTime(time.Now())
-	items[0].PublishCounter = 3
-	return items, nil
+func ItemsList(artifactID uint) (any, error) {
+	_, _, _, _, origin, err := repositories.GetArtifactRepoByID(artifactID)
+	if err != nil {
+		return nil, err
+	}
+	originType := artifact.Type(origin)
+	switch originType {
+	case artifact.Docker:
+		return registry.QueryImages(artifactID)
+	}
+
+	return nil, errors.New(fmt.Sprintf("Not Support Origin Type Code: %d", originType))
 }

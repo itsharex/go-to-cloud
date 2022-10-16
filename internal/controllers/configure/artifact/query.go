@@ -44,12 +44,6 @@ func QueryArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
-	if len(result) > 0 {
-		if items, err := artifact.ItemsList(result[0].Id); err == nil {
-			result[0].Items = items
-		}
-	}
-
 	response.Success(ctx, result)
 }
 
@@ -57,7 +51,7 @@ func QueryArtifactRepo(ctx *gin.Context) {
 // @Tags Configure
 // @Description 制品仓库配置
 // @Success 200 {array} artifact.Artifact
-// @Router /api/configure/{id} [get]
+// @Router /api/configure/artifact/{id} [get]
 // @Param   id     path     int     true	"ArtifactRepo.ID"
 // @Security JWT
 func QueryArtifactItems(ctx *gin.Context) {

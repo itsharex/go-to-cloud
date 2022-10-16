@@ -132,6 +132,37 @@ const docTemplate = `{
             }
         },
         "/api/configure/artifact/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "制品仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ArtifactRepo.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/artifact.Artifact"
+                            }
+                        }
+                    }
+                }
+            },
             "delete": {
                 "security": [
                     {
@@ -293,39 +324,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/configure/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "制品仓库配置",
-                "tags": [
-                    "Configure"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ArtifactRepo.ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/artifact.Artifact"
-                            }
-                        }
                     }
                 }
             }

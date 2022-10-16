@@ -189,7 +189,7 @@ func DeleteArtifactRepo(userId, repoId uint) error {
 	return err
 }
 
-func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurity bool, err error) {
+func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurity bool, origin int, err error) {
 	tx := conf.GetDbClient()
 
 	// TODO: os.Env
@@ -207,6 +207,7 @@ func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurit
 		account = &repo.Account
 		password = &repo.Password
 		isSecurity = repo.IsSecurity
+		origin = repo.ArtifactOrigin
 	}
 	return
 }
