@@ -328,6 +328,145 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/deploy/k8s": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "k8s环境配置",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/scm.Scm"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "k8s仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/k8s.K8s"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/deploy/k8s/bind": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "k8s仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/k8s.K8s"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/deploy/k8s/testing": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "k8s仓库配置",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/k8s.Testing"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/deploy/k8s/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "k8s仓库配置",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "K8sRepo.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/login": {
             "post": {
                 "description": "登录",
@@ -420,12 +559,6 @@ const docTemplate = `{
                 "isSecurity": {
                     "type": "boolean"
                 },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/artifact.Image"
-                    }
-                },
                 "name": {
                     "type": "string"
                 },
@@ -461,26 +594,6 @@ const docTemplate = `{
                 }
             }
         },
-        "artifact.Image": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "latestVersion": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "publishCounter": {
-                    "type": "integer"
-                },
-                "publishedAt": {
-                    "type": "string"
-                }
-            }
-        },
         "artifact.OrgLite": {
             "type": "object",
             "properties": {
@@ -511,6 +624,60 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
+                    "type": "string"
+                }
+            }
+        },
+        "k8s.K8s": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "kubeconfig": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgLites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/k8s.OrgLite"
+                    }
+                },
+                "orgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "k8s.OrgLite": {
+            "type": "object",
+            "properties": {
+                "orgId": {
+                    "type": "integer"
+                },
+                "orgName": {
+                    "type": "string"
+                }
+            }
+        },
+        "k8s.Testing": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "kubeconfig": {
                     "type": "string"
                 }
             }

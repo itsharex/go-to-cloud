@@ -2,6 +2,7 @@ package scm
 
 import (
 	"go-to-cloud/internal/models/scm"
+	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -12,5 +13,5 @@ func Update(model *scm.Scm, userId uint, orgs map[uint]string) error {
 		orgId = append(orgId, i)
 	}
 
-	return repositories.UpdateCodeRepo(model, userId, intersect(model.Orgs, orgId))
+	return repositories.UpdateCodeRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

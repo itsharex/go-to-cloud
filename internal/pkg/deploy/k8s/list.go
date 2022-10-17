@@ -1,7 +1,7 @@
-package scm
+package k8s
 
 import (
-	"go-to-cloud/internal/models/scm"
+	"go-to-cloud/internal/models/deploy/k8s"
 	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
@@ -11,7 +11,7 @@ import (
 //
 //	orgs: 当前用户所在组织
 //	query: 查询条件
-func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
+func List(orgs []uint, query *k8s.Query) ([]k8s.K8s, error) {
 	var orgId []uint
 	if len(query.Orgs) == 0 {
 		//	默认取当前用户所属全体组织
@@ -21,25 +21,22 @@ func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 		orgId = utils.Intersect(orgs, query.Orgs)
 	}
 
-	if merged, err := repositories.QueryCodeRepo(orgId, query.Name, &query.Pager); err != nil {
+	if merged, err := repositories.QueryK8sRepo(orgId, query.Name, &query.Pager); err != nil {
 		return nil, err
 	} else {
-		rlt := make([]scm.Scm, len(merged))
+		rlt := make([]k8s.K8s, len(merged))
 		for i, m := range merged {
-			orgLites := make([]scm.OrgLite, len(m.Org))
+			orgLites := make([]k8s.OrgLite, len(m.Org))
 			for i, lite := range m.Org {
-				orgLites[i] = scm.OrgLite{
+				orgLites[i] = k8s.OrgLite{
 					OrgId:   lite.OrgId,
 					OrgName: lite.OrgName,
 				}
 			}
-			rlt[i] = scm.Scm{
-				Testing: scm.Testing{
-					Id:       m.ID,
-					Origin:   scm.Type(m.ScmOrigin),
-					IsPublic: m.IsPublic != 0,
-					Url:      m.Url,
-					Token:    &merged[i].AccessToken,
+			rlt[i] = k8s.K8s{
+				Testing: k8s.Testing{
+					Id:         m.ID,
+					KubeConfig: &m.KubeConfig,
 				},
 				Name:      m.Name,
 				OrgLites:  orgLites,

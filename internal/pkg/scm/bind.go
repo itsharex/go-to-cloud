@@ -2,6 +2,7 @@ package scm
 
 import (
 	"go-to-cloud/internal/models/scm"
+	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -11,5 +12,5 @@ func Bind(model *scm.Scm, userId uint, orgs map[uint]string) error {
 	for i := range orgs {
 		orgId = append(orgId, i)
 	}
-	return repositories.BindCodeRepo(model, userId, intersect(model.Orgs, orgId))
+	return repositories.BindCodeRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

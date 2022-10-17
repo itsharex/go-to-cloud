@@ -1,6 +1,6 @@
-package artifact
+package utils
 
-func intersect(orgA, orgB []uint) []uint {
+func Intersect(orgA, orgB []uint) []uint {
 	counter := make(map[uint]int)
 	rlt := make([]uint, 0)
 	for _, a := range orgA {

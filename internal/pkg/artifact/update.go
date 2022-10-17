@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -12,5 +13,5 @@ func Update(model *artifact.Artifact, userId uint, orgs map[uint]string) error {
 		orgId = append(orgId, i)
 	}
 
-	return repositories.UpdateArtifactRepo(model, userId, intersect(model.Orgs, orgId))
+	return repositories.UpdateArtifactRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

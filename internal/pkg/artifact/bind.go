@@ -2,6 +2,7 @@ package artifact
 
 import (
 	"go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -11,5 +12,5 @@ func Bind(model *artifact.Artifact, userId uint, orgs map[uint]string) error {
 	for i := range orgs {
 		orgId = append(orgId, i)
 	}
-	return repositories.BindArtifactRepo(model, userId, intersect(model.Orgs, orgId))
+	return repositories.BindArtifactRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

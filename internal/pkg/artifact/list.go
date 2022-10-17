@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/pkg/artifact/registry"
+	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -20,7 +21,7 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 		orgId = orgs
 	} else {
 		// 	计算查询条件中的所属组织与当前用户所属组织的交集
-		orgId = intersect(orgs, query.Orgs)
+		orgId = utils.Intersect(orgs, query.Orgs)
 	}
 
 	if merged, err := repositories.QueryArtifactRepo(orgId, query.Name); err != nil {

@@ -40,7 +40,12 @@ func buildRouters(router *gin.Engine) {
 		confArtifact.GET("/:id", artifact.QueryArtifactItems)
 
 		confK8s := api.Group("/configure/deploy/k8s")
+		confK8s.POST("/testing", k8s.Testing)
+		confK8s.POST("/bind", k8s.BindK8sRepo)
+		confK8s.PUT("/", k8s.UpdateK8sRepo)
 		confK8s.GET("/", k8s.QueryK8sRepos)
+		confK8s.DELETE("/:id", k8s.RemoveK8sRepo)
+		confK8s.GET("/:id", k8s.QueryK8sRepos)
 
 		project := api.Group("/projects")
 		project.GET("/list", projects.List)

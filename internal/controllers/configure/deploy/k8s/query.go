@@ -3,9 +3,9 @@ package k8s
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/util"
-	scm2 "go-to-cloud/internal/models/scm"
+	k8smodel "go-to-cloud/internal/models/deploy/k8s"
+	"go-to-cloud/internal/pkg/deploy/k8s"
 	"go-to-cloud/internal/pkg/response"
-	"go-to-cloud/internal/pkg/scm"
 	"net/http"
 )
 
@@ -23,7 +23,7 @@ func QueryK8sRepos(ctx *gin.Context) {
 		return
 	}
 
-	var query scm2.Query
+	var query k8smodel.Query
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		response.Fail(ctx, http.StatusBadRequest, nil)
 		return
@@ -35,7 +35,7 @@ func QueryK8sRepos(ctx *gin.Context) {
 		orgsId[idx] = key
 		idx++
 	}
-	result, err := scm.List(orgsId, &query)
+	result, err := k8s.List(orgsId, &query)
 
 	if err != nil {
 		msg := err.Error()
