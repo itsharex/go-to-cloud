@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/configure/artifact"
-	"go-to-cloud/internal/controllers/configure/artifact/registry"
+	"go-to-cloud/internal/controllers/configure/deploy/k8s"
 	"go-to-cloud/internal/controllers/configure/scm"
 	"go-to-cloud/internal/controllers/projects"
 	"go-to-cloud/internal/controllers/users"
