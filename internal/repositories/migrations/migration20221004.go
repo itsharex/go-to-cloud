@@ -30,6 +30,13 @@ func (m *migration20221004) Up(db *gorm.DB) {
 			panic(err)
 		}
 	}
+
+	if !db.Migrator().HasTable(&repo.K8sRepo{}) {
+		err := db.AutoMigrate(&repo.K8sRepo{})
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (m *migration20221004) Down(db *gorm.DB) {
@@ -37,6 +44,7 @@ func (m *migration20221004) Down(db *gorm.DB) {
 		&repo.CodeRepo{},
 		&repo.ArtifactRepo{},
 		&repo.ArtifactDockerImages{},
+		&repo.K8sRepo{},
 	)
 	if err != nil {
 		panic(err)
