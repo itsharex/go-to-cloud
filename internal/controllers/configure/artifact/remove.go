@@ -13,8 +13,8 @@ import (
 // @Tags Configure
 // @Description 制品仓库配置
 // @Success 200
-// @Router /api/configure/artifact/:id [delete]
-// @Param   artifact_id     path     int     true	"ArtifactRepo.ID"
+// @Router /api/configure/artifact/{id} [delete]
+// @Param   id     path     int     true	"ArtifactRepo.ID"
 // @Security JWT
 func RemoveArtifactRepo(ctx *gin.Context) {
 	val := ctx.Param("id")

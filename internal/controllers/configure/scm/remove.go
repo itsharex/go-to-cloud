@@ -13,8 +13,8 @@ import (
 // @Tags Configure
 // @Description 代码仓库配置
 // @Success 200
-// @Router /api/configure/coderepo/:id [delete]
-// @Param   coderepo_id     path     int     true	"CodeRepo.ID"
+// @Router /api/configure/coderepo/{id} [delete]
+// @Param   id     path     int     true	"CodeRepo.ID"
 // @Security JWT
 func RemoveCodeRepo(ctx *gin.Context) {
 	val := ctx.Param("id")

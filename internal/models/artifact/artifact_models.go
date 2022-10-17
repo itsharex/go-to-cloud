@@ -3,8 +3,8 @@ package artifact
 type Type int
 
 const (
-	Docker Type = iota
-	OSS
+	OSS Type = iota
+	Docker
 	Nuget
 	Maven
 	Npm

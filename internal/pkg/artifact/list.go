@@ -1,7 +1,10 @@
 package artifact
 
 import (
+	"errors"
+	"fmt"
 	"go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/artifact/registry"
 	"go-to-cloud/internal/repositories"
 )
 
@@ -36,7 +39,7 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 				Testing: artifact.Testing{
 					Id:         m.ID,
 					Type:       artifact.Type(m.ArtifactOrigin),
-					IsSecurity: m.IsSecurity != 0,
+					IsSecurity: m.IsSecurity,
 					Url:        m.Url,
 					User:       m.Account,
 					Password:   m.Password,
@@ -49,4 +52,18 @@ func List(orgs []uint, query *artifact.Query) ([]artifact.Artifact, error) {
 		}
 		return rlt, err
 	}
+}
+
+func ItemsList(artifactID uint) (any, error) {
+	_, _, _, _, origin, err := repositories.GetArtifactRepoByID(artifactID)
+	if err != nil {
+		return nil, err
+	}
+	originType := artifact.Type(origin)
+	switch originType {
+	case artifact.Docker:
+		return registry.QueryImages(artifactID)
+	}
+
+	return nil, errors.New(fmt.Sprintf("Not Support Origin Type Code: %d", originType))
 }
