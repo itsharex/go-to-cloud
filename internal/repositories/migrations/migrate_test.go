@@ -48,8 +48,9 @@ func TestMigrate(t *testing.T) {
 	var db *gorm.DB
 
 	if testing.Short() {
-		db = conf.GetDbClient()
 		initTestData()
+	} else {
+		db = conf.GetDbClient()
 	}
 
 	Migrate(db)
