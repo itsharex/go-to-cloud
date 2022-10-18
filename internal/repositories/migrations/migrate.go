@@ -22,8 +22,7 @@ func init() {
 }
 
 // Migrate 数据库变更同步
-func Migrate() {
-	db := conf.GetDbClient()
+func Migrate(db *gorm.DB) {
 
 	for i := 0; i < len(migrations); i++ {
 		migrations[i].Up(db)

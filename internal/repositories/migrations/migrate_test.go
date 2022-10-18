@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"github.com/stretchr/testify/assert"
+	"go-to-cloud/conf"
 	"gorm.io/gorm"
 	"testing"
 )
@@ -44,11 +45,14 @@ func initTestData() {
 	}
 }
 func TestMigrate(t *testing.T) {
+	var db *gorm.DB
+
 	if testing.Short() {
+		db = conf.GetDbClient()
 		initTestData()
 	}
 
-	Migrate()
+	Migrate(db)
 
 	if testing.Short() {
 		assert.Equal(t, 1, sortedUp[0])
