@@ -62,11 +62,15 @@ func TestMigrate(t *testing.T) {
 }
 
 func TestRollback(t *testing.T) {
+	var db *gorm.DB
+
 	if testing.Short() {
 		initTestData()
+	} else {
+		db = conf.GetDbClient()
 	}
 
-	Rollback()
+	Rollback(db)
 
 	if testing.Short() {
 		assert.Equal(t, 2, sortedDown[0])

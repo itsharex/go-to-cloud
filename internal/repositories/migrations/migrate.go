@@ -1,7 +1,6 @@
 package migrations
 
 import (
-	"go-to-cloud/conf"
 	"gorm.io/gorm"
 )
 
@@ -30,8 +29,7 @@ func Migrate(db *gorm.DB) {
 }
 
 // Rollback 数据库变更回滚
-func Rollback() {
-	db := conf.GetDbClient()
+func Rollback(db *gorm.DB) {
 
 	for i := len(migrations) - 1; i >= 0; i-- {
 		migrations[i].Down(db)
