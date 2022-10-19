@@ -12,7 +12,7 @@ import (
 // QueryK8sRepos
 // @Tags Configure
 // @Description k8s环境配置
-// @Success 200 {object} scm.Scm
+// @Success 200 {object} k8s.K8s
 // @Router /api/configure/deploy/k8s [get]
 // @Security JWT
 func QueryK8sRepos(ctx *gin.Context) {

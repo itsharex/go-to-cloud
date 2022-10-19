@@ -12,11 +12,12 @@ import (
 
 type K8sRepo struct {
 	gorm.Model
-	Name       string         `json:"name" gorm:"column:name"`
-	KubeConfig string         `json:"kubeconfig" gorm:"column:kube_config"`
-	CreatedBy  uint           `json:"createdBy" gorm:"column:created_by"`  // 仓库创建人
-	BelongsTo  datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"` // 所属组织
-	Remark     string         `json:"remark" gorm:"column:remark"`
+	Name          string         `json:"name" gorm:"column:name"`
+	KubeConfig    string         `json:"kubeconfig" gorm:"column:kube_config"`
+	ServerVersion string         `json:"serverVersion" gorm:"column:server_ver"`
+	CreatedBy     uint           `json:"createdBy" gorm:"column:created_by"`  // 仓库创建人
+	BelongsTo     datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"` // 所属组织
+	Remark        string         `json:"remark" gorm:"column:remark"`
 }
 
 func (m *K8sRepo) TableName() string {
@@ -88,11 +89,12 @@ func mergeK8sRepoOrg(repos []K8sRepoWithOrg) ([]MergedK8sRepoWithOrg, error) {
 						UpdatedAt: repo.UpdatedAt,
 						DeletedAt: repo.DeletedAt,
 					},
-					Name:       repo.Name,
-					KubeConfig: repo.KubeConfig,
-					CreatedBy:  repo.CreatedBy,
-					BelongsTo:  datatypes.JSON{},
-					Remark:     repo.Remark,
+					Name:          repo.Name,
+					KubeConfig:    repo.KubeConfig,
+					CreatedBy:     repo.CreatedBy,
+					BelongsTo:     datatypes.JSON{},
+					Remark:        repo.Remark,
+					ServerVersion: repo.ServerVersion,
 				},
 				Org: r[repo.ID],
 			}
@@ -114,12 +116,13 @@ func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *gorm.Mode
 		return nil, err
 	}
 	repo := K8sRepo{
-		Model:      *gormModel,
-		Name:       model.Name,
-		KubeConfig: *model.KubeConfig,
-		CreatedBy:  userId,
-		BelongsTo:  datatypes.JSON(belongs),
-		Remark:     model.Remark,
+		Model:         *gormModel,
+		Name:          model.Name,
+		KubeConfig:    *model.KubeConfig,
+		CreatedBy:     userId,
+		BelongsTo:     datatypes.JSON(belongs),
+		ServerVersion: model.ServerVersion,
+		Remark:        model.Remark,
 	}
 
 	return &repo, nil

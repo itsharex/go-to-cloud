@@ -11,9 +11,7 @@ type Migration20220831 struct {
 func (m *Migration20220831) Up(db *gorm.DB) {
 
 	userOrgRelNotExists := false
-	if !db.Migrator().HasTable(&repo.Infrastructure{}) {
-		db.AutoMigrate(&repo.Infrastructure{})
-	}
+
 	if !db.Migrator().HasTable(&repo.User{}) {
 		db.AutoMigrate(&repo.User{})
 		userOrgRelNotExists = true
@@ -45,7 +43,6 @@ func (m *Migration20220831) Down(db *gorm.DB) {
 	db.Migrator().DropTable(
 		&repo.Org{},
 		&repo.User{},
-		&repo.Infrastructure{},
 	)
 
 	db.Migrator().DropTable("orgs_users_rel")

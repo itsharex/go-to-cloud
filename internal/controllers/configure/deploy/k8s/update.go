@@ -22,13 +22,13 @@ func UpdateK8sRepo(ctx *gin.Context) {
 		response.BadRequest(ctx, err)
 		return
 	}
-	success, err := k8s.Ping(&req.Testing)
+	ver, err := k8s.Ping(&req.Testing)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusOK, &msg)
 		return
 	}
-	if !success {
+	if len(ver) == 0 {
 		response.Fail(ctx, http.StatusOK, nil)
 		return
 	}

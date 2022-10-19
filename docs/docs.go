@@ -343,7 +343,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/scm.Scm"
+                            "$ref": "#/definitions/k8s.K8s"
                         }
                     }
                 }
@@ -653,6 +653,9 @@ const docTemplate = `{
                     }
                 },
                 "remark": {
+                    "type": "string"
+                },
+                "serverVersion": {
                     "type": "string"
                 },
                 "updatedAt": {

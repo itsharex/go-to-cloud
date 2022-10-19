@@ -22,15 +22,17 @@ func BindK8sRepo(ctx *gin.Context) {
 		response.BadRequest(ctx, err)
 		return
 	}
-	success, err := k8s.Ping(&req.Testing)
+	ver, err := k8s.Ping(&req.Testing)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusForbidden, &msg)
 		return
 	}
-	if !success {
+	if len(ver) == 0 {
 		response.Fail(ctx, http.StatusForbidden, nil)
 		return
+	} else {
+		req.ServerVersion = ver
 	}
 
 	exists, userId, _, orgs := util.CurrentUser(ctx)

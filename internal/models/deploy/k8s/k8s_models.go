@@ -14,11 +14,12 @@ type OrgLite struct {
 
 type K8s struct {
 	Testing
-	Name      string    `json:"name" form:"name"`
-	Orgs      []uint    `json:"orgs" form:"orgs"`
-	OrgLites  []OrgLite `json:"orgLites"`
-	Remark    string    `json:"remark"`
-	UpdatedAt string    `json:"updatedAt"`
+	Name          string    `json:"name" form:"name"`
+	Orgs          []uint    `json:"orgs" form:"orgs"`
+	OrgLites      []OrgLite `json:"orgLites"`
+	Remark        string    `json:"remark"`
+	ServerVersion string    `json:"serverVersion"`
+	UpdatedAt     string    `json:"updatedAt"`
 }
 
 type Query struct {

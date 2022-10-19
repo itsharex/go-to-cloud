@@ -38,10 +38,11 @@ func List(orgs []uint, query *k8s.Query) ([]k8s.K8s, error) {
 					Id:         m.ID,
 					KubeConfig: &m.KubeConfig,
 				},
-				Name:      m.Name,
-				OrgLites:  orgLites,
-				Remark:    m.Remark,
-				UpdatedAt: m.UpdatedAt.Format("2006-01-02"),
+				Name:          m.Name,
+				OrgLites:      orgLites,
+				Remark:        m.Remark,
+				ServerVersion: m.ServerVersion,
+				UpdatedAt:     m.UpdatedAt.Format("2006-01-02"),
 			}
 		}
 		return rlt, err
