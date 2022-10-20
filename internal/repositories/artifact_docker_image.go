@@ -2,11 +2,10 @@ package repositories
 
 import (
 	"go-to-cloud/conf"
-	"gorm.io/gorm"
 )
 
 type ArtifactDockerImages struct {
-	gorm.Model
+	Model
 	Name           string `json:"name" gorm:"column:name"`
 	ArtifactRepoID uint   `json:"artifactRepoId" gorm:"column:artifact_repo_id;index:artifact_docker_images_artifact_repo_id_index"`
 	Tag            string `json:"tag" gorm:"column:tag;uniqueIndex:artifact_docker_images_hash_tag_uindex"`

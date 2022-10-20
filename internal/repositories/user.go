@@ -5,7 +5,6 @@ import (
 	"go-to-cloud/conf"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strings"
 	"time"
@@ -13,7 +12,7 @@ import (
 
 // User 登录账户
 type User struct {
-	gorm.Model
+	Model
 	Account        string         `json:"account" gorm:"column:account;not null;"`   // 账号
 	HashedPassword string         `json:"-" gorm:"column:password;not null;"`        // 登录密码
 	Email          string         `json:"email" gorm:"column:email"`                 // 邮箱

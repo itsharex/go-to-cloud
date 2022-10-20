@@ -6,12 +6,11 @@ import (
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/scm"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 	"time"
 )
 
 type CodeRepo struct {
-	gorm.Model
+	Model
 	Name        string         `json:"name" gorm:"column:name"`
 	ScmOrigin   int            `json:"scmOrigin" gorm:"column:scm_origin"`     // 代码仓库来源；gitlab(0);github(1);gitee(2);gitea(3)
 	IsPublic    int8           `json:"isPublic" gorm:"column:is_public"`       // 是否公开仓库
@@ -85,7 +84,7 @@ func mergeCodeRepoOrg(repos []CodeRepoWithOrg) ([]MergedCodeRepoWithOrg, error) 
 		if merged[repo.ID] == nil {
 			merged[repo.ID] = &MergedCodeRepoWithOrg{
 				CodeRepo: CodeRepo{
-					Model: gorm.Model{
+					Model: Model{
 						ID:        repo.ID,
 						CreatedAt: repo.CreatedAt,
 						UpdatedAt: repo.UpdatedAt,
@@ -113,7 +112,7 @@ func mergeCodeRepoOrg(repos []CodeRepoWithOrg) ([]MergedCodeRepoWithOrg, error) 
 	return rlt, nil
 }
 
-func buildCodeRepo(model *scm.Scm, userId uint, orgs []uint, gormModel *gorm.Model) (*CodeRepo, error) {
+func buildCodeRepo(model *scm.Scm, userId uint, orgs []uint, gormModel *Model) (*CodeRepo, error) {
 	isPublic := int8(0)
 	if model.IsPublic {
 		isPublic = 1
@@ -141,7 +140,7 @@ func buildCodeRepo(model *scm.Scm, userId uint, orgs []uint, gormModel *gorm.Mod
 
 // BindCodeRepo 绑定代码仓库
 func BindCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		CreatedAt: time.Now(),
 	}
 	repo, err := buildCodeRepo(model, userId, orgs, g)
@@ -160,7 +159,7 @@ func BindCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
 
 // UpdateCodeRepo 更新代码仓库
 func UpdateCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		UpdatedAt: time.Now(),
 	}
 
@@ -188,7 +187,7 @@ func DeleteCodeRepo(userId, repoId uint) error {
 	// TODO: 校验当前userId是否拥有数据删除权限
 
 	err := tx.Delete(&CodeRepo{
-		Model: gorm.Model{
+		Model: Model{
 			ID: repoId,
 		},
 	}).Error

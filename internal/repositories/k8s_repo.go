@@ -6,12 +6,11 @@ import (
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/deploy/k8s"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 	"time"
 )
 
 type K8sRepo struct {
-	gorm.Model
+	Model
 	Name          string         `json:"name" gorm:"column:name"`
 	KubeConfig    string         `json:"kubeconfig" gorm:"column:kube_config"`
 	ServerVersion string         `json:"serverVersion" gorm:"column:server_ver"`
@@ -83,7 +82,7 @@ func mergeK8sRepoOrg(repos []K8sRepoWithOrg) ([]MergedK8sRepoWithOrg, error) {
 		if merged[repo.ID] == nil {
 			merged[repo.ID] = &MergedK8sRepoWithOrg{
 				K8sRepo: K8sRepo{
-					Model: gorm.Model{
+					Model: Model{
 						ID:        repo.ID,
 						CreatedAt: repo.CreatedAt,
 						UpdatedAt: repo.UpdatedAt,
@@ -109,7 +108,7 @@ func mergeK8sRepoOrg(repos []K8sRepoWithOrg) ([]MergedK8sRepoWithOrg, error) {
 	return rlt, nil
 }
 
-func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *gorm.Model) (*K8sRepo, error) {
+func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *Model) (*K8sRepo, error) {
 
 	belongs, err := json.Marshal(orgs)
 	if err != nil {
@@ -130,7 +129,7 @@ func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *gorm.Mode
 
 // BindK8sRepo 绑定K8s仓库
 func BindK8sRepo(model *k8s.K8s, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		CreatedAt: time.Now(),
 	}
 	repo, err := buildK8sRepo(model, userId, orgs, g)
@@ -149,7 +148,7 @@ func BindK8sRepo(model *k8s.K8s, userId uint, orgs []uint) error {
 
 // UpdateK8sRepo 更新K8s仓库
 func UpdateK8sRepo(model *k8s.K8s, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		UpdatedAt: time.Now(),
 	}
 
@@ -177,7 +176,7 @@ func DeleteK8sRepo(userId, repoId uint) error {
 	// TODO: 校验当前userId是否拥有数据删除权限
 
 	err := tx.Delete(&K8sRepo{
-		Model: gorm.Model{
+		Model: Model{
 			ID: repoId,
 		},
 	}).Error

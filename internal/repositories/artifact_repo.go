@@ -5,12 +5,11 @@ import (
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/artifact"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
 	"time"
 )
 
 type ArtifactRepo struct {
-	gorm.Model
+	Model
 	Name           string         `json:"name" gorm:"column:name"`
 	ArtifactOrigin int            `json:"artifactOrigin" gorm:"column:artifact_origin"` // 制品仓库来源；Docker(1);
 	IsSecurity     bool           `json:"isSecurity" gorm:"column:is_security"`         // 是否使用https
@@ -54,7 +53,7 @@ func mergeArtifactRepoOrg(repos []ArtifactRepoWithOrg) ([]MergedArtifactRepoWith
 		if merged[repo.ID] == nil {
 			merged[repo.ID] = &MergedArtifactRepoWithOrg{
 				ArtifactRepo: ArtifactRepo{
-					Model: gorm.Model{
+					Model: Model{
 						ID:        repo.ID,
 						CreatedAt: repo.CreatedAt,
 						UpdatedAt: repo.UpdatedAt,
@@ -83,7 +82,7 @@ func mergeArtifactRepoOrg(repos []ArtifactRepoWithOrg) ([]MergedArtifactRepoWith
 	return rlt, nil
 }
 
-func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormModel *gorm.Model) (*ArtifactRepo, error) {
+func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormModel *Model) (*ArtifactRepo, error) {
 	belongs, err := json.Marshal(orgs)
 	if err != nil {
 		return nil, err
@@ -106,7 +105,7 @@ func buildArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint, gormM
 
 // BindArtifactRepo 绑定制品仓库
 func BindArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		CreatedAt: time.Now(),
 	}
 	repo, err := buildArtifactRepo(model, userId, orgs, g)
@@ -153,7 +152,7 @@ func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]MergedArtifactRep
 
 // UpdateArtifactRepo 更新制品仓库
 func UpdateArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error {
-	g := &gorm.Model{
+	g := &Model{
 		UpdatedAt: time.Now(),
 	}
 
@@ -181,7 +180,7 @@ func DeleteArtifactRepo(userId, repoId uint) error {
 	// TODO: 校验当前userId是否拥有数据删除权限
 
 	err := tx.Delete(&ArtifactRepo{
-		Model: gorm.Model{
+		Model: Model{
 			ID: repoId,
 		},
 	}).Error
@@ -197,7 +196,7 @@ func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurit
 
 	var repo ArtifactRepo
 	err = tx.Where(&ArtifactRepo{
-		Model: gorm.Model{
+		Model: Model{
 			ID: repoID,
 		},
 	}).First(&repo).Error
