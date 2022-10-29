@@ -1,6 +1,9 @@
 package scm
 
 import (
+	"context"
+	scm2 "github.com/drone/go-scm/scm"
+	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
@@ -13,7 +16,7 @@ import (
 //	query: 查询条件
 func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 	var orgId []uint
-	if len(query.Orgs) == 0 {
+	if query == nil || len(query.Orgs) == 0 {
 		//	默认取当前用户所属全体组织
 		orgId = orgs
 	} else {
@@ -21,7 +24,13 @@ func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 		orgId = utils.Intersect(orgs, query.Orgs)
 	}
 
-	if merged, err := repositories.QueryCodeRepo(orgId, query.Name, &query.Pager); err != nil {
+	patternName := ""
+	pager := models.Pager{}
+	if query != nil {
+		patternName = query.Name
+		pager = query.Pager
+	}
+	if merged, err := repositories.QueryCodeRepo(orgId, patternName, &pager); err != nil {
 		return nil, err
 	} else {
 		rlt := make([]scm.Scm, len(merged))
@@ -48,5 +57,32 @@ func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 			}
 		}
 		return rlt, err
+	}
+}
+
+// ListCodeProjects 列出仓库里的项目
+func ListCodeProjects(origin scm.Type, url, token *string) ([]scm.RepositoryModel, error) {
+	if client, err := newClient(origin, false, url, token); err != nil {
+		return nil, err
+	} else {
+		repo, _, err := client.Repositories.List(context.Background(), scm2.ListOptions{
+			Page: 0,
+			Size: 10000,
+		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		rlt := make([]scm.RepositoryModel, len(repo))
+		for i, repository := range repo {
+			rlt[i] = scm.RepositoryModel{
+				Id:        repository.ID,
+				Name:      repository.Name,
+				Url:       repository.Clone,
+				Namespace: repository.Namespace,
+			}
+		}
+		return rlt, nil
 	}
 }

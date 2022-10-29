@@ -740,7 +740,13 @@ const docTemplate = `{
         "project.GitSources": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "string"
+                },
                 "label": {
+                    "type": "string"
+                },
+                "namespace": {
                     "type": "string"
                 },
                 "value": {

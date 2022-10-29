@@ -2,8 +2,11 @@ package projects
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/models/project"
+	"go-to-cloud/internal/controllers/util"
+	projectModel "go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/response"
+	"go-to-cloud/internal/services/project"
+	"net/http"
 )
 
 // List
@@ -13,18 +16,16 @@ import (
 // @Router /api/projects/list [get]
 // @Security JWT
 func List(ctx *gin.Context) {
-	m := make([]project.DataModel, 0)
-	m = append(m, project.DataModel{
+	m := make([]projectModel.DataModel, 0)
+	m = append(m, projectModel.DataModel{
 		Id:   0,
 		Name: "aaa",
 	})
-	m = append(m, project.DataModel{
+	m = append(m, projectModel.DataModel{
 		Id:   1,
 		Name: "bbb",
 	})
-	response.Success(ctx, gin.H{
-		"data": m,
-	})
+	response.Success(ctx, m)
 }
 
 // CodeRepo
@@ -34,18 +35,27 @@ func List(ctx *gin.Context) {
 // @Router /api/projects/coderepo [get]
 // @Security JWT
 func CodeRepo(ctx *gin.Context) {
-	m := make([]project.CodeRepoGroup, 0)
-	m = append(m, project.CodeRepoGroup{
-		Id:   0,
-		Name: "aaa",
-		Git: []project.GitSources{
-			{
-				Name: "Te1",
-				Url:  "http://dsfsaf.git",
-			},
-		},
-	})
-	response.Success(ctx, gin.H{
-		"data": m,
-	})
+	exists, _, _, orgs := util.CurrentUser(ctx)
+	if !exists {
+		response.Fail(ctx, http.StatusUnauthorized, nil)
+		return
+	}
+
+	i := 0
+	orgId := make([]uint, len(orgs))
+	for k, _ := range orgs {
+		orgId[i] = k
+		i++
+	}
+
+	m, err := project.GetCodeRepoGroupsByOrg(orgId)
+
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+		return
+	} else {
+		response.Success(ctx, m)
+		return
+	}
 }
