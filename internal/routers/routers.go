@@ -49,5 +49,6 @@ func buildRouters(router *gin.Engine) {
 
 		project := api.Group("/projects")
 		project.GET("/list", projects.List)
+		project.GET("/coderepo", projects.CodeRepo)
 	}
 }

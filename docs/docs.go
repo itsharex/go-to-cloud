@@ -494,6 +494,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/coderepo": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出当前账户已绑定的SCM平台及可见的代码仓库",
+                "tags": [
+                    "Projects"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.CodeRepoGroup"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/list": {
             "get": {
                 "security": [
@@ -692,6 +716,34 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "project.CodeRepoGroup": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/project.GitSources"
+                    }
+                }
+            }
+        },
+        "project.GitSources": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "value": {
                     "type": "string"
                 }
             }
