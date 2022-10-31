@@ -33,7 +33,7 @@ func UpdateK8sRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs := util.CurrentUser(ctx)
+	exists, userId, _, orgs, _ := util.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

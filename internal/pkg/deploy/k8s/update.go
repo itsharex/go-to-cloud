@@ -7,11 +7,6 @@ import (
 )
 
 // Update 更新代码仓库
-func Update(model *k8sModel.K8s, userId uint, orgs map[uint]string) error {
-	orgId := make([]uint, 0)
-	for i := range orgs {
-		orgId = append(orgId, i)
-	}
-
+func Update(model *k8sModel.K8s, userId uint, orgId []uint) error {
 	return repositories.UpdateK8sRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

@@ -7,10 +7,6 @@ import (
 )
 
 // Bind 绑定制品仓库
-func Bind(model *artifact.Artifact, userId uint, orgs map[uint]string) error {
-	orgId := make([]uint, 0)
-	for i := range orgs {
-		orgId = append(orgId, i)
-	}
-	return repositories.BindArtifactRepo(model, userId, utils.Intersect(model.Orgs, orgId))
+func Bind(model *artifact.Artifact, userId uint, orgs []uint) error {
+	return repositories.BindArtifactRepo(model, userId, utils.Intersect(model.Orgs, orgs))
 }

@@ -9,5 +9,6 @@ type GitSources struct {
 type CodeRepoGroup struct {
 	Id   uint         `json:"id"`
 	Name string       `json:"label"`
+	Host string       `json:"host"`
 	Git  []GitSources `json:"options"`
 }

@@ -7,11 +7,6 @@ import (
 )
 
 // Update 更新制品仓库
-func Update(model *artifact.Artifact, userId uint, orgs map[uint]string) error {
-	orgId := make([]uint, 0)
-	for i := range orgs {
-		orgId = append(orgId, i)
-	}
-
+func Update(model *artifact.Artifact, userId uint, orgId []uint) error {
 	return repositories.UpdateArtifactRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

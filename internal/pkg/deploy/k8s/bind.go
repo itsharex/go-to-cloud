@@ -7,11 +7,6 @@ import (
 )
 
 // Bind 绑定k8s仓库
-func Bind(model *k8s.K8s, userId uint, orgs map[uint]string) error {
-	orgId := make([]uint, 0)
-	for i := range orgs {
-		orgId = append(orgId, i)
-	}
-
+func Bind(model *k8s.K8s, userId uint, orgId []uint) error {
 	return repositories.BindK8sRepo(model, userId, utils.Intersect(model.Orgs, orgId))
 }

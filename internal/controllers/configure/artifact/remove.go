@@ -26,7 +26,7 @@ func RemoveArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, _ := util.CurrentUser(ctx)
+	exists, userId, _, _, _ := util.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

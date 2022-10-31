@@ -17,7 +17,7 @@ import (
 // @Router /api/configure/artifact [get]
 // @Security JWT
 func QueryArtifactRepo(ctx *gin.Context) {
-	exists, _, _, orgs := util.CurrentUser(ctx)
+	exists, _, _, orgsId, _ := util.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -30,12 +30,6 @@ func QueryArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
-	orgsId := make([]uint, len(orgs))
-	idx := uint(0)
-	for key := range orgs {
-		orgsId[idx] = key
-		idx++
-	}
 	result, err := artifact.List(orgsId, &query)
 
 	if err != nil {
@@ -55,7 +49,7 @@ func QueryArtifactRepo(ctx *gin.Context) {
 // @Param   id     path     int     true	"ArtifactRepo.ID"
 // @Security JWT
 func QueryArtifactItems(ctx *gin.Context) {
-	exists, _, _, _ := util.CurrentUser(ctx)
+	exists, _, _, _, _ := util.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

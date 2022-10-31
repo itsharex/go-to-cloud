@@ -20,6 +20,7 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 		} else {
 			rlt[i].Id = s.Id
 			rlt[i].Name = s.Name
+			rlt[i].Host = s.Url
 			rlt[i].Git = make([]project.GitSources, len(models))
 			for j, model := range models {
 				rlt[i].Git[j] = project.GitSources{

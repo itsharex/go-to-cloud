@@ -14,7 +14,7 @@ import (
 // @Router /api/user/info [get]
 // @Security JWT
 func Info(ctx *gin.Context) {
-	exists, userId, userName, orgs := util.CurrentUser(ctx)
+	exists, userId, userName, _, orgs := util.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

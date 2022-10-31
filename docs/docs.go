@@ -531,7 +531,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.DataModel"
+                            }
+                        }
                     }
                 }
             }
@@ -723,6 +729,9 @@ const docTemplate = `{
         "project.CodeRepoGroup": {
             "type": "object",
             "properties": {
+                "host": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -734,6 +743,20 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/project.GitSources"
                     }
+                }
+            }
+        },
+        "project.DataModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
                 }
             }
         },
