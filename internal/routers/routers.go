@@ -48,6 +48,7 @@ func buildRouters(router *gin.Engine) {
 		confK8s.GET("/:id", k8s.QueryK8sRepos)
 
 		project := api.Group("/projects")
+		project.POST("/", projects.Create)
 		project.GET("/list", projects.List)
 		project.GET("/coderepo", projects.CodeRepo)
 	}
