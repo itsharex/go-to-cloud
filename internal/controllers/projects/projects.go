@@ -38,7 +38,7 @@ func List(ctx *gin.Context) {
 // @Description 创建新的项目
 // @Param   ContentBody     body     project.DataModel     true  "Request"     example(project.DataModel)
 // @Success 200
-// @Router /api/projects/create [POST]
+// @Router /api/projects [POST]
 // @Security JWT
 func Create(ctx *gin.Context) {
 	var req project2.DataModel

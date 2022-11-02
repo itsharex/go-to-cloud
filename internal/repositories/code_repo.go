@@ -54,8 +54,9 @@ func QueryCodeRepo(orgs []uint, repoNamePattern string, pager *models.Pager) ([]
 
 	tx = tx.Order("created_at desc")
 
-	// TODO: os.Env
-	tx = tx.Debug()
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
 
 	err := tx.Scan(&repo).Error
 
@@ -150,8 +151,9 @@ func BindCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
 
 	tx := conf.GetDbClient()
 
-	// TODO: os.Env
-	tx = tx.Debug()
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
 
 	err = tx.Omit("updated_at").Create(&repo).Error
 	return err
@@ -170,8 +172,9 @@ func UpdateCodeRepo(model *scm.Scm, userId uint, orgs []uint) error {
 
 	tx := conf.GetDbClient()
 
-	// TODO: os.Env
-	tx = tx.Debug()
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
 
 	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
 	return err
@@ -181,8 +184,9 @@ func DeleteCodeRepo(userId, repoId uint) error {
 
 	tx := conf.GetDbClient()
 
-	// TODO: os.Env
-	tx = tx.Debug()
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
 
 	// TODO: 校验当前userId是否拥有数据删除权限
 

@@ -10,3 +10,7 @@ type GitRepo struct {
 func (m *GitRepo) TableName() string {
 	return "git_repo"
 }
+
+func AddGitRepo() {
+
+}

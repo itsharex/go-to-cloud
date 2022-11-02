@@ -27,6 +27,12 @@ func QueryProjectsByOrg(orgs []uint) ([]Project, error) {
 
 	tx := db.Model(&Project{})
 
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
+
+	tx = tx.Select("projects.*, org.Id AS orgId, org.Name AS orgName")
+	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(projects.belongs_to, cast(org.id as JSON), '$')")
 	tx = tx.Where("org.ID IN ? AND org.deleted_at IS NULL", orgs)
 	err := tx.Scan(&projects).Error
 
@@ -40,7 +46,7 @@ func buildProject(model *project2.DataModel, userId uint, orgs []uint, gormModel
 	return &Project{
 		Model:     *gormModel,
 		CreatedBy: userId,
-		BelongsTo: datatypes.JSON(belongs),
+		BelongsTo: belongs,
 		Name:      model.Name,
 		Remark:    model.Remark,
 	}, nil
@@ -57,8 +63,9 @@ func CreateProject(userId uint, orgs []uint, model project2.DataModel) (uint, er
 
 	tx := conf.GetDbClient()
 
-	// TODO: os.Env
-	tx = tx.Debug()
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
 
 	err = tx.Omit("updated_at").Create(&repo).Error
 	return 0, err
