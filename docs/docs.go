@@ -494,31 +494,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/coderepo": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "列出当前账户已绑定的SCM平台及可见的代码仓库",
-                "tags": [
-                    "Projects"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/project.CodeRepoGroup"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/projects/create": {
+        "/api/projects": {
             "post": {
                 "security": [
                     {
@@ -543,6 +519,30 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/projects/coderepo": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出当前账户已绑定的SCM平台及可见的代码仓库",
+                "tags": [
+                    "Projects"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.CodeRepoGroup"
+                            }
+                        }
                     }
                 }
             }
@@ -783,6 +783,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "org": {
+                    "type": "integer"
                 },
                 "remark": {
                     "type": "string"

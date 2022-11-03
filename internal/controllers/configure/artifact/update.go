@@ -2,7 +2,7 @@ package artifact
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	artifactModels "go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/pkg/artifact"
 	"go-to-cloud/internal/pkg/response"
@@ -33,7 +33,7 @@ func UpdateArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs, _ := util.CurrentUser(ctx)
+	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

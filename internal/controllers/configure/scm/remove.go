@@ -2,7 +2,7 @@ package scm
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/pkg/scm"
 	"net/http"
@@ -26,7 +26,7 @@ func RemoveCodeRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, _, _ := util.CurrentUser(ctx)
+	exists, userId, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

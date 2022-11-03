@@ -2,8 +2,8 @@ package k8s
 
 import (
 	"go-to-cloud/internal/models/deploy/k8s"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // List 读取仓库

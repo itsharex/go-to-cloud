@@ -2,7 +2,7 @@ package scm
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	scm2 "go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/pkg/scm"
@@ -16,7 +16,7 @@ import (
 // @Router /api/configure/coderepo [get]
 // @Security JWT
 func QueryCodeRepos(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := util.CurrentUser(ctx)
+	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

@@ -2,8 +2,8 @@ package k8s
 
 import (
 	k8sModel "go-to-cloud/internal/models/deploy/k8s"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // Update 更新代码仓库

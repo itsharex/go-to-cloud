@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	k8sModel "go-to-cloud/internal/models/deploy/k8s"
 	"go-to-cloud/internal/pkg/deploy/k8s"
 	"go-to-cloud/internal/pkg/response"
@@ -35,7 +35,7 @@ func BindK8sRepo(ctx *gin.Context) {
 		req.ServerVersion = ver
 	}
 
-	exists, userId, _, orgs, _ := util.CurrentUser(ctx)
+	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

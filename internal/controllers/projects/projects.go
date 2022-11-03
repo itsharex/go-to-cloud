@@ -1,8 +1,9 @@
 package projects
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	project2 "go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/services/project"
@@ -16,7 +17,7 @@ import (
 // @Router /api/projects/list [get]
 // @Security JWT
 func List(ctx *gin.Context) {
-	exists, _, _, orgs, _ := util.CurrentUser(ctx)
+	exists, _, _, orgs, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -47,7 +48,12 @@ func Create(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs, _ := util.CurrentUser(ctx)
+	if req.OrgId < 0 {
+		response.BadRequest(ctx, errors.New("one organization at least"))
+		return
+	}
+
+	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

@@ -2,7 +2,7 @@ package projects
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/services/project"
 	"net/http"
@@ -15,7 +15,7 @@ import (
 // @Router /api/projects/coderepo [get]
 // @Security JWT
 func CodeRepo(ctx *gin.Context) {
-	exists, _, _, orgId, _ := util.CurrentUser(ctx)
+	exists, _, _, orgId, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

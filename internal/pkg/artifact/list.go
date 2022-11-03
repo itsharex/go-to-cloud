@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/pkg/artifact/registry"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // List 读取制品仓库

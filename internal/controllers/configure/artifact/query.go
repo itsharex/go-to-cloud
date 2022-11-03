@@ -2,7 +2,7 @@ package artifact
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	artifactModels "go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/pkg/artifact"
 	"go-to-cloud/internal/pkg/response"
@@ -17,7 +17,7 @@ import (
 // @Router /api/configure/artifact [get]
 // @Security JWT
 func QueryArtifactRepo(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := util.CurrentUser(ctx)
+	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -49,7 +49,7 @@ func QueryArtifactRepo(ctx *gin.Context) {
 // @Param   id     path     int     true	"ArtifactRepo.ID"
 // @Security JWT
 func QueryArtifactItems(ctx *gin.Context) {
-	exists, _, _, _, _ := util.CurrentUser(ctx)
+	exists, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

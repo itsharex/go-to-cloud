@@ -5,8 +5,8 @@ import (
 	scm2 "github.com/drone/go-scm/scm"
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/scm"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // List 读取仓库

@@ -2,8 +2,8 @@ package scm
 
 import (
 	"go-to-cloud/internal/models/scm"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // Update 更新代码仓库

@@ -2,8 +2,8 @@ package artifact
 
 import (
 	"go-to-cloud/internal/models/artifact"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // Update 更新制品仓库

@@ -2,8 +2,8 @@ package artifact
 
 import (
 	"go-to-cloud/internal/models/artifact"
-	"go-to-cloud/internal/pkg/utils"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 // Bind 绑定制品仓库

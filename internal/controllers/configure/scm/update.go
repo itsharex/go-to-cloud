@@ -2,7 +2,7 @@ package scm
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	scm2 "go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/pkg/scm"
@@ -33,7 +33,7 @@ func UpdateCodeRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs, _ := util.CurrentUser(ctx)
+	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

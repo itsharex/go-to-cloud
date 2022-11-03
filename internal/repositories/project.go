@@ -1,19 +1,17 @@
 package repositories
 
 import (
-	"encoding/json"
 	"go-to-cloud/conf"
 	project2 "go-to-cloud/internal/models/project"
-	"gorm.io/datatypes"
 	"time"
 )
 
 type Project struct {
 	Model
-	CreatedBy uint           `json:"createdBy" gorm:"column:created_by"`  // 仓库创建人
-	BelongsTo datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"` // 所属组织
-	Name      string         `json:"name" gorm:"column:name"`
-	Remark    string         `json:"remark" gorm:"column:remark"`
+	CreatedBy uint   `json:"createdBy" gorm:"column:created_by"` // 仓库创建人
+	OrgId     uint   `json:"orgId" gorm:"column:org_id;"`        // 所属组织
+	Name      string `json:"name" gorm:"column:name"`
+	Remark    string `json:"remark" gorm:"column:remark"`
 }
 
 func (m *Project) TableName() string {
@@ -38,25 +36,21 @@ func QueryProjectsByOrg(orgs []uint) ([]Project, error) {
 
 	return projects, err
 }
-func buildProject(model *project2.DataModel, userId uint, orgs []uint, gormModel *Model) (*Project, error) {
-	belongs, err := json.Marshal(orgs)
-	if err != nil {
-		return nil, err
-	}
+func buildProject(model *project2.DataModel, userId uint, orgId uint, gormModel *Model) (*Project, error) {
 	return &Project{
 		Model:     *gormModel,
 		CreatedBy: userId,
-		BelongsTo: belongs,
+		OrgId:     orgId,
 		Name:      model.Name,
 		Remark:    model.Remark,
 	}, nil
 }
 
-func CreateProject(userId uint, orgs []uint, model project2.DataModel) (uint, error) {
+func CreateProject(userId uint, orgId uint, model project2.DataModel) (uint, error) {
 	g := &Model{
 		CreatedAt: time.Now(),
 	}
-	repo, err := buildProject(&model, userId, orgs, g)
+	repo, err := buildProject(&model, userId, orgId, g)
 	if err != nil {
 		return 0, err
 	}

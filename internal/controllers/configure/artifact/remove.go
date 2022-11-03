@@ -2,7 +2,7 @@ package artifact
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/pkg/artifact"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
@@ -26,7 +26,7 @@ func RemoveArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, _, _ := util.CurrentUser(ctx)
+	exists, userId, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

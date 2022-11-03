@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	k8smodel "go-to-cloud/internal/models/deploy/k8s"
 	"go-to-cloud/internal/pkg/deploy/k8s"
 	"go-to-cloud/internal/pkg/response"
@@ -16,7 +16,7 @@ import (
 // @Router /api/configure/deploy/k8s [get]
 // @Security JWT
 func QueryK8sRepos(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := util.CurrentUser(ctx)
+	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

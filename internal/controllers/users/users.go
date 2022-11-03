@@ -2,7 +2,7 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/controllers/util"
+	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
 )
@@ -14,7 +14,7 @@ import (
 // @Router /api/user/info [get]
 // @Security JWT
 func Info(ctx *gin.Context) {
-	exists, userId, userName, _, orgs := util.CurrentUser(ctx)
+	exists, userId, userName, _, orgs := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

@@ -1,12 +1,12 @@
 package utils
 
-func Intersect(orgA, orgB []uint) []uint {
+func Intersect(a, b []uint) []uint {
 	counter := make(map[uint]int)
 	rlt := make([]uint, 0)
-	for _, a := range orgA {
+	for _, a := range a {
 		counter[a]++
 	}
-	for _, b := range orgB {
+	for _, b := range b {
 		sz, _ := counter[b]
 		if sz == 1 {
 			rlt = append(rlt, b)
