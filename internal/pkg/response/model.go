@@ -34,11 +34,17 @@ func Success(ctx *gin.Context, data ...any) {
 
 // Fail 业务失败响应
 func Fail(ctx *gin.Context, code int, message *string, data ...any) {
+	var msg string
+	if message == nil {
+		msg = ""
+	} else {
+		msg = *message
+	}
 	if data != nil {
-		GetResponse().WithData(data[0]).FailCode(ctx, code, *message)
+		GetResponse().WithData(data[0]).FailCode(ctx, code, msg)
 		return
 	}
-	GetResponse().FailCode(ctx, code)
+	GetResponse().FailCode(ctx, code, msg)
 }
 
 type result struct {

@@ -13,5 +13,5 @@ func CreateNewProject(userId uint, orgs []uint, model project2.DataModel) (uint,
 	if len(orgId) != 1 {
 		return 0, errors.New("invalid organization")
 	}
-	return repositories.CreateProject(userId, orgs[0], model)
+	return repositories.CreateProject(userId, orgId[0], model)
 }

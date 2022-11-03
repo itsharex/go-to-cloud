@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
 	"go-to-cloud/conf"
 	project2 "go-to-cloud/internal/models/project"
 	"time"
@@ -30,7 +32,7 @@ func QueryProjectsByOrg(orgs []uint) ([]Project, error) {
 	}
 
 	tx = tx.Select("projects.*, org.Id AS orgId, org.Name AS orgName")
-	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(projects.belongs_to, cast(org.id as JSON), '$')")
+	tx = tx.Joins("INNER JOIN org ON projects.org_id = org.ID")
 	tx = tx.Where("org.ID IN ? AND org.deleted_at IS NULL", orgs)
 	err := tx.Scan(&projects).Error
 
@@ -50,6 +52,7 @@ func CreateProject(userId uint, orgId uint, model project2.DataModel) (uint, err
 	g := &Model{
 		CreatedAt: time.Now(),
 	}
+
 	repo, err := buildProject(&model, userId, orgId, g)
 	if err != nil {
 		return 0, err
@@ -59,6 +62,15 @@ func CreateProject(userId uint, orgId uint, model project2.DataModel) (uint, err
 
 	if conf.Environment.IsDevelopment() {
 		tx = tx.Debug()
+	}
+
+	var total int64
+	err = tx.Model(&Project{}).Where("name = ? AND org_id = ?", model.Name, orgId).Count(&total).Error
+	if err != nil {
+		return 0, err
+	}
+	if total > 0 {
+		return 0, errors.New(fmt.Sprintf("project '%s' already exists", model.Name))
 	}
 
 	err = tx.Omit("updated_at").Create(&repo).Error
