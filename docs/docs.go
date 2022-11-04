@@ -785,6 +785,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "org": {
+                    "type": "string"
+                },
+                "orgId": {
                     "type": "integer"
                 },
                 "remark": {

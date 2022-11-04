@@ -5,6 +5,7 @@ import (
 	"go-to-cloud/conf"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strings"
 	"time"
@@ -45,7 +46,13 @@ func GetUser(account, password *string) *User {
 	db := conf.GetDbClient()
 
 	var user User
-	if db.Debug().Preload(clause.Associations).Where(&User{Account: *account}).First(&user).Error != nil {
+	var tx *gorm.DB
+	if conf.Environment.IsDevelopment() {
+		tx = db.Debug()
+	} else {
+		tx = db
+	}
+	if tx.Preload(clause.Associations).Where(&User{Account: *account}).First(&user).Error != nil {
 		return nil
 	}
 	if user.comparePassword(password) {

@@ -18,6 +18,8 @@ func List(orgId []uint) ([]project.DataModel, error) {
 			Id:     p.ID,
 			Name:   p.Name,
 			Remark: p.Remark,
+			OrgId:  int(p.OrgId),
+			Org:    p.Org.Name,
 		}
 	}
 	return models, nil
