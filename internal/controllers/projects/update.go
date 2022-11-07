@@ -36,7 +36,7 @@ func UpdateProject(ctx *gin.Context) {
 		return
 	}
 
-	// TODO: 更新
+	// TODO: 更新（归属组织不可更改)
 	//_, err := project.CreateNewProject(userId, orgs, req)
 	//if err != nil {
 	//	msg := err.Error()
