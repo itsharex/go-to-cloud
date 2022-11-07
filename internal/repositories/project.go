@@ -78,3 +78,22 @@ func CreateProject(userId uint, orgId uint, model project2.DataModel) (uint, err
 	return 0, err
 
 }
+
+func DeleteProject(userId, projectId uint) error {
+
+	tx := conf.GetDbClient()
+
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
+
+	// TODO: 校验当前userId是否拥有数据删除权限
+
+	err := tx.Delete(&Project{
+		Model: Model{
+			ID: projectId,
+		},
+	}).Error
+
+	return err
+}

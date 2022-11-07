@@ -495,6 +495,33 @@ const docTemplate = `{
             }
         },
         "/api/projects": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "更新项目信息",
+                "tags": [
+                    "Projects"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.DataModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -567,6 +594,33 @@ const docTemplate = `{
                                 "$ref": "#/definitions/project.DataModel"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/projects/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除项目仓库",
+                "tags": [
+                    "Projects"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
