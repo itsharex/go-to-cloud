@@ -97,3 +97,19 @@ func DeleteProject(userId, projectId uint) error {
 
 	return err
 }
+
+func UpdateProject(projectId uint, name, remark *string) error {
+	tx := conf.GetDbClient()
+
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
+
+	project := &Project{
+		Model: Model{ID: projectId},
+	}
+
+	tx = tx.Model(project).Updates(Project{Name: *name, Remark: *remark})
+
+	return tx.Error
+}

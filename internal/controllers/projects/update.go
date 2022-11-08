@@ -6,6 +6,7 @@ import (
 	"go-to-cloud/internal/controllers/utils"
 	project2 "go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/response"
+	"go-to-cloud/internal/services/project"
 	"net/http"
 )
 
@@ -28,21 +29,18 @@ func UpdateProject(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
-	_ = userId
-	_ = orgs
+	exists, userId, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
-	// TODO: 更新（归属组织不可更改)
-	//_, err := project.CreateNewProject(userId, orgs, req)
-	//if err != nil {
-	//	msg := err.Error()
-	//	response.Fail(ctx, http.StatusInternalServerError, &msg)
-	//	return
-	//}
+	err := project.UpdateProject(userId, &req)
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+		return
+	}
 
 	response.Success(ctx, gin.H{
 		"success": true,
