@@ -45,7 +45,6 @@ func buildRouters(router *gin.Engine) {
 		confK8s.PUT("/", k8s.UpdateK8sRepo)
 		confK8s.GET("/", k8s.QueryK8sRepos)
 		confK8s.DELETE("/:id", k8s.RemoveK8sRepo)
-		confK8s.GET("/:id", k8s.QueryK8sRepos)
 
 		project := api.Group("/projects")
 		project.POST("/", projects.Create)
@@ -53,5 +52,6 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/list", projects.List)
 		project.GET("/coderepo", projects.CodeRepo)
 		project.PUT("/", projects.UpdateProject)
+		project.POST("/:id/import", projects.ImportSourceCode)
 	}
 }

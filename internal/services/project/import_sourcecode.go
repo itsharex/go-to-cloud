@@ -3,6 +3,9 @@ package project
 import (
 	"go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/scm"
+	"go-to-cloud/internal/repositories"
+	"sort"
+	"strings"
 )
 
 func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
@@ -30,7 +33,14 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 					Namespace: model.Namespace,
 				}
 			}
+			sort.SliceStable(rlt[i].Git, func(x, y int) bool {
+				return strings.Compare(rlt[i].Git[x].Url, rlt[i].Git[y].Url) == -1
+			})
 		}
 	}
 	return rlt, nil
+}
+
+func ImportSourceCode(projectId, userId uint, req *project.SourceCodeModel) error {
+	return repositories.UpsertProjectSourceCode(projectId, userId, &req.Url)
 }

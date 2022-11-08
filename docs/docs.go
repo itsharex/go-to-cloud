@@ -625,6 +625,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/import": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "导入代码",
+                "tags": [
+                    "Projects"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/project.SourceCodeModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/info": {
             "get": {
                 "security": [
@@ -862,6 +891,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "project.SourceCodeModel": {
+            "type": "object",
+            "properties": {
+                "url": {
                     "type": "string"
                 }
             }
