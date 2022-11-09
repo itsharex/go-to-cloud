@@ -27,6 +27,7 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 			rlt[i].Git = make([]project.GitSources, len(models))
 			for j, model := range models {
 				rlt[i].Git[j] = project.GitSources{
+					GroupId:   s.Id,
 					Id:        model.Id,
 					Name:      model.Name,
 					Url:       model.Url,
@@ -41,6 +42,28 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 	return rlt, nil
 }
 
-func ImportSourceCode(projectId, userId uint, req *project.SourceCodeModel) error {
-	return repositories.UpsertProjectSourceCode(projectId, userId, &req.Url)
+func ImportSourceCode(projectId, codeRepoId, userId uint, req *project.SourceCodeModel) error {
+	return repositories.UpsertProjectSourceCode(projectId, codeRepoId, userId, &req.Url)
+}
+
+func GetSourceCodeImported(projectId uint) ([]project.SourceCodeImportedModel, error) {
+	rlt, err := repositories.QueryProjectSourceCode(projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	models := make([]project.SourceCodeImportedModel, len(rlt))
+	for i, code := range rlt {
+		models[i] = project.SourceCodeImportedModel{
+			SourceCodeModel: project.SourceCodeModel{
+				CodeRepoId: code.CodeRepoID,
+				Url:        code.GitUrl,
+			},
+			Id:             code.ID,
+			CodeRepoOrigin: code.CodeRepo.ScmOrigin,
+			CreatedBy:      code.CreatedUser.Account,
+			CreatedAt:      code.CreatedAt,
+		}
+	}
+	return models, nil
 }

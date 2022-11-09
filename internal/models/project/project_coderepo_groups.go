@@ -1,6 +1,7 @@
 package project
 
 type GitSources struct {
+	GroupId   uint   `json:"groupId"`
 	Id        string `json:"id"`
 	Name      string `json:"label"`
 	Namespace string `json:"namespace"`

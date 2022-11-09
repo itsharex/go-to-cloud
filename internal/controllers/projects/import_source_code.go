@@ -36,7 +36,7 @@ func ImportSourceCode(ctx *gin.Context) {
 		return
 	}
 
-	err = project.ImportSourceCode(uint(projectId), userId, &req)
+	err = project.ImportSourceCode(uint(projectId), req.CodeRepoId, userId, &req)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

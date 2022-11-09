@@ -654,6 +654,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/imported": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "查看导入的代码",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "查看导入的代码",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/project.SourceCodeImportedModel"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/info": {
             "get": {
                 "security": [
@@ -881,6 +906,9 @@ const docTemplate = `{
         "project.GitSources": {
             "type": "object",
             "properties": {
+                "groupId": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -895,10 +923,43 @@ const docTemplate = `{
                 }
             }
         },
+        "project.SourceCodeImportedModel": {
+            "type": "object",
+            "properties": {
+                "codeRepoId": {
+                    "description": "仓库ID",
+                    "type": "integer"
+                },
+                "codeRepoOrigin": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "导入时间",
+                    "type": "string"
+                },
+                "createdBy": {
+                    "description": "导入人",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "代码ID",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "代码地址",
+                    "type": "string"
+                }
+            }
+        },
         "project.SourceCodeModel": {
             "type": "object",
             "properties": {
+                "codeRepoId": {
+                    "description": "仓库ID",
+                    "type": "integer"
+                },
                 "url": {
+                    "description": "代码地址",
                     "type": "string"
                 }
             }
