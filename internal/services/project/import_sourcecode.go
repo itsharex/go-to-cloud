@@ -4,6 +4,7 @@ import (
 	"go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/scm"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 	"sort"
 	"strings"
 )
@@ -62,7 +63,7 @@ func GetSourceCodeImported(projectId uint) ([]project.SourceCodeImportedModel, e
 			Id:             code.ID,
 			CodeRepoOrigin: code.CodeRepo.ScmOrigin,
 			CreatedBy:      code.CreatedUser.Account,
-			CreatedAt:      code.CreatedAt,
+			CreatedAt:      utils.JsonTime(code.CreatedAt),
 		}
 	}
 	return models, nil

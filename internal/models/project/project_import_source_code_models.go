@@ -1,6 +1,8 @@
 package project
 
-import "time"
+import (
+	"go-to-cloud/internal/utils"
+)
 
 type SourceCodeModel struct {
 	CodeRepoId uint   `json:"codeRepoId"` // 仓库ID
@@ -9,8 +11,9 @@ type SourceCodeModel struct {
 
 type SourceCodeImportedModel struct {
 	SourceCodeModel
-	CodeRepoOrigin int       `json:"codeRepoOrigin"`
-	Id             uint      `json:"id"`        // 代码ID
-	CreatedBy      string    `json:"createdBy"` // 导入人
-	CreatedAt      time.Time `json:"createdAt"` // 导入时间
+	CodeRepoOrigin int             `json:"codeRepoOrigin"`
+	Id             uint            `json:"id"`            // 代码ID
+	CreatedBy      string          `json:"createdBy"`     // 导入人
+	CreatedAt      utils.JsonTime  `json:"updatedAt"`     // 导入时间
+	LatestBuildAt  *utils.JsonTime `json:"latestBuildAt"` // 最近一次构建时间
 }

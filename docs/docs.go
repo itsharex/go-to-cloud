@@ -933,10 +933,6 @@ const docTemplate = `{
                 "codeRepoOrigin": {
                     "type": "integer"
                 },
-                "createdAt": {
-                    "description": "导入时间",
-                    "type": "string"
-                },
                 "createdBy": {
                     "description": "导入人",
                     "type": "string"
@@ -944,6 +940,14 @@ const docTemplate = `{
                 "id": {
                     "description": "代码ID",
                     "type": "integer"
+                },
+                "latestBuildAt": {
+                    "description": "导入时间",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "导入时间",
+                    "type": "string"
                 },
                 "url": {
                     "description": "代码地址",
