@@ -679,6 +679,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除项目仓库",
+                "tags": [
+                    "Projects"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project.ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "SourceCode.ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/info": {
             "get": {
                 "security": [
