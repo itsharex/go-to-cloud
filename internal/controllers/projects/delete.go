@@ -13,7 +13,7 @@ import (
 // @Tags Projects
 // @Description 删除项目仓库
 // @Success 200
-// @Router /api/projects/{id} [delete]
+// @Router /api/projects/{projectId} [delete]
 // @Param   id     path     int     true	"Project.ID"
 // @Security JWT
 func DeleteProject(ctx *gin.Context) {

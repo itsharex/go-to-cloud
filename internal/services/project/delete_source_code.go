@@ -1,6 +1,7 @@
 package project
 
+import "go-to-cloud/internal/repositories"
+
 func DeleteSourceCode(userId, projectId, sourceCodeId uint) error {
-	// TODO
-	return nil
+	return repositories.DeleteProjectSourceCode(projectId, sourceCodeId)
 }

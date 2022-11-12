@@ -12,8 +12,8 @@ import (
 // DeleteSourceCode 删除项目仓库
 // @Tags Projects
 // @Description 删除项目仓库
-// @Success 200
-// @Router /api/projects/{projectId}/{id} [delete]
+// @Success 200   {object}     response.Result{data=bool}
+// @Router /api/projects/{projectId}/sourcecode/{id} [delete]
 // @Param   projectId     path     int     true	"Project.ID"
 // @Param   id            path     int     true	"SourceCode.ID"
 // @Security JWT
@@ -40,6 +40,6 @@ func DeleteSourceCode(ctx *gin.Context) {
 	if err != nil {
 		response.Fail(ctx, http.StatusInternalServerError, nil, err)
 	} else {
-		response.Success(ctx)
+		response.Success(ctx, gin.H{"result": true})
 	}
 }

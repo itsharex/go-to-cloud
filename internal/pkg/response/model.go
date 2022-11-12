@@ -11,7 +11,7 @@ import (
 func GetResponse() *Response {
 	return &Response{
 		httpCode: http.StatusOK,
-		result: &result{
+		Result: &Result{
 			Code:    0,
 			Message: "",
 			Data:    nil,
@@ -47,7 +47,7 @@ func Fail(ctx *gin.Context, code int, message *string, data ...any) {
 	GetResponse().FailCode(ctx, code, msg)
 }
 
-type result struct {
+type Result struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
@@ -56,7 +56,7 @@ type result struct {
 
 type Response struct {
 	httpCode int
-	result   *result
+	Result   *Result
 }
 
 // Fail 错误返回
@@ -97,7 +97,7 @@ func (r *Response) WithDataFailure(code int, ctx *gin.Context, data interface{})
 
 // SetCode 设置返回code码
 func (r *Response) SetCode(code int) *Response {
-	r.result.Code = code
+	r.Result.Code = code
 	return r
 }
 
@@ -115,27 +115,27 @@ type defaultRes struct {
 func (r *Response) WithData(data interface{}) *Response {
 	switch data.(type) {
 	case string, int, bool:
-		r.result.Data = &defaultRes{Result: data}
+		r.Result.Data = &defaultRes{Result: data}
 	default:
-		r.result.Data = data
+		r.Result.Data = data
 	}
 	return r
 }
 
 // WithMessage 设置返回自定义错误消息
 func (r *Response) WithMessage(message string) *Response {
-	r.result.Message = message
+	r.Result.Message = message
 	return r
 }
 
 // json 返回 gin 框架的 HandlerFunc
 func (r *Response) json(ctx *gin.Context) {
-	if len(strings.Trim(r.result.Message, " ")) > 0 {
-		if r.result.Code >= http.StatusBadRequest {
-			r.result.Message = fmt.Sprintf("msg: %s\r\nplease visit https://http.cat/%d for reason", r.result.Message, r.result.Code)
+	if len(strings.Trim(r.Result.Message, " ")) > 0 {
+		if r.Result.Code >= http.StatusBadRequest {
+			r.Result.Message = fmt.Sprintf("msg: %s\r\nplease visit https://http.cat/%d for reason", r.Result.Message, r.Result.Code)
 		}
 	}
 
-	r.result.Cost = time.Since(ctx.GetTime("requestStartTime")).String()
-	ctx.AbortWithStatusJSON(r.httpCode, r.result)
+	r.Result.Cost = time.Since(ctx.GetTime("requestStartTime")).String()
+	ctx.AbortWithStatusJSON(r.httpCode, r.Result)
 }

@@ -598,7 +598,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{id}": {
+        "/api/projects/{projectId}": {
             "delete": {
                 "security": [
                     {
@@ -679,7 +679,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{projectId}/{id}": {
+        "/api/projects/{projectId}/sourcecode/{id}": {
             "delete": {
                 "security": [
                     {
@@ -708,7 +708,22 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.Result"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
                     }
                 }
             }
@@ -998,6 +1013,21 @@ const docTemplate = `{
                 },
                 "url": {
                     "description": "代码地址",
+                    "type": "string"
+                }
+            }
+        },
+        "response.Result": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "cost": {
+                    "type": "string"
+                },
+                "data": {},
+                "message": {
                     "type": "string"
                 }
             }

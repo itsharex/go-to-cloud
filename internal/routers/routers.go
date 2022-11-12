@@ -48,12 +48,12 @@ func buildRouters(router *gin.Engine) {
 
 		project := api.Group("/projects")
 		project.POST("/", projects.Create)
-		project.DELETE("/:id", projects.DeleteProject)
+		project.DELETE("/:projectId", projects.DeleteProject)
 		project.GET("/list", projects.List)
 		project.GET("/coderepo", projects.CodeRepo)
 		project.PUT("/", projects.UpdateProject)
 		project.POST("/:projectId/import", projects.ImportSourceCode)
 		project.GET("/:projectId/imported", projects.ListImportedSourceCode)
-		project.DELETE("/:projectId/:id", projects.DeleteSourceCode)
+		project.DELETE("/:projectId/sourcecode/:id", projects.DeleteSourceCode)
 	}
 }

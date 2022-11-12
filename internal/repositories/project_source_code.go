@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"go-to-cloud/conf"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -24,27 +25,29 @@ func (m *ProjectSourceCode) TableName() string {
 func UpsertProjectSourceCode(projectId, codeRepoId, userId uint, url *string) error {
 	db := conf.GetDbClient()
 
-	tx := db.Model(&ProjectSourceCode{})
+	return db.Transaction(func(tx *gorm.DB) error {
+		tx = tx.Model(&ProjectSourceCode{})
+		if conf.Environment.IsDevelopment() {
+			tx = tx.Debug()
+		}
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
+		tx = tx.Where("project_id = ? AND code_repo_id = ? AND git_url = ?", projectId, codeRepoId, *url)
+		tx = tx.FirstOrCreate(&ProjectSourceCode{
+			CodeRepoID: codeRepoId,
+			ProjectID:  projectId,
+			GitUrl:     *url,
+			CreatedBy:  userId,
+		})
 
-	tx = tx.FirstOrCreate(&ProjectSourceCode{
-		CodeRepoID: codeRepoId,
-		ProjectID:  projectId,
-		GitUrl:     *url,
-		CreatedBy:  userId,
+		if err := tx.Error; err != nil {
+			return err
+		}
+		if tx.RowsAffected == 0 {
+			return errors.New("already exists")
+		}
+
+		return nil
 	})
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-	if tx.RowsAffected == 0 {
-		return errors.New("already exists")
-	}
-
-	return nil
 }
 
 func QueryProjectSourceCode(projectId uint) ([]ProjectSourceCode, error) {
@@ -60,4 +63,21 @@ func QueryProjectSourceCode(projectId uint) ([]ProjectSourceCode, error) {
 	tx = tx.Where("project_id = ?", projectId).Find(&rlt)
 
 	return rlt, tx.Error
+}
+
+func DeleteProjectSourceCode(projectId, sourceCodeId uint) error {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&ProjectSourceCode{})
+
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
+
+	sourceCode := ProjectSourceCode{
+		Model: Model{ID: sourceCodeId},
+	}
+	tx = tx.Where("project_id = ?", projectId).Delete(&sourceCode)
+
+	return tx.Error
 }
