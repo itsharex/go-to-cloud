@@ -21,7 +21,7 @@ func Setup(orgID uint) error {
 
 	deploy := &kube.AppDeployConfig{
 		Namespace: agent.Namespace,
-		Name:      "gotocloud-agent",
+		Name:      agentNodeName,
 		Ports: []kube.Port{
 			{
 				ContainerPort: 80,
@@ -33,6 +33,10 @@ func Setup(orgID uint) error {
 		Image:    "-",
 	}
 
-	_ = deploy
-	return nil
+	client, err := kube.NewClient(&agent.KubeConfig)
+	if err != nil {
+		return err
+	}
+
+	return client.Launch(deploy)
 }
