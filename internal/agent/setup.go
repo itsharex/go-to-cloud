@@ -2,6 +2,7 @@ package agent
 
 import (
 	"errors"
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 )
@@ -30,7 +31,7 @@ func Setup(orgID uint) error {
 			},
 		},
 		Replicas: 1,
-		Image:    "-",
+		Image:    *conf.GetAgentImage(),
 	}
 
 	client, err := kube.NewClient(&agent.KubeConfig)

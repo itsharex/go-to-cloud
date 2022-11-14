@@ -1,0 +1,17 @@
+db:
+  user: root
+  password: Helloi23
+  host: 43.142.122.30
+  schema: gotocloud # 数据库名，默认不用修改
+jwt:
+  security: thisisunsafeuntilyouchangit
+  realm: GOTOCLOUD
+  idkey: id
+kind:
+  - admin # 管理员
+  - pm    # 项目经理
+  - dev   # 开发
+  - qa    # 质量
+  - op    # 运维
+agent:
+  image: gotocloud.cn/image:latest

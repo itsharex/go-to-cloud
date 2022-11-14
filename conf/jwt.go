@@ -1,5 +1,7 @@
 package conf
 
+import "sync"
+
 type JWT struct {
 	Security string
 	Realm    string
@@ -7,15 +9,20 @@ type JWT struct {
 
 var jwt *JWT
 
+var onceJwt sync.Once
+
 // GetJwtKey 获取JWT私钥
 func GetJwtKey() *JWT {
 	if jwt == nil {
-		filePath := getConfFilePath()
-		j := getConfiguration(filePath).Jwt
-		jwt = &JWT{
-			Security: j.Security,
-			Realm:    j.Realm,
-		}
+		onceJwt.Do(func() {
+			if jwt == nil {
+				j := getConf().Jwt
+				jwt = &JWT{
+					Security: j.Security,
+					Realm:    j.Realm,
+				}
+			}
+		})
 	}
 
 	return jwt

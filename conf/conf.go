@@ -3,9 +3,15 @@ package conf
 import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"os"
+	"sync"
 )
 
+var once sync.Once
+
 type Conf struct {
+	Agent struct {
+		Image string
+	}
 	Db struct {
 		User     string
 		Password string
@@ -18,6 +24,20 @@ type Conf struct {
 		IdKey    string // IdentityKey
 	}
 	Kind []string // 用户分类
+}
+
+var conf *Conf
+
+func getConf() *Conf {
+	if conf == nil {
+		once.Do(func() {
+			if conf == nil {
+				filePath := getConfFilePath()
+				conf = getConfiguration(filePath)
+			}
+		})
+	}
+	return conf
 }
 
 // getConfiguration 读取配置
