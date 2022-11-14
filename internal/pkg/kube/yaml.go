@@ -12,7 +12,7 @@ import (
 	"text/template"
 )
 
-const RegistrySecretName = "image_pull_secret"
+const REGISTRY_SECRET_NAME = "imgpullsecret"
 
 type ConfigValidation interface {
 	validate(args ...string) error
@@ -40,7 +40,7 @@ func DecodeYaml[T Kinds](yml *string, conf *T) error {
 }
 
 // validate 校验入参，并做些适当的调整，比如将名称调整为小写
-func (cfg *AppDeployConfig) validate(args ...string) error {
+func (cfg *AppDeployConfig) validate() error {
 	cfg.Name = strings.ReplaceAll(strings.ToLower(cfg.Name), "_", "-")
 	if cfg.Ports != nil && len(cfg.Ports) > 0 {
 		cfg.PortType = "ClusterIP"
@@ -61,7 +61,9 @@ func (cfg *AppDeployConfig) validate(args ...string) error {
 				}
 			}
 
-			cfg.Ports[i].PortName = strings.Replace(fmt.Sprintf("p-%2d", i), " ", "0", 1)
+			if len(strings.TrimSpace(cfg.Ports[i].PortName)) == 0 {
+				cfg.Ports[i].PortName = strings.Replace(fmt.Sprintf("p-%2d", i), " ", "0", 1)
+			}
 		}
 	}
 
@@ -69,8 +71,8 @@ func (cfg *AppDeployConfig) validate(args ...string) error {
 		return errors.New("镜像地址没有配置")
 	}
 
-	if cfg.Replicas <= 0 {
-		return errors.New("副本数量不允许为0")
+	if cfg.Replicas < 0 {
+		return errors.New("副本数量不允许小于0")
 	}
 
 	if cfg.RollingUpdate != nil {
@@ -149,7 +151,7 @@ type ProbeConfigure struct {
 
 func (cfg *ProbeConfigure) validate(args ...string) error {
 
-	if args == nil || len(args) == 0 {
+	if len(args) == 0 {
 		args = []string{"探针"}
 	}
 
@@ -187,7 +189,7 @@ type RollingUpdateStrategy struct {
 	MaxUnavailable int //	最大无效数：滚动升级期间，相对于期望副本数能够允许有多少 pod 实例处于不可用状态；取值范围：1～100
 }
 
-func (cfg *RollingUpdateStrategy) validate(args ...string) error {
+func (cfg *RollingUpdateStrategy) validate() error {
 	if cfg.MaxSurge <= 0 || cfg.MaxSurge >= 100 {
 		return errors.New("最大激发数范围：1～100")
 	}
@@ -199,13 +201,13 @@ func (cfg *RollingUpdateStrategy) validate(args ...string) error {
 
 // ResLimits 资源限制
 type ResLimits struct {
-	CpuRequest *int // CPU分配资源；1～1000
-	CpuLimits  *int // CPU资源上限；1～1000
-	MemRequest *int // 内存分配资源：单位：Mi
-	MemLimits  *int // 内存资源上限；单位：Mi
+	CpuRequest *int `json:"cpuRequest"` // CPU分配资源；> 0，单位m
+	CpuLimits  *int `json:"cpuLimits"`  // CPU资源上限；> 0，单位m
+	MemRequest *int `json:"memRequest"` // 内存分配资源：单位：Mi
+	MemLimits  *int `json:"memLimits"`  // 内存资源上限；单位：Mi
 }
 
-func (cfg *ResLimits) validate(args ...string) error {
+func (cfg *ResLimits) validate() error {
 	if cfg.MemLimits != nil && *cfg.MemLimits <= 0 {
 		return errors.New("内存分配上限不能小于0M")
 	}
@@ -213,17 +215,18 @@ func (cfg *ResLimits) validate(args ...string) error {
 		return errors.New("内存分配不能小于0M")
 	}
 	if cfg.MemLimits != nil && cfg.MemRequest != nil && *cfg.MemLimits < *cfg.MemRequest {
-		return errors.New("内存分配上限不能小于内存分配")
+		return errors.New("内存分配上限不能小于内存分配数量")
 	}
 
-	if cfg.CpuLimits != nil && (*cfg.CpuLimits <= 0 || *cfg.CpuLimits > 1000) {
-		return errors.New("CPU分配上限范围：1～1000")
+	if cfg.CpuLimits != nil && (*cfg.CpuLimits <= 0) {
+		return errors.New("CPU不能少于0")
 	}
-	if cfg.CpuRequest != nil && (*cfg.CpuRequest <= 0 || *cfg.CpuRequest > 1000) {
-		return errors.New("CPU分配范围：1～1000")
+	if cfg.CpuRequest != nil && (*cfg.CpuRequest <= 0) {
+		return errors.New("CPU不能少于0")
 	}
+
 	if cfg.CpuLimits != nil && cfg.CpuRequest != nil && *cfg.CpuLimits < *cfg.CpuRequest {
-		return errors.New("CPU分配上限不能小于内存分配")
+		return errors.New("CPU分配上限不能小于CPU分配数量")
 	}
 
 	return nil
@@ -235,10 +238,10 @@ type DependContainer struct {
 }
 
 type Port struct {
-	ServicePort   int    // 应用运行端口(service.spec.ports.port)
-	ContainerPort int    // 容器暴露端口(service.spec.ports.targetPort)
-	NodePort      int    // NodePort(30000～32767）
-	PortName      string // PortName，按规则P01～P99
+	ServicePort   int    `json:"servicePort"`   // 应用运行端口(service.spec.ports.port)
+	ContainerPort int    `json:"containerPort"` // 容器暴露端口(service.spec.ports.targetPort)
+	NodePort      int    `json:"nodePort"`      // NodePort(30000～32767）
+	PortName      string `json:"portName"`      // PortName，按规则P01～P99
 }
 
 type EnvVar struct {
@@ -247,39 +250,42 @@ type EnvVar struct {
 	ValueFrom interface{} // TODO: Not Supported YET；参考：https://kubernetes.io/zh-cn/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
 }
 
+type ConfigMapVolume struct {
+	Name          string
+	ConfigMapName string
+	MountPath     string
+	SubPath       string
+}
+
+// ContainerExtract 额外信息，作为Containers节点下的附加信息，通常放Args、Command
+type ContainerExtract struct {
+	Key    string
+	Values []string
+}
+
 // AppDeployConfig 应用部署配置
 type AppDeployConfig struct {
-	Name          string                 //	应用名称
-	Ports         []Port                 // 端口
-	PortType      string                 // 端口类型：NodePort 或者 ClusterIP
-	Image         string                 // 镜像地址
-	CPUs          int                    // CPU数量
-	Env           []EnvVar               // 环境变量
-	Replicas      int                    //	运行副本数
-	Liveness      *ProbeConfigure        // 存活检查
-	Readiness     *ProbeConfigure        // 就绪检查
-	RollingUpdate *RollingUpdateStrategy // 滚动发布策略
-	ResourceLimit *ResLimits             //	资源限制
-	Dependencies  []DependContainer      // 依赖容器
+	Namespace         string // 名字空间
+	Name              string //	应用名称
+	Ports             []Port // 端口
+	PortType          string // 端口类型：NodePort 或者 ClusterIP
+	Image             string // 镜像地址
+	ContainerExtracts []ContainerExtract
+	Env               []EnvVar               // 环境变量
+	Replicas          int                    //	运行副本数
+	Liveness          *ProbeConfigure        // 存活检查
+	Readiness         *ProbeConfigure        // 就绪检查
+	RollingUpdate     *RollingUpdateStrategy // 滚动发布策略
+	ResourceLimit     *ResLimits             //	资源限制
+	Dependencies      []DependContainer      // 依赖容器
+	NodeSelector      []NodeSelector         // 指定选择
+	ConfigMaps        []ConfigMapVolume      // ConfigMap卷
 }
 
-type PodPort struct {
-	Port     int
-	HostPort int
+type NodeSelector struct {
+	LabelName  string
+	LabelValue string
 }
-type PodContainer struct {
-	Image string
-	Name  string
-	TTY   bool
-	Ports []PodPort
-}
-
-const namespace_yml = `
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{.Namespace}}
-`
 
 // YamlTplService Service ClusterIP方式Yaml模板
 const YamlTplService = `
@@ -332,15 +338,33 @@ spec:
       labels:
         app: {{.Name}}
     spec:
+{{- if .ConfigMaps}}
+      volumes:
+{{- range .ConfigMaps}}
+      - configMap:
+          defaultMode: 420
+          name: {{.Name}}
+        name: {{.ConfigMapName}}
+{{- end}}
+{{- end}}
       imagePullSecrets:
-      - name: ` + RegistrySecretName + `
+      - name: ` + REGISTRY_SECRET_NAME + `
+{{- if .NodeSelector}}
+      nodeSelector:
+{{- range .NodeSelector}}
+        {{.LabelName}}: {{.LabelValue}}
+{{- end}}
+{{- end}}
       containers:
       - name: {{.Name}}
         image: {{.Image}}
-{{- if .CPUs}}
-        args:
-        - -cpus
-        - "{{.CPUs}}"
+{{- if .ContainerExtracts}}
+{{- range .ContainerExtracts}}
+        {{.Key}}:
+{{- range .Values}}
+          - "{{.}}"
+{{- end}}
+{{- end}}
 {{- end}}
 {{- if .Env}}
         env:
@@ -356,6 +380,14 @@ spec:
 {{- range .Ports}}
           - name: {{.PortName}}
             containerPort: {{.ContainerPort}}
+{{- end}}
+{{- end}}
+{{- if .ConfigMaps}}
+        volumeMounts:
+{{- range .ConfigMaps}}
+        - mountPath: {{.MountPath}}
+          name: {{.ConfigMapName}}
+          subPath: {{.SubPath}}
 {{- end}}
 {{- end}}
 {{- if .ResourceLimit}}

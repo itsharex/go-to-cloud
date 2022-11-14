@@ -1,63 +1,47 @@
 package kube
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
-	apps "k8s.io/api/apps/v1"
-	core "k8s.io/api/core/v1"
-	applyApps "k8s.io/client-go/applyconfigurations/apps/v1"
-	applyCore "k8s.io/client-go/applyconfigurations/core/v1"
+	av1 "k8s.io/api/apps/v1"
+	cv1 "k8s.io/api/core/v1"
+	appsv1 "k8s.io/client-go/applyconfigurations/apps/v1"
+	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
+	"strings"
 )
 
 // ApplyDeployment kubectl apply -f yml
-// Kind: Deployment
-func (client *Client) ApplyDeployment(namespace *string, yml *applyApps.DeploymentApplyConfiguration) (*apps.Deployment, error) {
-	client.getOrCreateNamespace(namespace)
+func (client *Client) ApplyDeployment(namespace *string, yml *appsv1.DeploymentApplyConfiguration) (*av1.Deployment, error) {
+	if _, err := client.getOrCreateNamespace(namespace); err != nil {
+		return nil, err
+	}
 	return client.clientSet.AppsV1().Deployments(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
 // ApplyService kubectl apply -f yml
-// Kind: Service
-func (client *Client) ApplyService(namespace *string, yml *applyCore.ServiceApplyConfiguration) (*core.Service, error) {
-	client.getOrCreateNamespace(namespace)
+func (client *Client) ApplyService(namespace *string, yml *corev1.ServiceApplyConfiguration) (*cv1.Service, error) {
+	if _, err := client.getOrCreateNamespace(namespace); err != nil {
+		return nil, err
+	}
 	return client.clientSet.CoreV1().Services(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
-// Apply 安装Agent
-func Apply(k8sConfig, namespace *string, pod *AppDeployConfig) error {
-	client, err := NewClient(k8sConfig)
+const namespace_yml = `
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{.Namespace}}
+`
 
-	_, err = client.GetOrAddNamespace(namespace)
+// getOrCreateNamespace 获取或创建namespace
+func (client *Client) getOrCreateNamespace(namespace *string) (*cv1.Namespace, error) {
+
+	cfg := strings.ReplaceAll(namespace_yml, "{{.Namespace}}", *namespace)
+	yml := corev1.NamespaceApplyConfiguration{}
+	err := DecodeYaml(&cfg, &yml)
+
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	deploy, service, err := GetYamlFromTemple(pod)
-	if err != nil {
-		panic(err)
-	}
-
-	deployConfig := applyApps.DeploymentApplyConfiguration{}
-	if err = DecodeYaml(deploy, &deployConfig); err != nil {
-		fmt.Println(err)
-		panic(err)
-
-	}
-	serviceConfig := applyCore.ServiceApplyConfiguration{}
-	if err = DecodeYaml(service, &serviceConfig); err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	if _, err = client.ApplyDeployment(namespace, &deployConfig); err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	if _, err = client.ApplyService(namespace, &serviceConfig); err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-
-	return nil
+	return client.clientSet.CoreV1().Namespaces().Apply(context.TODO(), &yml, *client.defaultApplyOptions)
 }

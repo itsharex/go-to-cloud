@@ -3,23 +3,42 @@ package kube
 import (
 	"fmt"
 	"golang.org/x/net/context"
-	core "k8s.io/api/core/v1"
-	applyCore "k8s.io/client-go/applyconfigurations/core/v1"
-	meta "k8s.io/client-go/applyconfigurations/meta/v1"
+	cv1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
+	v1 "k8s.io/client-go/applyconfigurations/meta/v1"
 	"strings"
 )
 
+func (client *Client) GetAllNamespaces(includeKube bool) ([]string, error) {
+
+	if all, err := client.clientSet.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{}); err != nil {
+		return nil, err
+	} else {
+		ns := make([]string, 0)
+		for _, namespace := range all.Items {
+			if !includeKube {
+				if strings.HasPrefix(namespace.Name, "includeKube-") || strings.HasPrefix(namespace.Name, "kubernetes-") {
+					continue
+				}
+			}
+			ns = append(ns, namespace.Name)
+		}
+		return ns, nil
+	}
+}
+
 // GetOrAddNamespace 获取或创建名字空间
-func (client *Client) GetOrAddNamespace(ns *string) (*core.Namespace, error) {
+func (client *Client) GetOrAddNamespace(ns *string) (*cv1.Namespace, error) {
 
 	kind := "Namespace"
 	apiVer := "v1"
-	namespace := applyCore.NamespaceApplyConfiguration{
-		TypeMetaApplyConfiguration: meta.TypeMetaApplyConfiguration{
+	namespace := corev1.NamespaceApplyConfiguration{
+		TypeMetaApplyConfiguration: v1.TypeMetaApplyConfiguration{
 			Kind:       &kind,
 			APIVersion: &apiVer,
 		},
-		ObjectMetaApplyConfiguration: &meta.ObjectMetaApplyConfiguration{
+		ObjectMetaApplyConfiguration: &v1.ObjectMetaApplyConfiguration{
 			Name: ns,
 		},
 	}
@@ -29,14 +48,4 @@ func (client *Client) GetOrAddNamespace(ns *string) (*core.Namespace, error) {
 		fmt.Println(err)
 	}
 	return rlt, err
-}
-
-// getOrCreateNamespace 获取或创建namespace
-func (client *Client) getOrCreateNamespace(namespace *string) (*core.Namespace, error) {
-
-	cfg := strings.ReplaceAll(namespace_yml, "{{.Namespace}}", *namespace)
-	yml := applyCore.NamespaceApplyConfiguration{}
-	DecodeYaml(&cfg, &yml)
-
-	return client.clientSet.CoreV1().Namespaces().Apply(context.TODO(), &yml, *client.defaultApplyOptions)
 }
