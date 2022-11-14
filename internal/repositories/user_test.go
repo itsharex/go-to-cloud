@@ -12,6 +12,10 @@ func TestPasswordGenAndCompare(t *testing.T) {
 	u.SetPassword(&pwd)
 	assert.True(t, u.comparePassword(&pwd))
 
+	pwd = "OJBK"
+	u.SetPassword(&pwd)
+	assert.True(t, u.comparePassword(&pwd))
+
 	pwd1 := "Ojbk"
 	assert.True(t, u.comparePassword(&pwd1))
 

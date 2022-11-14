@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"go-to-cloud/internal/agent"
 	"go-to-cloud/internal/routers"
 	"os"
 	"strings"
@@ -50,7 +51,7 @@ func main() {
 		// web模式运行
 		_ = routers.SetRouters().Run(port)
 	} else {
-		// TODO: k8s agent模式运行
-		// _ = agent.Startup()
+		// agent模式运行
+		_ = agent.Startup().Run(port)
 	}
 }

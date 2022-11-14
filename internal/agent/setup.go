@@ -7,7 +7,7 @@ import (
 	"go-to-cloud/internal/repositories"
 )
 
-// Setup 安装agent至指定组织
+// Setup 安装指定组织的agent
 func Setup(orgID uint) error {
 	// 读取配置
 	agent, err := repositories.GetAgentByOrgId(orgID)
