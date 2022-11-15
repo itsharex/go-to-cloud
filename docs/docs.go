@@ -763,6 +763,19 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/commands/healthz": {
+            "head": {
+                "description": "健康检查",
+                "tags": [
+                    "Agent"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
         }
     },
     "definitions": {

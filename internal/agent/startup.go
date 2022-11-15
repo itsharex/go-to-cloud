@@ -2,8 +2,10 @@ package agent
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-to-cloud/conf"
-	"go-to-cloud/internal/controllers/users"
+	"go-to-cloud/docs"
 	"go-to-cloud/internal/middlewares"
 	"go-to-cloud/internal/pkg/response"
 	"io"
@@ -22,6 +24,7 @@ func Startup() (routers *gin.Engine) {
 	// 开发模式配置
 	if conf.Environment.IsDevelopment() {
 		gin.SetMode(gin.DebugMode) // 调试模式
+		buildSwagger(routers)
 	}
 
 	buildCommands(routers)
@@ -33,12 +36,18 @@ func Startup() (routers *gin.Engine) {
 	return routers
 }
 
+// buildSwagger 创建swagger文档
+func buildSwagger(router *gin.Engine) {
+	docs.SwaggerInfo.BasePath = "/"
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+}
+
 func buildCommands(router *gin.Engine) {
 
 	api := router.Group("/commands")
+	api.HEAD("/healthz", Healthz)
 
 	api.Use(middlewares.AgentAuthHandler)
 	{
-		api.POST("/logout", users.Logout)
 	}
 }
