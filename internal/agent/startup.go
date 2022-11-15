@@ -6,6 +6,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-to-cloud/conf"
 	"go-to-cloud/docs"
+	"go-to-cloud/internal/agent/commands"
 	"go-to-cloud/internal/middlewares"
 	"go-to-cloud/internal/pkg/response"
 	"io"
@@ -45,9 +46,14 @@ func buildSwagger(router *gin.Engine) {
 func buildCommands(router *gin.Engine) {
 
 	api := router.Group("/commands")
-	api.HEAD("/healthz", Healthz)
+	api.HEAD("/healthz", commands.Healthz)
+
+	if conf.Environment.IsDevelopment() {
+		api.GET("/dev/token", commands.GenToken)
+	}
 
 	api.Use(middlewares.AgentAuthHandler)
 	{
+		api.POST("/clone", commands.Clone)
 	}
 }

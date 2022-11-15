@@ -1,4 +1,4 @@
-package agent
+package commands
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,6 +8,7 @@ import (
 // Healthz 健康检查
 // @Tags Agent
 // @Description 健康检查
+// @Summary 健康检查
 // @Router /commands/healthz [head]
 // @Success 204
 func Healthz(c *gin.Context) {

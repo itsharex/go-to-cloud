@@ -11,6 +11,7 @@ import (
 	"github.com/drone/go-scm/scm/driver/gogs"
 	"github.com/drone/go-scm/scm/transport"
 	git "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	gohttp "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"net/http"
@@ -98,11 +99,12 @@ func gitHttpClient(scmType GitScmType, token *string) *http.Client {
 	}
 }
 
-// gitClone 从git下载源码
+// GitClone 从git下载源码
 // gitUrl git地址
+// branch 分支名称（不带ref/head)
 // dest 目标地址
 // token AccessToken
-func gitClone(gitUrl, dest, token *string) (err error) {
+func GitClone(gitUrl, branch, dest, token *string) (err error) {
 	var auth *gohttp.BasicAuth
 
 	if token == nil || len(*token) == 0 {
@@ -113,16 +115,18 @@ func gitClone(gitUrl, dest, token *string) (err error) {
 			Password: *token,
 		}
 	}
+
+	opt := &git.CloneOptions{
+		URL:  *gitUrl,
+		Auth: auth,
+	}
+	if branch != nil && len(*branch) > 0 {
+		opt.ReferenceName = plumbing.NewBranchReferenceName(*branch)
+	}
 	if dest == nil || len(*dest) == 0 {
-		_, err = git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
-			URL:  *gitUrl,
-			Auth: auth,
-		})
+		_, err = git.Clone(memory.NewStorage(), nil, opt)
 	} else {
-		_, err = git.PlainClone(*dest, false, &git.CloneOptions{
-			URL:  *gitUrl,
-			Auth: auth,
-		})
+		_, err = git.PlainClone(*dest, false, opt)
 	}
 	return err
 }

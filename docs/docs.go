@@ -764,12 +764,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/commands/clone": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "克隆代码",
+                "tags": [
+                    "Agent"
+                ],
+                "summary": "克隆代码",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GitModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/commands/dev/token": {
+            "get": {
+                "description": "获取Token",
+                "tags": [
+                    "Agent"
+                ],
+                "summary": "获取Token",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/commands/healthz": {
             "head": {
                 "description": "健康检查",
                 "tags": [
                     "Agent"
                 ],
+                "summary": "健康检查",
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -910,6 +955,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "kubeconfig": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GitModel": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "branch": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
