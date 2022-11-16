@@ -55,5 +55,6 @@ func buildCommands(router *gin.Engine) {
 	api.Use(middlewares.AgentAuthHandler)
 	{
 		api.POST("/clone", commands.Clone)
+		api.POST("/shell", commands.Shell)
 	}
 }
