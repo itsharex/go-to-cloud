@@ -6,6 +6,7 @@ import (
 	"go-to-cloud/internal/pkg/pipeline/stages"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
+	"os"
 )
 
 // Clone
@@ -13,21 +14,25 @@ import (
 // @Description 克隆代码
 // @Summary 克隆代码
 // @Param   ContentBody     body     models.GitModel     true  "Request"     example(models.GitModel)
-// @Success 200
+// @Success 200 {string} workdir
 // @Router /commands/clone [POST]
 // @Security JWT
 func Clone(c *gin.Context) {
 	var m models.GitModel
-	if err := c.ShouldBind(&m); err != nil {
+	var err error
+	if err = c.ShouldBind(&m); err != nil {
 		response.BadRequest(c)
 		return
 	}
 
-	// TODO: 默认工作目录
-	workdir := ""
-	if err := stages.GitClone(&m.Address, &m.Branch, &workdir, m.DecodeToken()); err != nil {
+	var workdir string
+	if workdir, err = os.MkdirTemp("", "gtc"); err != nil {
+		response.Fail(c, http.StatusInternalServerError, nil, err)
+		return
+	}
+	if err = stages.GitClone(&m.Address, &m.Branch, &workdir, m.DecodeToken()); err != nil {
 		response.Fail(c, http.StatusInternalServerError, nil, err)
 	} else {
-		response.Success(c)
+		response.Success(c, workdir)
 	}
 }
