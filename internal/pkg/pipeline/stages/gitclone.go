@@ -29,6 +29,9 @@ const (
 	Gogs   GitScmType = iota
 )
 
+type GitCloneStage struct {
+}
+
 // NewGitClient 创建git客户端对象
 func NewGitClient(scmType GitScmType, gitUrl string, token *string) (*scm.Client, error) {
 	if strings.HasSuffix(gitUrl, ".git") {
@@ -104,7 +107,7 @@ func gitHttpClient(scmType GitScmType, token *string) *http.Client {
 // branch 分支名称（不带ref/head)
 // dest 目标地址
 // token AccessToken
-func GitClone(gitUrl, branch, dest, token *string) (err error) {
+func (m *GitCloneStage) GitClone(gitUrl, branch, dest, token *string) (err error) {
 	var auth *gohttp.BasicAuth
 
 	if token == nil || len(*token) == 0 {
@@ -129,4 +132,8 @@ func GitClone(gitUrl, branch, dest, token *string) (err error) {
 		_, err = git.PlainClone(*dest, false, opt)
 	}
 	return err
+}
+
+func (m *GitCloneStage) Run() {
+
 }
