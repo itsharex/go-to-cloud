@@ -30,6 +30,10 @@ const (
 )
 
 type GitCloneStage struct {
+	Token   string
+	GitUrl  string
+	Branch  string
+	WorkDir string
 }
 
 // NewGitClient 创建git客户端对象
@@ -102,38 +106,30 @@ func gitHttpClient(scmType GitScmType, token *string) *http.Client {
 	}
 }
 
-// GitClone 从git下载源码
-// gitUrl git地址
-// branch 分支名称（不带ref/head)
-// dest 目标地址
-// token AccessToken
-func (m *GitCloneStage) GitClone(gitUrl, branch, dest, token *string) (err error) {
+func (m *GitCloneStage) Run() error {
 	var auth *gohttp.BasicAuth
 
-	if token == nil || len(*token) == 0 {
+	if m == nil || len(m.Token) == 0 {
 		auth = nil
 	} else {
 		auth = &gohttp.BasicAuth{
 			Username: "go-to-cloud",
-			Password: *token,
+			Password: m.Token,
 		}
 	}
 
 	opt := &git.CloneOptions{
-		URL:  *gitUrl,
+		URL:  m.GitUrl,
 		Auth: auth,
 	}
-	if branch != nil && len(*branch) > 0 {
-		opt.ReferenceName = plumbing.NewBranchReferenceName(*branch)
+	if len(m.Branch) > 0 {
+		opt.ReferenceName = plumbing.NewBranchReferenceName(m.Branch)
 	}
-	if dest == nil || len(*dest) == 0 {
+	var err error
+	if len(m.WorkDir) == 0 {
 		_, err = git.Clone(memory.NewStorage(), nil, opt)
 	} else {
-		_, err = git.PlainClone(*dest, false, opt)
+		_, err = git.PlainClone(m.WorkDir, false, opt)
 	}
 	return err
-}
-
-func (m *GitCloneStage) Run() {
-
 }

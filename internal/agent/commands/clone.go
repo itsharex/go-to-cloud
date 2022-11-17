@@ -30,7 +30,14 @@ func Clone(c *gin.Context) {
 		response.Fail(c, http.StatusInternalServerError, nil, err)
 		return
 	}
-	if err = stages.GitClone(&m.Address, &m.Branch, &workdir, m.DecodeToken()); err != nil {
+
+	gitCloneStage := stages.GitCloneStage{
+		Token:   *m.DecodeToken(),
+		GitUrl:  m.Address,
+		Branch:  m.Branch,
+		WorkDir: workdir,
+	}
+	if err = gitCloneStage.Run(); err != nil {
 		response.Fail(c, http.StatusInternalServerError, nil, err)
 	} else {
 		response.Success(c, workdir)
