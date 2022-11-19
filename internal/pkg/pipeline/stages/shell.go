@@ -1,6 +1,8 @@
 package stages
 
-import "errors"
+import (
+	"errors"
+)
 import "github.com/codeskyblue/go-sh"
 
 type ShellCommand struct {
@@ -22,15 +24,30 @@ func (m *Shell) Stub() error {
 
 func (m *Shell) Run() error {
 	session := sh.NewSession()
-	session = session.Command(m.Commands.Command, m.Commands.Args)
+	if !individualCmd(session, &m.Commands) {
+		session = session.Command(m.Commands.Command, m.Commands.Args)
+	}
 	next := m.Commands.Next
 	for next != nil {
-		session = session.Command(next.Command, next.Args)
-		next = m.Commands.Next
+		if !individualCmd(session, next) {
+			session = session.Command(next.Command, next.Args)
+		}
+		next = next.Next
 	}
 	r, err := session.Output()
-	if err != nil {
+	if err == nil {
 		m.Result = string(r)
 	}
 	return err
+}
+
+func individualCmd(session *sh.Session, command *ShellCommand) bool {
+	if command.Command == "cd" {
+		if len(command.Args) > 0 {
+			session.SetDir(command.Args[0])
+		}
+		return true
+	}
+
+	return false
 }

@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/go-to-cloud/go-to-cloud/branch/main/graph/badge.svg?token=9Y81AN6KUA)](https://codecov.io/gh/go-to-cloud/go-to-cloud)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/go-to-cloud/go-to-cloud/blob/main/LICENSE)
 
-### 后端服务
+### Master 后端服务
 
 
 ### Swagger
@@ -41,4 +41,14 @@ swag init
 func Helloworld(g *gin.Context)  {
 	g.JSON(http.StatusOK, "helloworld")
 }
+```
+
+# Agent
+
+> Agent 运行在构建节点机器上，与Master使用gPrc通讯
+
+1. 安装gRPC工具
+```shell
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 ```
