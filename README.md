@@ -47,7 +47,11 @@ func Helloworld(g *gin.Context)  {
 
 > Agent 运行在构建节点机器上，与Master使用gPrc通讯
 
-1. 安装gRPC工具
+1. 下载[protoc]("https://github.com/protocolbuffers/protobuf/releases")
+> 下载完成后建议将`protoc`路径配置到PATH
+
+2. 安装gRPC工具
+
 ```shell
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
