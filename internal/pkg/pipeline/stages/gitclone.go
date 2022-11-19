@@ -106,6 +106,12 @@ func gitHttpClient(scmType GitScmType, token *string) *http.Client {
 	}
 }
 
+func (m *GitCloneStage) Stub() error {
+
+	// TODO: master调用
+	return errors.New("NOT Implemented")
+}
+
 func (m *GitCloneStage) Run() error {
 	var auth *gohttp.BasicAuth
 

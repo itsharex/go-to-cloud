@@ -1,5 +1,6 @@
 package stages
 
 type Stage interface {
-	Run() error
+	Stub() error // Master端使用
+	Run() error  // Agent端调用
 }
