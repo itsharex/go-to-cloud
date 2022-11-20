@@ -1,60 +1,36 @@
 package agent
 
 import (
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"go-to-cloud/conf"
-	"go-to-cloud/docs"
-	"go-to-cloud/internal/agent/commands"
-	"go-to-cloud/internal/middlewares"
-	"go-to-cloud/internal/pkg/response"
-	"io"
-	"net/http"
+	"fmt"
+	gotocloud "go-to-cloud/internal/agent/proto"
+	"go-to-cloud/internal/agent/server"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"log"
+	"net"
 )
 
-func Startup() (routers *gin.Engine) {
-	routers = gin.New()
+const HEALTHCHECK_SERVICE = "gotocloud.agent.v1.Health"
 
-	// 生产模式配置
-	if conf.Environment.IsProduction() {
-		gin.SetMode(gin.ReleaseMode)   // 生产模式
-		gin.DefaultWriter = io.Discard // 禁用 gin 输出接口访问日志
+func Startup(port *string) error {
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s", *port))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+		return err
+	}
+	s := grpc.NewServer()
+
+	healthSrv := health.NewServer()
+	healthSrv.SetServingStatus(HEALTHCHECK_SERVICE, healthpb.HealthCheckResponse_SERVING)
+	healthpb.RegisterHealthServer(s, healthSrv)
+
+	gotocloud.RegisterAgentServer(s, &server.Agent{})
+	log.Printf("server listening at %v", lis.Addr())
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
+		return err
 	}
 
-	// 开发模式配置
-	if conf.Environment.IsDevelopment() {
-		gin.SetMode(gin.DebugMode) // 调试模式
-		buildSwagger(routers)
-	}
-
-	buildCommands(routers)
-
-	routers.NoRoute(func(ctx *gin.Context) {
-		response.GetResponse().SetHttpCode(http.StatusNotFound).FailCode(ctx, http.StatusNotFound)
-	})
-
-	return routers
-}
-
-// buildSwagger 创建swagger文档
-func buildSwagger(router *gin.Engine) {
-	docs.SwaggerInfo.BasePath = "/"
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-}
-
-func buildCommands(router *gin.Engine) {
-
-	api := router.Group("/commands")
-	api.HEAD("/healthz", commands.Healthz)
-
-	if conf.Environment.IsDevelopment() {
-		api.GET("/dev/token", commands.GenToken)
-	}
-
-	api.Use(middlewares.AgentAuthHandler)
-	{
-		api.POST("/clone", commands.Clone)
-		api.POST("/shell", commands.Shell)
-	}
+	return nil
 }

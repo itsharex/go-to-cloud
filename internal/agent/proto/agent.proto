@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+option go_package = "/;gotocloud";
+
+package gotocloud;
+
+service Agent {
+  rpc Token(AccessTokenRequest) returns (AccessTokenResponse){}
+  rpc GitClone (CloneRequest) returns (CloneResponse) {}
+  rpc Run (RunRequest) returns (RunResponse) {}
+}
+
+message AccessTokenRequest {
+  string ticket = 1;
+}
+message AccessTokenResponse {
+  string accessToken = 1;
+}
+
+message CloneRequest {
+  string address = 1;
+  string branch = 2;
+  string encodedToken = 3;
+}
+
+// The response message containing the greetings
+message CloneResponse {
+  string workdir = 1;
+}
+
+message RunRequest {
+  string address = 1;
+  string branch = 2;
+  string encodedToken = 3;
+}
+
+// The response message containing the greetings
+message RunResponse {
+  string workdir = 1;
+}

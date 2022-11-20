@@ -31,7 +31,11 @@ func runMode() (bool, string) {
 	}
 
 	if len(*aPort) == 0 {
-		*aPort = ":80"
+		if *aType == "web" {
+			*aPort = ":80"
+		} else {
+			*aPort = ":50010"
+		}
 	}
 
 	if !strings.HasPrefix(*aPort, ":") {
@@ -52,6 +56,6 @@ func main() {
 		_ = routers.SetRouters().Run(port)
 	} else {
 		// agent模式运行
-		_ = agent.Startup().Run(port)
+		_ = agent.Startup(&port)
 	}
 }

@@ -56,3 +56,9 @@ func Helloworld(g *gin.Context)  {
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 ```
+
+3. 生成pb文件
+
+```shell
+protoc ./internal/agent/proto/*.proto --go_out=./internal/agent/proto --go-grpc_out=./internal/agent/proto
+```

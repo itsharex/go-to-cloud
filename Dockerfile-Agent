@@ -22,5 +22,5 @@ COPY --from=build-env /go/src/app/gtc /gotocloud/
 
 ENV PATH $PATH:/gotocloud
 
-EXPOSE 80
-CMD ["/gotocloud/gtc -type agent"]
+EXPOSE 50010
+CMD ["/gotocloud/gtc -type agent -port 50010"]
