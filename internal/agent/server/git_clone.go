@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func (s *Agent) GitClone(ctx context.Context, in *gotocloud.CloneRequest) (*gotocloud.CloneResponse, error) {
+func (m *Agent) GitClone(ctx context.Context, in *gotocloud.CloneRequest) (*gotocloud.CloneResponse, error) {
 	if workdir, err := os.MkdirTemp("", "gtc"); err != nil {
 		return nil, err
 	} else {

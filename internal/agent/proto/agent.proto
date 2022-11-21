@@ -9,7 +9,9 @@ service Agent {
   rpc GitClone (CloneRequest) returns (CloneResponse) {}
   rpc Run (RunRequest) returns (RunResponse) {}
 }
-
+message Ticket {
+  string accessToken = 1;
+}
 message AccessTokenRequest {
   string ticket = 1;
 }

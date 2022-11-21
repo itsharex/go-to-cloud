@@ -3,6 +3,7 @@ package agent
 import (
 	"errors"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/agent/vars"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 )
@@ -22,7 +23,7 @@ func Setup(orgID uint) error {
 
 	deploy := &kube.AppDeployConfig{
 		Namespace: agent.Namespace,
-		Name:      agentNodeName,
+		Name:      vars.AgentNodeName,
 		Ports: []kube.Port{
 			{
 				ContainerPort: 80,

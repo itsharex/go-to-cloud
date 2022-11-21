@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"go-to-cloud/internal/agent/client"
 	gotocloud "go-to-cloud/internal/agent/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -19,10 +20,9 @@ func TestStartup(t *testing.T) {
 	addr := "localhost:50010"
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(addr,
-		grpc.WithDefaultServiceConfig(
-			fmt.Sprintf(`{"HealthCheckConfig": {"ServiceName": "%s"}}`,
-				HEALTHCHECK_SERVICE)),
+		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"HealthCheckConfig": {"ServiceName": "%s"}}`, HEALTHCHECK_SERVICE)),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(new(client.AccessTokenAuth)),
 	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
