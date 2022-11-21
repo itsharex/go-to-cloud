@@ -12,7 +12,7 @@ type AccessTokenAuth struct {
 // GetRequestMetadata 获取元数据
 func (c AccessTokenAuth) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"ticket": vars.Ticket,
+		"access-token": vars.Ticket,
 	}, nil
 }
 

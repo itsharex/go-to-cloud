@@ -19,7 +19,7 @@ func Startup(port *string) error {
 		log.Fatalf("failed to listen: %v", err)
 		return err
 	}
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.UnaryInterceptor(server.AccessTokenInterceptor))
 
 	healthSrv := health.NewServer()
 	healthSrv.SetServingStatus(HEALTHCHECK_SERVICE, healthpb.HealthCheckResponse_SERVING)
