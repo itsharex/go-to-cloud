@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestStartup(t *testing.T) {
+func TestGitClone(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -38,4 +38,52 @@ func TestStartup(t *testing.T) {
 	}
 
 	log.Printf("Greeting: %s", r.GetWorkdir())
+}
+
+func TestShell(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
+	addr := "localhost:50010"
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(addr,
+		grpc.WithDefaultServiceConfig(fmt.Sprintf(`{"HealthCheckConfig": {"ServiceName": "%s"}}`, HEALTHCHECK_SERVICE)),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithPerRPCCredentials(new(client.AccessTokenAuth)),
+	)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := gotocloud.NewAgentClient(conn)
+
+	s4 := &gotocloud.RunCommandRequest{
+		Command: "echo",
+		Args:    []string{"hello world"},
+	}
+	s3 := &gotocloud.RunCommandRequest{
+		Command: "pwd",
+		Next:    s4,
+	}
+
+	s2 := &gotocloud.RunCommandRequest{
+		Command: "ls",
+		Args:    []string{"."},
+		Next:    s3,
+	}
+
+	s1 := &gotocloud.RunRequest{
+		Workdir: "/",
+		Command: &gotocloud.RunCommandRequest{
+			Command: "cd",
+			Args:    []string{"/"},
+			Next:    s2,
+		},
+	}
+
+	r, err := c.Run(context.Background(), s1)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, r.Ret)
 }

@@ -20,13 +20,18 @@ message CloneResponse {
   string workdir = 1;
 }
 
+message RunCommandRequest {
+  string command = 1;
+  repeated string args = 2;
+  RunCommandRequest next = 3;
+}
+
 message RunRequest {
-  string address = 1;
-  string branch = 2;
-  string encodedToken = 3;
+  string workdir = 1;
+  RunCommandRequest command = 2;
 }
 
 // The response message containing the greetings
 message RunResponse {
-  string workdir = 1;
+  string ret = 1;
 }

@@ -1,8 +1,5 @@
 package stages
 
-import (
-	"errors"
-)
 import "github.com/codeskyblue/go-sh"
 
 type ShellCommand struct {
@@ -14,12 +11,6 @@ type Shell struct {
 	Commands ShellCommand `json:"commands"`
 	WorkDir  string       `json:"workDir"`
 	Result   string       `json:"result"`
-}
-
-func (m *Shell) Stub() error {
-
-	// TODO: master调用
-	return errors.New("NOT Implemented")
 }
 
 func (m *Shell) Run() error {
