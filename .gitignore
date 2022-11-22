@@ -27,3 +27,6 @@ appsettings.*.yaml
 go.sum
 /go-to-cloud
 /internal/agent/k8s.config.*.yml
+
+# protobuf gen files
+*.pb.go

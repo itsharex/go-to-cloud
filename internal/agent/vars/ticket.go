@@ -1,3 +1,5 @@
 package vars
 
-const Ticket = "TODO_CHANGE_THIS_TICKET"
+const (
+	Ticket = "TODO_CHANGE_THIS_TICKET"
+)
