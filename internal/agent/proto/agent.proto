@@ -15,7 +15,6 @@ message CloneRequest {
   string encodedToken = 3;
 }
 
-// The response message containing the greetings
 message CloneResponse {
   string workdir = 1;
 }
@@ -31,7 +30,6 @@ message RunRequest {
   RunCommandRequest command = 2;
 }
 
-// The response message containing the greetings
 message RunResponse {
   string ret = 1;
 }
