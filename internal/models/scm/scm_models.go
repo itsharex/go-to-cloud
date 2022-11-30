@@ -1,6 +1,9 @@
 package scm
 
-import "go-to-cloud/internal/models"
+import (
+	"github.com/drone/go-scm/scm"
+	"go-to-cloud/internal/models"
+)
 
 type Type int
 
@@ -31,6 +34,10 @@ type Scm struct {
 	OrgLites  []OrgLite `json:"orgLites"`
 	Remark    string    `json:"remark"`
 	UpdatedAt string    `json:"updatedAt"`
+}
+
+type Branch struct {
+	*scm.Reference
 }
 
 type Query struct {

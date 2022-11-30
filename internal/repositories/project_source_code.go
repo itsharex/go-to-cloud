@@ -81,3 +81,18 @@ func DeleteProjectSourceCode(projectId, sourceCodeId uint) error {
 
 	return tx.Error
 }
+
+func GetProjectSourceCodeById(sourceCodeId uint) (*ProjectSourceCode, error) {
+	db := conf.GetDbClient()
+	tx := db.Model(&ProjectSourceCode{})
+	tx = tx.Preload(clause.Associations)
+
+	if conf.Environment.IsDevelopment() {
+		tx = tx.Debug()
+	}
+
+	var rlt ProjectSourceCode
+	tx = tx.Where("id = ?", sourceCodeId).First(&rlt)
+
+	return &rlt, tx.Error
+}

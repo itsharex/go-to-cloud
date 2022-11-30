@@ -38,12 +38,12 @@ func (m *migration20221004) Up(db *gorm.DB) {
 		}
 	}
 
-	if !db.Migrator().HasTable(&repo.GitRepo{}) {
-		err := db.AutoMigrate(&repo.GitRepo{})
-		if err != nil {
-			panic(err)
-		}
-	}
+	//if !db.Migrator().HasTable(&repo.GitRepo{}) {
+	//	err := db.AutoMigrate(&repo.GitRepo{})
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
 
 	if !db.Migrator().HasTable(&repo.Project{}) {
 		err := db.AutoMigrate(&repo.Project{})
@@ -73,7 +73,7 @@ func (m *migration20221004) Down(db *gorm.DB) {
 		&repo.ArtifactRepo{},
 		&repo.ArtifactDockerImages{},
 		&repo.K8sRepo{},
-		&repo.GitRepo{},
+		//&repo.GitRepo{},
 		&repo.Project{},
 		&repo.ProjectSourceCode{},
 		&repo.AgentNode{},
