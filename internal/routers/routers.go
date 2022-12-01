@@ -55,5 +55,6 @@ func buildRouters(router *gin.Engine) {
 		project.POST("/:projectId/import", projects.ImportSourceCode)
 		project.GET("/:projectId/imported", projects.ListImportedSourceCode)
 		project.DELETE("/:projectId/sourcecode/:id", projects.DeleteSourceCode)
+		project.GET("/:projectId/src/:sourceCodeId", projects.ListBranches)
 	}
 }
