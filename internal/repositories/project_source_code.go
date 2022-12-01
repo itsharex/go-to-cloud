@@ -82,7 +82,7 @@ func DeleteProjectSourceCode(projectId, sourceCodeId uint) error {
 	return tx.Error
 }
 
-func GetProjectSourceCodeById(sourceCodeId uint) (*ProjectSourceCode, error) {
+func GetProjectSourceCodeById(projectId, sourceCodeId uint) (*ProjectSourceCode, error) {
 	db := conf.GetDbClient()
 	tx := db.Model(&ProjectSourceCode{})
 	tx = tx.Preload(clause.Associations)
@@ -92,7 +92,7 @@ func GetProjectSourceCodeById(sourceCodeId uint) (*ProjectSourceCode, error) {
 	}
 
 	var rlt ProjectSourceCode
-	tx = tx.Where("id = ?", sourceCodeId).First(&rlt)
+	tx = tx.Where("id = ? AND project_id = ?", sourceCodeId, projectId).First(&rlt)
 
 	return &rlt, tx.Error
 }

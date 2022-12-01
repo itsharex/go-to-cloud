@@ -9,16 +9,16 @@ import (
 )
 
 // ListBranches 列出代码分支
-func ListBranches(sourceCodeId uint) ([]scm.Branch, error) {
-	sourceCode, err := repositories.GetProjectSourceCodeById(sourceCodeId)
+func ListBranches(projectId, sourceCodeId uint) ([]scm.Branch, error) {
+	sourceCode, err := repositories.GetProjectSourceCodeById(projectId, sourceCodeId)
 	if err != nil {
 		return nil, err
 	}
 	if client, err := newClient(scm.Type(sourceCode.CodeRepo.ScmOrigin), false, &sourceCode.CodeRepo.Url, &sourceCode.CodeRepo.AccessToken); err != nil {
 		return nil, err
 	} else {
-		repo := strings.TrimLeft(
-			strings.TrimRight(sourceCode.GitUrl, ".git"),
+		repo := strings.TrimPrefix(
+			strings.TrimSuffix(sourceCode.GitUrl, ".git"),
 			sourceCode.CodeRepo.Url,
 		)
 		branches, _, err := client.Git.ListBranches(

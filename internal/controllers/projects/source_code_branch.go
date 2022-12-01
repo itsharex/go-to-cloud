@@ -3,7 +3,9 @@ package projects
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
+	"go-to-cloud/internal/models/project"
 	"go-to-cloud/internal/pkg/response"
+	"go-to-cloud/internal/pkg/scm"
 	"net/http"
 	"strconv"
 )
@@ -12,7 +14,7 @@ import (
 // @Tags Projects
 // @Description 列出仓库分支
 // @Summary 列出仓库分支
-// @Success 200 {array} project.SourceCodeBranch
+// @Success 200
 // @Router /api/projects/{projectId}/src/{sourceCodeId} [get]
 // @Security JWT
 func ListBranches(ctx *gin.Context) {
@@ -36,6 +38,13 @@ func ListBranches(ctx *gin.Context) {
 		return
 	}
 
-	_ = projectId
-	_ = sourceCodeId
+	if branches, err := scm.ListBranches(uint(projectId), uint(sourceCodeId)); err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+	} else {
+		response.Success(ctx, project.SourceCodeBranch{
+			Branches: branches,
+		})
+	}
+	return
 }

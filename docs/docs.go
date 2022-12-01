@@ -728,6 +728,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/src/{sourceCodeId}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出仓库分支",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "列出仓库分支",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/info": {
             "get": {
                 "security": [
