@@ -27,9 +27,6 @@ func UpsertProjectSourceCode(projectId, codeRepoId, userId uint, url *string) er
 
 	return db.Transaction(func(tx *gorm.DB) error {
 		tx = tx.Model(&ProjectSourceCode{})
-		if conf.Environment.IsDevelopment() {
-			tx = tx.Debug()
-		}
 
 		tx = tx.Where("project_id = ? AND code_repo_id = ? AND git_url = ?", projectId, codeRepoId, *url)
 		tx = tx.FirstOrCreate(&ProjectSourceCode{
@@ -55,10 +52,6 @@ func QueryProjectSourceCode(projectId uint) ([]ProjectSourceCode, error) {
 	tx := db.Model(&ProjectSourceCode{})
 	tx = tx.Preload(clause.Associations)
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	var rlt []ProjectSourceCode
 	tx = tx.Where("project_id = ?", projectId).Find(&rlt)
 
@@ -69,10 +62,6 @@ func DeleteProjectSourceCode(projectId, sourceCodeId uint) error {
 	db := conf.GetDbClient()
 
 	tx := db.Model(&ProjectSourceCode{})
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	sourceCode := ProjectSourceCode{
 		Model: Model{ID: sourceCodeId},
@@ -86,10 +75,6 @@ func GetProjectSourceCodeById(projectId, sourceCodeId uint) (*ProjectSourceCode,
 	db := conf.GetDbClient()
 	tx := db.Model(&ProjectSourceCode{})
 	tx = tx.Preload(clause.Associations)
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	var rlt ProjectSourceCode
 	tx = tx.Where("id = ? AND project_id = ?", sourceCodeId, projectId).First(&rlt)

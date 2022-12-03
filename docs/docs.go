@@ -145,7 +145,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ArtifactRepo.ID",
+                        "description": "ArtifactRepoId.ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -176,7 +176,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ArtifactRepo.ID",
+                        "description": "ArtifactRepoId.ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -185,6 +185,61 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/build/cmd": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "构建命令",
+                "tags": [
+                    "BuildConfigure"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"dot-net-3.1\"",
+                        "description": "Build Env",
+                        "name": "env",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/buildEnv.cmd"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/configure/build/env": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "构建环境",
+                "tags": [
+                    "BuildConfigure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/buildEnv.envGroup"
+                            }
+                        }
                     }
                 }
             }
@@ -625,6 +680,36 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/build/plan": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "新建构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "新建构建计划",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/build.PlanModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/import": {
             "post": {
                 "security": [
@@ -860,6 +945,80 @@ const docTemplate = `{
                 },
                 "user": {
                     "type": "string"
+                }
+            }
+        },
+        "build.PlanModel": {
+            "type": "object",
+            "properties": {
+                "artifact_enabled": {
+                    "type": "boolean"
+                },
+                "artifact_repo_id": {
+                    "type": "integer"
+                },
+                "branch": {
+                    "type": "string"
+                },
+                "buildEnv": {
+                    "type": "string"
+                },
+                "deploy_enabled": {
+                    "type": "boolean"
+                },
+                "dockerfile": {
+                    "type": "string"
+                },
+                "lint_check": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qa_enabled": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "source_code_id": {
+                    "type": "integer"
+                },
+                "unit_test": {
+                    "type": "string"
+                }
+            }
+        },
+        "buildEnv.cmd": {
+            "type": "object",
+            "properties": {
+                "lintCheck": {
+                    "type": "string"
+                },
+                "unitTest": {
+                    "type": "string"
+                }
+            }
+        },
+        "buildEnv.envGroup": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "label": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },

@@ -29,6 +29,9 @@ func GetDbClient() *gorm.DB {
 					panic(err)
 				}
 
+				if Environment.IsDevelopment() {
+					_db = _db.Debug()
+				}
 				db = _db
 			}
 		})

@@ -29,10 +29,6 @@ func QueryProjectsByOrg(orgs []uint) ([]Project, error) {
 
 	tx := db.Model(&Project{})
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	tx = tx.Preload(clause.Associations)
 	tx = tx.Where("org_id in ?", orgs)
 	err := tx.Find(&projects).Error
@@ -61,10 +57,6 @@ func CreateProject(userId uint, orgId uint, model project2.DataModel) (uint, err
 
 	tx := conf.GetDbClient()
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	var total int64
 	err = tx.Model(&Project{}).Where("name = ? AND org_id = ?", model.Name, orgId).Count(&total).Error
 	if err != nil {
@@ -83,10 +75,6 @@ func DeleteProject(userId, projectId uint) error {
 
 	tx := conf.GetDbClient()
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	// TODO: 校验当前userId是否拥有数据删除权限
 
 	err := tx.Delete(&Project{
@@ -100,10 +88,6 @@ func DeleteProject(userId, projectId uint) error {
 
 func UpdateProject(projectId uint, name, remark *string) error {
 	tx := conf.GetDbClient()
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	project := &Project{
 		Model: Model{ID: projectId},

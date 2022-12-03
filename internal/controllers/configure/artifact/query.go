@@ -46,7 +46,7 @@ func QueryArtifactRepo(ctx *gin.Context) {
 // @Description 制品仓库配置
 // @Success 200 {array} artifact.Artifact
 // @Router /api/configure/artifact/{id} [get]
-// @Param   id     path     int     true	"ArtifactRepo.ID"
+// @Param   id     path     int     true	"ArtifactRepoId.ID"
 // @Security JWT
 func QueryArtifactItems(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)

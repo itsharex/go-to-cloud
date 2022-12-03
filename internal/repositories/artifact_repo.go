@@ -115,10 +115,6 @@ func BindArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) error 
 
 	tx := conf.GetDbClient()
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	err = tx.Omit("updated_at").Create(&repo).Error
 	return err
 }
@@ -138,10 +134,6 @@ func QueryArtifactRepo(orgs []uint, repoNamePattern string) ([]MergedArtifactRep
 	}
 
 	tx = tx.Order("created_at desc")
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	err := tx.Scan(&repo).Error
 
@@ -165,10 +157,6 @@ func UpdateArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) erro
 
 	tx := conf.GetDbClient()
 
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
-
 	err = tx.Omit("created_at", "created_by", "updated_at").Where("id = ?", model.Id).Updates(&repo).Error
 	return err
 }
@@ -176,10 +164,6 @@ func UpdateArtifactRepo(model *artifact.Artifact, userId uint, orgs []uint) erro
 func DeleteArtifactRepo(userId, repoId uint) error {
 
 	tx := conf.GetDbClient()
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	// TODO: 校验当前userId是否拥有数据删除权限
 
@@ -194,10 +178,6 @@ func DeleteArtifactRepo(userId, repoId uint) error {
 
 func GetArtifactRepoByID(repoID uint) (url, account, password *string, isSecurity bool, origin int, err error) {
 	tx := conf.GetDbClient()
-
-	if conf.Environment.IsDevelopment() {
-		tx = tx.Debug()
-	}
 
 	var repo ArtifactRepo
 	err = tx.Where(&ArtifactRepo{

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/configure/artifact"
+	"go-to-cloud/internal/controllers/configure/buildEnv"
 	"go-to-cloud/internal/controllers/configure/deploy/k8s"
 	"go-to-cloud/internal/controllers/configure/scm"
 	"go-to-cloud/internal/controllers/projects"
@@ -23,6 +24,9 @@ func buildRouters(router *gin.Engine) {
 		user := api.Group("/user")
 		user.GET("/info", users.Info)
 		user.POST("/logout", users.Logout)
+
+		api.GET("/configure/build/env", buildEnv.BuildEnv)
+		api.GET("/configure/build/cmd", buildEnv.BuildCmd)
 
 		confCodeRepo := api.Group("/configure/coderepo")
 		confCodeRepo.GET("/", scm.QueryCodeRepos)
@@ -56,5 +60,6 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/:projectId/imported", projects.ListImportedSourceCode)
 		project.DELETE("/:projectId/sourcecode/:id", projects.DeleteSourceCode)
 		project.GET("/:projectId/src/:sourceCodeId", projects.ListBranches)
+		project.POST("/:projectId/build/plan", projects.NewBuildPlan)
 	}
 }

@@ -14,7 +14,7 @@ import (
 // @Description 制品仓库配置
 // @Success 200
 // @Router /api/configure/artifact/{id} [delete]
-// @Param   id     path     int     true	"ArtifactRepo.ID"
+// @Param   id     path     int     true	"ArtifactRepoId.ID"
 // @Security JWT
 func RemoveArtifactRepo(ctx *gin.Context) {
 	val := ctx.Param("id")
