@@ -25,20 +25,20 @@ type steps []CiPlanSteps
 
 func (steps *steps) qaStep(model *build.PlanModel, sort *int) error {
 	if model.QaEnabled {
-		if len(strings.TrimSpace(model.UnitTest)) > 0 {
+		if len(strings.TrimSpace(*model.UnitTest)) > 0 {
 			*steps = append(*steps, CiPlanSteps{
 				Sort:   *sort,
 				Name:   "单元测试",
-				Script: model.UnitTest,
+				Script: *model.UnitTest,
 				Type:   build.UnitTest,
 			})
 			*sort++
 		}
-		if len(strings.TrimSpace(model.LintCheck)) > 0 {
+		if len(strings.TrimSpace(*model.LintCheck)) > 0 {
 			*steps = append(*steps, CiPlanSteps{
 				Sort:   *sort,
 				Name:   "Lint检查",
-				Script: model.LintCheck,
+				Script: *model.LintCheck,
 				Type:   build.LintCheck,
 			})
 			*sort++
@@ -49,14 +49,14 @@ func (steps *steps) qaStep(model *build.PlanModel, sort *int) error {
 
 func (steps *steps) artifactStep(model *build.PlanModel, sort *int) error {
 	if model.ArtifactEnabled {
-		if url, account, password, isSecurity, origin, err := GetArtifactRepoByID(model.ArtifactRepoId); err != nil {
+		if url, account, password, isSecurity, origin, err := GetArtifactRepoByID(*model.ArtifactRepoId); err != nil {
 			return err
 		} else {
 			if origin != 1 {
 				return errors.New("not docker registry")
 			}
 			script, _ := json.Marshal(ArtifactScript{
-				Dockerfile: model.Dockerfile,
+				Dockerfile: *model.Dockerfile,
 				Registry:   *url,
 				IsSecurity: isSecurity,
 				Account:    *account,

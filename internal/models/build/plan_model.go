@@ -29,18 +29,19 @@ const (
 
 // PlanModel 构建计划模型
 type PlanModel struct {
-	Name            string `json:"name"`
-	Env             string `json:"buildEnv"`
-	SourceCodeID    uint   `json:"source_code_id"`
-	Branch          string `json:"branch"`
-	QaEnabled       bool   `json:"qa_enabled"`
-	UnitTest        string `json:"unit_test"`
-	LintCheck       string `json:"lint_check"`
-	ArtifactEnabled bool   `json:"artifact_enabled"`
-	Dockerfile      string `json:"dockerfile"`
-	ArtifactRepoId  uint   `json:"artifact_repo_id"`
-	DeployEnabled   bool   `json:"deploy_enabled"`
-	Remark          string `json:"remark"`
+	Id              uint    `json:"id"`
+	Name            string  `json:"name"`
+	Env             string  `json:"buildEnv"`
+	SourceCodeID    uint    `json:"source_code_id"`
+	Branch          string  `json:"branch"`
+	QaEnabled       bool    `json:"qa_enabled"`
+	UnitTest        *string `json:"unit_test"`
+	LintCheck       *string `json:"lint_check"`
+	ArtifactEnabled bool    `json:"artifact_enabled"`
+	Dockerfile      *string `json:"dockerfile"`
+	ArtifactRepoId  *uint   `json:"artifact_repo_id"`
+	DeployEnabled   bool    `json:"deploy_enabled"`
+	Remark          string  `json:"remark"`
 }
 
 type PlanCardModel struct {

@@ -57,6 +57,7 @@ func NewPlan(projectId uint, currentUserId uint, model *build.PlanModel) (err er
 		CreatedBy:       currentUserId,
 		Remark:          model.Remark,
 		LastBuildResult: 0,
+		CiPlanSteps:     steps,
 	}
 
 	tx := conf.GetDbClient()
@@ -85,4 +86,20 @@ func QueryPlan(projectId uint) ([]CiPlan, error) {
 	}
 
 	return plans, nil
+}
+
+func DeletePlan(projectId uint, planId uint) error {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&CiPlan{})
+
+	tx = tx.Preload(clause.Associations)
+	tx = tx.Where("project_id = ?", projectId)
+	err := tx.Delete(&CiPlan{Model: Model{ID: planId}}).Error
+
+	if err == nil {
+		tx = tx.Session(&gorm.Session{NewDB: true})
+		tx.Model(&CiPlanSteps{}).Where("ci_plan_id = ?", planId).Delete(&CiPlanSteps{})
+	}
+	return err
 }

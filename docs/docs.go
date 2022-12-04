@@ -733,6 +733,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/build/plan/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "删除构建计划",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/import": {
             "post": {
                 "security": [
@@ -991,6 +1010,9 @@ const docTemplate = `{
                 },
                 "dockerfile": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "lint_check": {
                     "type": "string"
