@@ -31,6 +31,11 @@ func NewBuildPlan(ctx *gin.Context) {
 		return
 	}
 
+	if err := req.Valid(); err != nil {
+		response.BadRequest(ctx, err)
+		return
+	}
+
 	exists, userId, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

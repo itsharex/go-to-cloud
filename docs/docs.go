@@ -681,6 +681,29 @@ const docTemplate = `{
             }
         },
         "/api/projects/{projectId}/build/plan": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取构建计划",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/build.PlanModel"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {

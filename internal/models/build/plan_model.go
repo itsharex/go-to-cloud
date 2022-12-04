@@ -1,20 +1,10 @@
 package build
 
-// PlanModel 构建计划模型
-type PlanModel struct {
-	Name            string `json:"name"`
-	BuildEnv        string `json:"buildEnv"`
-	SourceCodeId    uint   `json:"source_code_id"`
-	Branch          string `json:"branch"`
-	QaEnabled       bool   `json:"qa_enabled"`
-	UnitTest        string `json:"unit_test"`
-	LintCheck       string `json:"lint_check"`
-	ArtifactEnabled bool   `json:"artifact_enabled"`
-	Dockerfile      string `json:"dockerfile"`
-	ArtifactRepoId  uint   `json:"artifact_repo_id"`
-	DeployEnabled   bool   `json:"deploy_enabled"`
-	Remark          string `json:"remark"`
-}
+import (
+	"errors"
+	"go-to-cloud/internal/utils"
+	"strings"
+)
 
 type PlanStepType int
 
@@ -27,3 +17,50 @@ const (
 	Image                  = 4
 	Deploy                 = 5
 )
+
+type BuildingResult int
+
+const (
+	NeverBuild        BuildingResult = 0
+	BuildingSuccess   BuildingResult = 1
+	BuildingInterrupt BuildingResult = 2
+	BuildingFailed    BuildingResult = 3
+)
+
+// PlanModel 构建计划模型
+type PlanModel struct {
+	Name            string `json:"name"`
+	Env             string `json:"buildEnv"`
+	SourceCodeID    uint   `json:"source_code_id"`
+	Branch          string `json:"branch"`
+	QaEnabled       bool   `json:"qa_enabled"`
+	UnitTest        string `json:"unit_test"`
+	LintCheck       string `json:"lint_check"`
+	ArtifactEnabled bool   `json:"artifact_enabled"`
+	Dockerfile      string `json:"dockerfile"`
+	ArtifactRepoId  uint   `json:"artifact_repo_id"`
+	DeployEnabled   bool   `json:"deploy_enabled"`
+	Remark          string `json:"remark"`
+}
+
+type PlanCardModel struct {
+	PlanModel
+	LastBuildAt     *utils.JsonTime `json:"lastBuildAt"`
+	LastBuildResult BuildingResult  `json:"lastBuildResult"`
+}
+
+func (m *PlanModel) Valid() error {
+	if len(strings.TrimSpace(m.Name)) == 0 {
+		return errors.New("name is empty")
+	}
+	if len(strings.TrimSpace(m.Env)) == 0 {
+		return errors.New("build env is not selected")
+	}
+	if len(strings.TrimSpace(m.Branch)) == 0 {
+		return errors.New("branch is not selected")
+	}
+	if m.SourceCodeID == 0 {
+		return errors.New("source code is not selected")
+	}
+	return nil
+}
