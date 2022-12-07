@@ -23,33 +23,27 @@ func Setup(id, orgID uint) error {
 
 	for _, agent := range agents {
 		if agent.ID == id {
-
-			deploy := &kube.AppDeployConfig{
-				Namespace: agent.K8sWorkerSpace,
-				Name:      vars.AgentNodeName,
-				Ports: []kube.Port{
-					{
-						ContainerPort: 80,
-						ServicePort:   80,
-						NodePort:      agents.NodePort,
-					},
-				},
-				Replicas: 1,
-				Image:    *conf.GetAgentImage(),
+			if agent.NodeType == 0 {
+				return setupK8sNode(agent)
 			}
-
-			client, err := kube.NewClient(&agents.KubeConfig)
-			if err != nil {
-				return err
-			}
-
-			return client.Launch(deploy)
 		}
 	}
 
 	return errors.New("no agent found")
 }
 
-func setupK8sNode(agent repositories.BuilderNode) {
+func setupK8sNode(agent repositories.BuilderNode) error {
+	deploy := &kube.AppDeployConfig{
+		Namespace: agent.K8sWorkerSpace,
+		Name:      vars.AgentNodeName,
+		Replicas:  1,
+		Image:     *conf.GetAgentImage(),
+	}
 
+	client, err := kube.NewClient(agent.DecryptKubeConfig())
+	if err != nil {
+		return err
+	}
+
+	return client.Launch(deploy)
 }

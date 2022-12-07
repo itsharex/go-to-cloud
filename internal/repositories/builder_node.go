@@ -31,3 +31,8 @@ func GetBuildNodesByOrgId(orgId uint) ([]BuilderNode, error) {
 
 	return returnWithError(agents, tx.Error)
 }
+
+func (m *BuilderNode) DecryptKubeConfig() *string {
+	// TODO:
+	return nil
+}
