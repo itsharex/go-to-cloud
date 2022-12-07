@@ -7,13 +7,13 @@ func isNoRecordError(err error) bool {
 	return err != nil && errors.Is(err, gorm.ErrRecordNotFound)
 }
 
-func returnWithError[T interface{}](ret *T, err error) (*T, error) {
+func returnWithError[T interface{}](ret T, err error) (T, error) {
 	if err == nil {
 		return ret, nil
 	}
 
 	if isNoRecordError(err) {
-		return nil, nil
+		return ret, nil
 	} else {
 		return ret, err
 	}

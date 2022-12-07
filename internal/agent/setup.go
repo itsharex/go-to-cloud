@@ -9,36 +9,47 @@ import (
 )
 
 // Setup 安装指定组织的agent
-func Setup(orgID uint) error {
+func Setup(id, orgID uint) error {
 	// 读取配置
-	agent, err := repositories.GetAgentByOrgId(orgID)
+	agents, err := repositories.GetBuildNodesByOrgId(orgID)
 
 	if err != nil {
 		return err
 	}
 
-	if agent == nil {
+	if agents == nil {
 		return errors.New("没有找到agent配置")
 	}
 
-	deploy := &kube.AppDeployConfig{
-		Namespace: agent.Namespace,
-		Name:      vars.AgentNodeName,
-		Ports: []kube.Port{
-			{
-				ContainerPort: 80,
-				ServicePort:   80,
-				NodePort:      agent.NodePort,
-			},
-		},
-		Replicas: 1,
-		Image:    *conf.GetAgentImage(),
+	for _, agent := range agents {
+		if agent.ID == id {
+
+			deploy := &kube.AppDeployConfig{
+				Namespace: agent.K8sWorkerSpace,
+				Name:      vars.AgentNodeName,
+				Ports: []kube.Port{
+					{
+						ContainerPort: 80,
+						ServicePort:   80,
+						NodePort:      agents.NodePort,
+					},
+				},
+				Replicas: 1,
+				Image:    *conf.GetAgentImage(),
+			}
+
+			client, err := kube.NewClient(&agents.KubeConfig)
+			if err != nil {
+				return err
+			}
+
+			return client.Launch(deploy)
+		}
 	}
 
-	client, err := kube.NewClient(&agent.KubeConfig)
-	if err != nil {
-		return err
-	}
+	return errors.New("no agent found")
+}
 
-	return client.Launch(deploy)
+func setupK8sNode(agent repositories.BuilderNode) {
+
 }

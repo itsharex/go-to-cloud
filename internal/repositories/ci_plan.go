@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"errors"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/build"
 	"go-to-cloud/internal/utils"
@@ -78,14 +77,7 @@ func QueryPlan(projectId uint) ([]CiPlan, error) {
 	tx = tx.Where("project_id = ?", projectId)
 	err := tx.Find(&plans).Error
 
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return plans, nil
+	return returnWithError(plans, err)
 }
 
 func DeletePlan(projectId uint, planId uint) error {

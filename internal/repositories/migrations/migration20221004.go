@@ -79,6 +79,13 @@ func (m *migration20221004) Up(db *gorm.DB) {
 			panic(err)
 		}
 	}
+
+	if !db.Migrator().HasTable(&repo.BuilderNode{}) {
+		err := db.AutoMigrate(&repo.BuilderNode{})
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func (m *migration20221004) Down(db *gorm.DB) {
@@ -93,6 +100,7 @@ func (m *migration20221004) Down(db *gorm.DB) {
 		&repo.AgentNode{},
 		&repo.CiPlan{},
 		&repo.CiPlanSteps{},
+		&repo.BuilderNode{},
 	)
 	if err != nil {
 		panic(err)
