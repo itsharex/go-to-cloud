@@ -9,30 +9,26 @@ import (
 )
 
 // Setup 安装指定组织的agent
-func Setup(id, orgID uint) error {
+func Setup(id uint) error {
 	// 读取配置
-	agents, err := repositories.GetBuildNodesByOrgId(orgID)
+	agent, err := repositories.GetBuildNodesById(id)
 
 	if err != nil {
 		return err
 	}
 
-	if agents == nil {
+	if agent == nil {
 		return errors.New("没有找到agent配置")
 	}
 
-	for _, agent := range agents {
-		if agent.ID == id {
-			if agent.NodeType == 0 {
-				return setupK8sNode(agent)
-			}
-		}
+	if agent.NodeType == 0 {
+		return setupK8sNode(agent)
 	}
 
 	return errors.New("no agent found")
 }
 
-func setupK8sNode(agent repositories.BuilderNode) error {
+func setupK8sNode(agent *repositories.BuilderNode) error {
 	deploy := &kube.AppDeployConfig{
 		Namespace: agent.K8sWorkerSpace,
 		Name:      vars.AgentNodeName,

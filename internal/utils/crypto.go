@@ -30,3 +30,12 @@ func AesEny(plaintext []byte) []byte {
 func Base64AesEny(plaintext []byte) string {
 	return base64.StdEncoding.EncodeToString(AesEny(plaintext))
 }
+
+func Base64AesEnyDecode(text string) string {
+	t, err := base64.StdEncoding.DecodeString(text)
+	if err != nil {
+		return ""
+	}
+
+	return string(AesEny(t))
+}

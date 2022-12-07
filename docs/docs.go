@@ -244,6 +244,35 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/builder/install/k8s": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "安装构建节点",
+                "tags": [
+                    "Builder"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/builder.OnK8sModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/coderepo": {
             "get": {
                 "security": [
@@ -1064,6 +1093,32 @@ const docTemplate = `{
                             }
                         }
                     }
+                }
+            }
+        },
+        "builder.OnK8sModel": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "kubeConfig": {
+                    "type": "string"
+                },
+                "maxWorker": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "workspace": {
+                    "type": "string"
                 }
             }
         },

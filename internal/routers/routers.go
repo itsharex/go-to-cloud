@@ -5,6 +5,7 @@ import (
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/configure/artifact"
 	"go-to-cloud/internal/controllers/configure/buildEnv"
+	"go-to-cloud/internal/controllers/configure/builder"
 	"go-to-cloud/internal/controllers/configure/deploy/k8s"
 	"go-to-cloud/internal/controllers/configure/scm"
 	"go-to-cloud/internal/controllers/projects"
@@ -49,6 +50,9 @@ func buildRouters(router *gin.Engine) {
 		confK8s.PUT("/", k8s.UpdateK8sRepo)
 		confK8s.GET("/", k8s.QueryK8sRepos)
 		confK8s.DELETE("/:id", k8s.RemoveK8sRepo)
+
+		confBuilder := api.Group("/configure/builder")
+		confBuilder.POST("/install/k8s", builder.K8sInstall)
 
 		project := api.Group("/projects")
 		project.POST("/", projects.Create)
