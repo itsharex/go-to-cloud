@@ -11,17 +11,19 @@ func TestNewPlan(t *testing.T) {
 		t.Skip()
 	}
 
+	mockstr := "mock"
+	mockint := uint(1)
 	assert.NoError(t, NewPlan(uint(0), uint(1), &build.PlanModel{
 		Name:            "name",
 		QaEnabled:       true,
 		ArtifactEnabled: false,
-		UnitTest:        "test",
-		LintCheck:       "lintcheck",
-		Dockerfile:      "dockerfile",
-		ArtifactRepoId:  1,
+		UnitTest:        &mockstr,
+		LintCheck:       &mockstr,
+		Dockerfile:      &mockstr,
+		ArtifactRepoId:  &mockint,
 		Remark:          "remark",
-		SourceCodeId:    1,
-		BuildEnv:        "3.1",
+		SourceCodeID:    1,
+		Env:             "3.1",
 		Branch:          "branch",
 	}))
 }
