@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"go-to-cloud/conf"
 	"gorm.io/gorm"
 )
 
@@ -18,6 +19,11 @@ func init() {
 		&migration20220921{},
 		&migration20221004{},
 	}
+}
+
+func AutoMigrate() {
+	db := conf.GetDbClient()
+	Migrate(db)
 }
 
 // Migrate 数据库变更同步

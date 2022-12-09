@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"go-to-cloud/internal/agent"
+	"go-to-cloud/internal/repositories/migrations"
 	"go-to-cloud/internal/routers"
 	"os"
 	"strings"
@@ -23,7 +24,7 @@ func runMode() (bool, string) {
 	}
 
 	if len(*aPort) == 0 {
-		*aPort = os.Getenv("Port")
+		*aPort = os.Getenv("port")
 	}
 
 	if len(*aType) == 0 {
@@ -52,7 +53,9 @@ func runMode() (bool, string) {
 func main() {
 	runType, port := runMode()
 	if runType {
-		// web模式运行
+		// 迁移数据库
+		migrations.AutoMigrate()
+		// server模式运行
 		_ = routers.SetRouters().Run(port)
 	} else {
 		// agent模式运行

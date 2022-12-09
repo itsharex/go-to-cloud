@@ -8,8 +8,8 @@ type ArtifactDockerImages struct {
 	Model
 	Name           string `json:"name" gorm:"column:name"`
 	ArtifactRepoID uint   `json:"artifactRepoId" gorm:"column:artifact_repo_id;index:artifact_docker_images_artifact_repo_id_index"`
-	Tag            string `json:"tag" gorm:"column:tag;uniqueIndex:artifact_docker_images_hash_tag_uindex"`
-	Hash           string `json:"hash" gorm:"column:hash;uniqueIndex:artifact_docker_images_hash_tag_uindex"`
+	Tag            string `json:"tag" gorm:"column:tag;type:text;"`
+	Hash           string `json:"hash" gorm:"column:hash;"`
 	FullAddress    string `json:"fullAddress" gorm:"column:full_address"`
 }
 
