@@ -23,6 +23,8 @@ func init() {
 
 func AutoMigrate() {
 	db := conf.GetDbClient()
+
+	// TODO：检查 '__migration'表中是否有最新变更记录，有则跳过迁移
 	Migrate(db)
 }
 
