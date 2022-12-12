@@ -53,6 +53,7 @@ func buildRouters(router *gin.Engine) {
 
 		confBuilder := api.Group("/configure/builder")
 		confBuilder.POST("/install/k8s", builder.K8sInstall)
+		confBuilder.GET("/nodes/k8s", builder.QueryNodesOnK8s)
 
 		project := api.Group("/projects")
 		project.POST("/", projects.Create)

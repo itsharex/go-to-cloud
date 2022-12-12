@@ -3,10 +3,10 @@ package repositories
 import (
 	"encoding/json"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/utils"
 	"gorm.io/datatypes"
-	"strconv"
 	"time"
 )
 
@@ -25,6 +25,16 @@ func (m *BuilderNode) TableName() string {
 	return "builder_nodes"
 }
 
+type BuilderNodeWithOrg struct {
+	BuilderNode
+	OrgLite
+}
+
+type MergedBuilderNodeWithOrg struct {
+	BuilderNode
+	Org []OrgLite
+}
+
 func GetBuildNodesById(id uint) (*BuilderNode, error) {
 	db := conf.GetDbClient()
 
@@ -37,16 +47,73 @@ func GetBuildNodesById(id uint) (*BuilderNode, error) {
 	return returnWithError(&agent, tx.Error)
 }
 
-func GetBuildNodesByOrgId(orgId uint) ([]BuilderNode, error) {
-	db := conf.GetDbClient()
+func GetBuildNodesOnK8sByOrgId(orgs []uint, repoNamePattern string, pager *models.Pager) ([]MergedBuilderNodeWithOrg, error) {
+	var repo []BuilderNodeWithOrg
+	const K8sNode int = 1
 
-	tx := db.Model(&BuilderNode{})
+	tx := conf.GetDbClient().Model(&BuilderNode{})
 
-	var agents []BuilderNode
-	tx = tx.Where("JSON_CONTAINS(belongs_to, ?)", strconv.Itoa(int(orgId)))
-	tx = tx.Find(&agents)
+	tx = tx.Select("builder_nodes.*, org.Id AS orgId, org.Name AS orgName")
+	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(builder_nodes.belongs_to, cast(org.id as JSON), '$')")
+	tx = tx.Where("builder_nodes.node_type = ? AND org.ID IN ? AND org.deleted_at IS NULL", K8sNode, orgs)
 
-	return returnWithError(agents, tx.Error)
+	if len(repoNamePattern) > 0 {
+		tx = tx.Where("builder_nodes.name like ?", repoNamePattern+"%")
+	}
+
+	if pager != nil {
+		tx = tx.Limit(pager.PageSize).Offset((pager.PageIndex - 1) * pager.PageSize)
+	}
+
+	tx = tx.Order("created_at desc")
+
+	err := tx.Scan(&repo).Error
+
+	if err == nil {
+		return mergeBuilderNodeOrg(repo)
+	} else {
+		return nil, err
+	}
+}
+
+func mergeBuilderNodeOrg(repos []BuilderNodeWithOrg) ([]MergedBuilderNodeWithOrg, error) {
+	r := make(map[uint][]OrgLite)
+	for _, repo := range repos {
+		x := r[repo.ID]
+		if x == nil {
+			r[repo.ID] = make([]OrgLite, 0)
+		}
+		r[repo.ID] = append(r[repo.ID], OrgLite{
+			OrgId:   repo.OrgId,
+			OrgName: repo.OrgName,
+		})
+	}
+
+	merged := make(map[uint]*MergedBuilderNodeWithOrg)
+	for _, repo := range repos {
+		if merged[repo.ID] == nil {
+			merged[repo.ID] = &MergedBuilderNodeWithOrg{
+				BuilderNode: BuilderNode{
+					Model: Model{
+						ID:        repo.ID,
+						CreatedAt: repo.CreatedAt,
+						UpdatedAt: repo.UpdatedAt,
+						DeletedAt: repo.DeletedAt,
+					},
+					Name:      repo.Name,
+					BelongsTo: datatypes.JSON{},
+				},
+				Org: r[repo.ID],
+			}
+		}
+	}
+	rlt := make([]MergedBuilderNodeWithOrg, len(merged))
+	counter := 0
+	for _, m := range merged {
+		rlt[counter] = *m
+		counter++
+	}
+	return rlt, nil
 }
 
 func (m *BuilderNode) EncryptKubeConfig() {

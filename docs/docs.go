@@ -273,6 +273,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/builder/nodes/k8s": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "节点管理",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/builder.NodesOnK8s"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/configure/coderepo": {
             "get": {
                 "security": [
@@ -1096,6 +1120,26 @@ const docTemplate = `{
                 }
             }
         },
+        "builder.NodesOnK8s": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "orgLites": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/builder.OrgLite"
+                    }
+                },
+                "orgs": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "builder.OnK8sModel": {
             "type": "object",
             "properties": {
@@ -1118,6 +1162,17 @@ const docTemplate = `{
                     }
                 },
                 "workspace": {
+                    "type": "string"
+                }
+            }
+        },
+        "builder.OrgLite": {
+            "type": "object",
+            "properties": {
+                "orgId": {
+                    "type": "integer"
+                },
+                "orgName": {
                     "type": "string"
                 }
             }
