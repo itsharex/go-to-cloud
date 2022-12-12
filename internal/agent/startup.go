@@ -1,3 +1,4 @@
+// agent works as a client
 package agent
 
 import (

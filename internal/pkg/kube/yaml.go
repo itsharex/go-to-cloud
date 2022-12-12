@@ -289,6 +289,7 @@ type NodeSelector struct {
 
 // YamlTplService Service ClusterIP方式Yaml模板
 const YamlTplService = `
+{{- if .Ports}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -297,7 +298,6 @@ spec:
   selector:
     app: {{.Name}}
   ports:
-{{- if .Ports}}
 {{- range .Ports}}
   - protocol: TCP
     port: {{.ServicePort}}
@@ -375,8 +375,8 @@ spec:
 {{- end}}
 {{- end}}
 {{- end}}
-        ports:
 {{- if .Ports}}
+        ports:
 {{- range .Ports}}
           - name: {{.PortName}}
             containerPort: {{.ContainerPort}}

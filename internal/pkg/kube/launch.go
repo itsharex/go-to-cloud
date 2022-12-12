@@ -16,8 +16,10 @@ func (c *Client) Launch(appDeployConfig *AppDeployConfig) error {
 
 	if conf.Environment.IsDevelopment() {
 		fmt.Println(*deploy)
-		fmt.Println("---")
-		fmt.Println(*service)
+		if len(*service) > 0 {
+			fmt.Println("---")
+			fmt.Println(*service)
+		}
 	}
 
 	if err != nil {
@@ -31,21 +33,22 @@ func (c *Client) Launch(appDeployConfig *AppDeployConfig) error {
 		fmt.Println(err)
 		return err
 	}
-
-	serviceCfg := corev1.ServiceApplyConfiguration{}
-	if err := DecodeYaml(service, &serviceCfg); err != nil {
-		fmt.Println(err)
-		return err
-	}
-
 	if _, e := c.ApplyDeployment(&appDeployConfig.Namespace, &deployCfg); e != nil {
 		fmt.Println(e)
 		return e
 	}
 
-	if _, e := c.ApplyService(&appDeployConfig.Namespace, &serviceCfg); e != nil {
-		fmt.Println(e)
-		return e
+	if len(*service) > 0 {
+		serviceCfg := corev1.ServiceApplyConfiguration{}
+		if err := DecodeYaml(service, &serviceCfg); err != nil {
+			fmt.Println(err)
+			return err
+		}
+
+		if _, e := c.ApplyService(&appDeployConfig.Namespace, &serviceCfg); e != nil {
+			fmt.Println(e)
+			return e
+		}
 	}
 
 	return nil
