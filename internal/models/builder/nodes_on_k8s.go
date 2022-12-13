@@ -8,9 +8,16 @@ type OrgLite struct {
 }
 
 type NodesOnK8s struct {
-	Orgs     []uint    `json:"orgs" form:"orgs"`
-	OrgLites []OrgLite `json:"orgLites"`
-	Name     string    `json:"name" form:"name"`
+	Id             uint      `json:"id"`
+	Orgs           []uint    `json:"orgs" form:"orgs"`
+	OrgLites       []OrgLite `json:"orgLites"`
+	Name           string    `json:"name" form:"name"`
+	Remark         string    `json:"remark"`
+	KubeConfig     string    `json:"kubeConfig"`
+	Workspace      string    `json:"workspace"`      // 工作空间（k8s名字空间）
+	MaxWorkers     int       `json:"maxWorkers"`     // 最大同时工作数量
+	CurrentWorkers int       `json:"currentWorkers"` // 当前工作数量
+	AgentVersion   string    `json:"agentVersion"`   // 代理版本
 }
 
 type Query struct {

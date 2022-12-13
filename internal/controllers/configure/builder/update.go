@@ -4,29 +4,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/models/builder"
-	k8sModel "go-to-cloud/internal/models/deploy/k8s"
-	"go-to-cloud/internal/pkg/builder/install"
-	"go-to-cloud/internal/pkg/deploy/k8s"
+	builder2 "go-to-cloud/internal/pkg/builder"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
 )
 
-// K8sInstall 安装构建节点(基于k8s)
-// @Tags Builder
-// @Description 安装构建节点
+// UpdateBuilderNode 更新构建节点信息
+// @Tags Configure
+// @Description 更新构建节点信息
 // @Success 200
-// @Router /api/configure/builder/install/k8s [post]
 // @Param   ContentBody     body     builder.OnK8sModel     true  "Request"     example(builder.OnK8sModel)
+// @Router /api/configure/builder/node [put]
 // @Security JWT
-func K8sInstall(ctx *gin.Context) {
+func UpdateBuilderNode(ctx *gin.Context) {
 	var req builder.OnK8sModel
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return
-	}
-
-	if len(req.Workspace) == 0 {
-		req.Workspace = "gotocloud-agent"
 	}
 
 	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
@@ -35,21 +29,13 @@ func K8sInstall(ctx *gin.Context) {
 		return
 	}
 
-	if _, err := k8s.Ping(&k8sModel.Testing{
-		KubeConfig: &req.KubeConfig,
-	}); err != nil {
-		msg := err.Error()
-		response.Fail(ctx, http.StatusForbidden, &msg)
-		return
-	}
-
-	if err := install.OnK8s(&req, userId, orgs); err != nil {
+	if err := builder2.Update(&req, userId, orgs); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 		return
+	} else {
+		response.Success(ctx, gin.H{
+			"success": true,
+		})
 	}
-
-	response.Success(ctx, gin.H{
-		"success": true,
-	})
 }

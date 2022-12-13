@@ -49,3 +49,10 @@ func (client *Client) GetOrAddNamespace(ns *string) (*cv1.Namespace, error) {
 	}
 	return rlt, err
 }
+
+func (client *Client) DeleteNamespace(ns *string) error {
+	deletePolicy := metav1.DeletePropagationForeground
+	return client.clientSet.CoreV1().Namespaces().Delete(context.TODO(), *ns, metav1.DeleteOptions{
+		PropagationPolicy: &deletePolicy,
+	})
+}

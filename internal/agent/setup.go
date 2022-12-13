@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/agent/vars"
+	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 )
@@ -21,7 +22,7 @@ func Setup(id uint) error {
 		return errors.New("没有找到agent配置")
 	}
 
-	if agent.NodeType == 0 {
+	if agent.NodeType == int(builder.K8s) {
 		return setupK8sNode(agent)
 	}
 

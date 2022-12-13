@@ -14,11 +14,13 @@ type BuilderNode struct {
 	Model
 	BelongsTo              datatypes.JSON `json:"belongs_to" gorm:"column:belongs_to"`                             // 所属机构
 	Name                   string         `json:"name" gorm:"column:name"`                                         // 节点名称
-	NodeType               int            `json:"node_type" gorm:"column:node_type"`                               // 节点类型；0：k8s；2：docker；3: windows；4：linux；5：macos
+	NodeType               int            `json:"node_type" gorm:"column:node_type"`                               // 节点类型；1：k8s；2：docker；3: windows；4：linux；5：macos
 	MaxWorkers             int            `json:"max_workers" gorm:"column:max_workers"`                           // 同时执行任务数量；0:不限；其他值：同时构建任务上限
 	K8sWorkerSpace         string         `json:"k8s_worker_space" gorm:"column:k8s_worker_space"`                 // k8s名字空间
 	K8sKubeConfigEncrypted string         `json:"k8s_kubeconfig_encrypted" gorm:"column:k8s_kubeconfig_encrypted"` // 已加密kubeconfig
 	k8sKubeConfigDecrypted string         `gorm:"-"`
+	Remark                 string         `json:"remark" gorm:"column:remark"`
+	AgentVersion           string         `json:"agent_version" gorm:"column:agent_version"`
 }
 
 func (m *BuilderNode) TableName() string {
@@ -49,13 +51,12 @@ func GetBuildNodesById(id uint) (*BuilderNode, error) {
 
 func GetBuildNodesOnK8sByOrgId(orgs []uint, repoNamePattern string, pager *models.Pager) ([]MergedBuilderNodeWithOrg, error) {
 	var repo []BuilderNodeWithOrg
-	const K8sNode int = 1
 
 	tx := conf.GetDbClient().Model(&BuilderNode{})
 
 	tx = tx.Select("builder_nodes.*, org.Id AS orgId, org.Name AS orgName")
 	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(builder_nodes.belongs_to, cast(org.id as JSON), '$')")
-	tx = tx.Where("builder_nodes.node_type = ? AND org.ID IN ? AND org.deleted_at IS NULL", K8sNode, orgs)
+	tx = tx.Where("builder_nodes.node_type = ? AND org.ID IN ? AND org.deleted_at IS NULL", builder.K8s, orgs)
 
 	if len(repoNamePattern) > 0 {
 		tx = tx.Where("builder_nodes.name like ?", repoNamePattern+"%")
@@ -100,8 +101,14 @@ func mergeBuilderNodeOrg(repos []BuilderNodeWithOrg) ([]MergedBuilderNodeWithOrg
 						UpdatedAt: repo.UpdatedAt,
 						DeletedAt: repo.DeletedAt,
 					},
-					Name:      repo.Name,
-					BelongsTo: datatypes.JSON{},
+					Name:                   repo.Name,
+					BelongsTo:              datatypes.JSON{},
+					MaxWorkers:             repo.MaxWorkers,
+					AgentVersion:           repo.AgentVersion,
+					K8sWorkerSpace:         repo.K8sWorkerSpace,
+					Remark:                 repo.Remark,
+					NodeType:               repo.NodeType,
+					K8sKubeConfigEncrypted: repo.K8sKubeConfigEncrypted,
 				},
 				Org: r[repo.ID],
 			}
@@ -133,10 +140,11 @@ func buildRepoModel(model *builder.OnK8sModel, _ uint, orgs []uint, gormModel *M
 		Model:                  *gormModel,
 		BelongsTo:              datatypes.JSON(belongs),
 		Name:                   model.Name,
-		NodeType:               0,
-		MaxWorkers:             model.MaxWorker,
+		NodeType:               int(builder.K8s),
+		MaxWorkers:             model.MaxWorkers,
 		K8sWorkerSpace:         model.Workspace,
 		k8sKubeConfigDecrypted: model.KubeConfig,
+		Remark:                 model.Remark,
 	}
 	repo.EncryptKubeConfig()
 
@@ -160,4 +168,52 @@ func NewBuilderNode(node *builder.OnK8sModel, userId uint, orgs []uint) (uint, e
 	} else {
 		return repo.ID, nil
 	}
+}
+
+func DeleteBuilderNode(userId, nodeId uint) error {
+
+	tx := conf.GetDbClient()
+
+	// TODO: 校验当前userId是否拥有数据删除权限
+
+	err := tx.Delete(&BuilderNode{
+		Model: Model{
+			ID: nodeId,
+		},
+	}).Error
+
+	return err
+}
+
+// UpdateBuilderNode 更新构建节点信息
+func UpdateBuilderNode(model *builder.OnK8sModel, userId uint, orgs []uint) error {
+	g := &Model{
+		UpdatedAt: time.Now(),
+	}
+
+	repo, err := buildBuilderNode(model, userId, orgs, g)
+	if err != nil {
+		return err
+	}
+
+	tx := conf.GetDbClient()
+
+	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
+	return err
+}
+
+func buildBuilderNode(model *builder.OnK8sModel, userId uint, orgs []uint, gormModel *Model) (*BuilderNode, error) {
+
+	belongs, err := json.Marshal(orgs)
+	if err != nil {
+		return nil, err
+	}
+	repo := BuilderNode{
+		Model:      *gormModel,
+		BelongsTo:  datatypes.JSON(belongs),
+		MaxWorkers: model.MaxWorkers,
+		Remark:     model.Remark,
+	}
+
+	return &repo, nil
 }

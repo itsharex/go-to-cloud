@@ -273,6 +273,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/builder/node": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "更新构建节点信息",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/builder.OnK8sModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/builder/node/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "卸载构建节点",
+                "tags": [
+                    "Builder"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Node ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/builder/nodes/k8s": {
             "get": {
                 "security": [
@@ -1123,6 +1179,24 @@ const docTemplate = `{
         "builder.NodesOnK8s": {
             "type": "object",
             "properties": {
+                "agentVersion": {
+                    "description": "代理版本",
+                    "type": "string"
+                },
+                "currentWorkers": {
+                    "description": "当前工作数量",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "kubeConfig": {
+                    "type": "string"
+                },
+                "maxWorkers": {
+                    "description": "最大同时工作数量",
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -1137,6 +1211,13 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "workspace": {
+                    "description": "工作空间（k8s名字空间）",
+                    "type": "string"
                 }
             }
         },
@@ -1149,7 +1230,7 @@ const docTemplate = `{
                 "kubeConfig": {
                     "type": "string"
                 },
-                "maxWorker": {
+                "maxWorkers": {
                     "type": "integer"
                 },
                 "name": {
@@ -1160,6 +1241,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "remark": {
+                    "type": "string"
                 },
                 "workspace": {
                     "type": "string"
