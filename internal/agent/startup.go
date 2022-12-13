@@ -1,4 +1,3 @@
-// agent works as a client
 package agent
 
 import (
@@ -10,11 +9,15 @@ import (
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"log"
 	"net"
+	"strings"
 )
 
 const HEALTHCHECK_SERVICE = "gotocloud.agent.v1.Health"
 
 func Startup(port *string) error {
+	if !strings.HasPrefix(*port, ":") {
+		*port = ":" + *port
+	}
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
