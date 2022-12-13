@@ -37,7 +37,7 @@ func setupK8sNode(agent *repositories.BuilderNode) error {
 		Image:     *conf.GetAgentImage(),
 		Env: []kube.EnvVar{
 			{
-				Name:  "GoToCloud-Server",
+				Name:  "GOTOCLOUD",
 				Value: conf.GetServerGrpcHost().Host,
 			},
 		},
