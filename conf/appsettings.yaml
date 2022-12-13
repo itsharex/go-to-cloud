@@ -15,3 +15,5 @@ kind:
   - op    # 运维
 agent:
   image: gotocloud.cn/image:latest
+server:
+  host: http://localhost:18081 # gotocloud服务地址，可被agent访问，注意：这个host作用于agent通信，非web站点后端服务地址

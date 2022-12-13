@@ -18,12 +18,9 @@ type Conf struct {
 		Host     string
 		Schema   string
 	}
-	Jwt struct {
-		Security string // 私钥
-		Realm    string // Realm
-		IdKey    string // IdentityKey
-	}
-	Kind []string // 用户分类
+	Jwt    JWT
+	Kind   []string // 用户分类
+	Server Server
 }
 
 var conf *Conf

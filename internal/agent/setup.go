@@ -35,6 +35,12 @@ func setupK8sNode(agent *repositories.BuilderNode) error {
 		Name:      vars.AgentNodeName,
 		Replicas:  1,
 		Image:     *conf.GetAgentImage(),
+		Env: []kube.EnvVar{
+			{
+				Name:  "GoToCloud-Server",
+				Value: conf.GetServerGrpcHost().Host,
+			},
+		},
 	}
 
 	client, err := kube.NewClient(agent.DecryptKubeConfig())
