@@ -14,7 +14,7 @@ import (
 // @Description 删除构建计划
 // @Summary 删除构建计划
 // @Success 200
-// @Router /api/projects/{projectId}/build/plan/{id} [delete]
+// @Router /api/projects/{projectId}/pipeline/{id} [delete]
 // @Security JWT
 func DeleteBuildPlan(ctx *gin.Context) {
 	projectIdStr := ctx.Param("projectId")

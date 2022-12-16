@@ -789,78 +789,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{projectId}/build/plan": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "获取构建计划",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "获取构建计划",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/build.PlanModel"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "新建构建计划",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "新建构建计划",
-                "parameters": [
-                    {
-                        "description": "Request",
-                        "name": "ContentBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/build.PlanModel"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/projects/{projectId}/build/plan/{id}": {
-            "delete": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "删除构建计划",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "删除构建计划",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
         "/api/projects/{projectId}/import": {
             "post": {
                 "security": [
@@ -911,6 +839,78 @@ const docTemplate = `{
                                 "$ref": "#/definitions/project.SourceCodeImportedModel"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/pipeline": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取构建计划",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/pipeline.PlanModel"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "新建构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "新建构建计划",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pipeline.PlanModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/pipeline/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "删除构建计划",
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 }
             }
@@ -1099,50 +1099,6 @@ const docTemplate = `{
                 }
             }
         },
-        "build.PlanModel": {
-            "type": "object",
-            "properties": {
-                "artifact_enabled": {
-                    "type": "boolean"
-                },
-                "artifact_repo_id": {
-                    "type": "integer"
-                },
-                "branch": {
-                    "type": "string"
-                },
-                "buildEnv": {
-                    "type": "string"
-                },
-                "deploy_enabled": {
-                    "type": "boolean"
-                },
-                "dockerfile": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lint_check": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "qa_enabled": {
-                    "type": "boolean"
-                },
-                "remark": {
-                    "type": "string"
-                },
-                "source_code_id": {
-                    "type": "integer"
-                },
-                "unit_test": {
-                    "type": "string"
-                }
-            }
-        },
         "buildEnv.cmd": {
             "type": "object",
             "properties": {
@@ -1325,6 +1281,50 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pipeline.PlanModel": {
+            "type": "object",
+            "properties": {
+                "artifact_enabled": {
+                    "type": "boolean"
+                },
+                "artifact_repo_id": {
+                    "type": "integer"
+                },
+                "branch": {
+                    "type": "string"
+                },
+                "buildEnv": {
+                    "type": "string"
+                },
+                "deploy_enabled": {
+                    "type": "boolean"
+                },
+                "dockerfile": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lint_check": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qa_enabled": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "source_code_id": {
+                    "type": "integer"
+                },
+                "unit_test": {
                     "type": "string"
                 }
             }

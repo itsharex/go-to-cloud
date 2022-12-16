@@ -3,7 +3,7 @@ package projects
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
-	"go-to-cloud/internal/models/build"
+	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/repositories"
 	"net/http"
@@ -14,9 +14,9 @@ import (
 // @Tags Projects
 // @Description 新建构建计划
 // @Summary 新建构建计划
-// @Param   ContentBody     body     build.PlanModel     true  "Request"     example(build.PlanModel)
+// @Param   ContentBody     body     pipeline.PlanModel     true  "Request"     example(build.PlanModel)
 // @Success 200
-// @Router /api/projects/{projectId}/build/plan [post]
+// @Router /api/projects/{projectId}/pipeline [post]
 // @Security JWT
 func NewBuildPlan(ctx *gin.Context) {
 	projectIdStr := ctx.Param("projectId")
@@ -25,7 +25,7 @@ func NewBuildPlan(ctx *gin.Context) {
 		response.BadRequest(ctx, err.Error())
 		return
 	}
-	var req build.PlanModel
+	var req pipeline.PlanModel
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return

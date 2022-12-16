@@ -1,22 +1,22 @@
 package project
 
 import (
-	"go-to-cloud/internal/models/build"
+	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/repositories"
 )
 
-func ListBuildPlans(projectId uint) ([]build.PlanCardModel, error) {
+func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
 	plans, err := repositories.QueryPlan(projectId)
 
 	if err != nil {
 		return nil, err
 	}
 
-	models := make([]build.PlanCardModel, len(plans))
+	models := make([]pipeline.PlanCardModel, len(plans))
 	for i, plan := range plans {
 		unitTestEnabled, lintEnabled, artifactEnabled := false, false, false
 		var unitTest, lint *string = nil, nil
-		for _, step := range plan.CiPlanSteps {
+		for _, step := range plan.PipelineSteps {
 			if step.Type == 1 {
 				unitTestEnabled = true
 				unitTest = &step.Script
@@ -32,8 +32,8 @@ func ListBuildPlans(projectId uint) ([]build.PlanCardModel, error) {
 				continue
 			}
 		}
-		models[i] = build.PlanCardModel{
-			PlanModel: build.PlanModel{
+		models[i] = pipeline.PlanCardModel{
+			PlanModel: pipeline.PlanModel{
 				Id:              plan.ID,
 				Name:            plan.Name,
 				Env:             plan.Env,
@@ -44,8 +44,8 @@ func ListBuildPlans(projectId uint) ([]build.PlanCardModel, error) {
 				LintCheck:       lint,
 				ArtifactEnabled: artifactEnabled,
 			},
-			LastBuildAt:     plan.LastBuildAt,
-			LastBuildResult: plan.LastBuildResult,
+			LastBuildAt:     plan.LastRunAt,
+			LastBuildResult: plan.LastRunResult,
 		}
 	}
 

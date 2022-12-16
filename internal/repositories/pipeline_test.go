@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"github.com/stretchr/testify/assert"
-	"go-to-cloud/internal/models/build"
+	"go-to-cloud/internal/models/pipeline"
 	"testing"
 )
 
@@ -13,7 +13,7 @@ func TestNewPlan(t *testing.T) {
 
 	mockstr := "mock"
 	mockint := uint(1)
-	assert.NoError(t, NewPlan(uint(0), uint(1), &build.PlanModel{
+	assert.NoError(t, NewPlan(uint(0), uint(1), &pipeline.PlanModel{
 		Name:            "name",
 		QaEnabled:       true,
 		ArtifactEnabled: false,

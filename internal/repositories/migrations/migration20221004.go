@@ -59,15 +59,15 @@ func (m *migration20221004) Up(db *gorm.DB) {
 		}
 	}
 
-	if !db.Migrator().HasTable(&repo.CiPlan{}) {
-		err := db.AutoMigrate(&repo.CiPlan{})
+	if !db.Migrator().HasTable(&repo.Pipeline{}) {
+		err := db.AutoMigrate(&repo.Pipeline{})
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	if !db.Migrator().HasTable(&repo.CiPlanSteps{}) {
-		err := db.AutoMigrate(&repo.CiPlanSteps{})
+	if !db.Migrator().HasTable(&repo.PipelineSteps{}) {
+		err := db.AutoMigrate(&repo.PipelineSteps{})
 		if err != nil {
 			panic(err)
 		}
@@ -90,8 +90,8 @@ func (m *migration20221004) Down(db *gorm.DB) {
 		//&repo.GitRepo{},
 		&repo.Project{},
 		&repo.ProjectSourceCode{},
-		&repo.CiPlan{},
-		&repo.CiPlanSteps{},
+		&repo.Pipeline{},
+		&repo.PipelineSteps{},
 		&repo.BuilderNode{},
 	)
 	if err != nil {
