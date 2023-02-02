@@ -30,7 +30,7 @@ func Startup(port *string) error {
 	healthpb.RegisterHealthServer(s, healthSrv)
 
 	gotocloud.RegisterAgentServer(s, &server.Agent{})
-	log.Printf("server listening at %v", lis.Addr())
+	log.Printf("agent server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 		return err
