@@ -7,7 +7,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-to-cloud/conf"
 	"go-to-cloud/docs"
-	"go-to-cloud/internal/agent"
+	"go-to-cloud/internal/agent_server"
 	"go-to-cloud/internal/middlewares"
 	"go-to-cloud/internal/pkg/response"
 	"io"
@@ -25,7 +25,7 @@ func StartAgentServer() {
 			panic(fmt.Sprintf("grpc port not found in server.host：%s", addr.Host))
 		}
 
-		err = agent.Startup(&port)
+		err = agent_server.Startup(&port)
 		if err != nil {
 			panic(err)
 		}

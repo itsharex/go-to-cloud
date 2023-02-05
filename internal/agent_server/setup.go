@@ -1,19 +1,18 @@
-package agent
+package agent_server
 
 import (
 	"errors"
 	"go-to-cloud/conf"
-	"go-to-cloud/internal/agent/vars"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
+	"strconv"
 )
 
 // Setup 安装指定组织的agent
 func Setup(id uint) error {
 	// 读取配置
 	agent, err := repositories.GetBuildNodesById(id)
-
 	if err != nil {
 		return err
 	}
@@ -32,13 +31,19 @@ func Setup(id uint) error {
 func setupK8sNode(agent *repositories.BuilderNode) error {
 	deploy := &kube.AppDeployConfig{
 		Namespace: agent.K8sWorkerSpace,
-		Name:      vars.AgentNodeName,
+		Name:      EnvAgentNodeName,
 		Replicas:  1,
 		Image:     *conf.GetAgentImage(),
 		Env: []kube.EnvVar{
 			{
-				Name:  "GOTOCLOUD",
+				Name:  EnvServerHost,
 				Value: conf.GetServerGrpcHost().Host,
+			},
+			{
+				Name: EnvWorkId,
+				Value: func() string {
+					return strconv.Itoa(int(agent.ID))
+				}(),
 			},
 		},
 	}

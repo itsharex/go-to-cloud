@@ -2,7 +2,7 @@ package install
 
 import (
 	"errors"
-	"go-to-cloud/internal/agent"
+	"go-to-cloud/internal/agent_server"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
@@ -32,5 +32,5 @@ func OnK8s(model *builder.OnK8sModel, userId uint, orgId []uint) error {
 	}
 
 	// 部署到k8s
-	return agent.Setup(id)
+	return agent_server.Setup(id)
 }
