@@ -20,8 +20,8 @@ type Pipeline struct {
 	Model
 	PipelineSteps []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
 	ProjectID     uint                    `json:"project_id" gorm:"column:project_id"`
-	Name          string                  `json:"name" gorm:"column:name"` // 计划名称
-	Env           string                  `json:"env" gorm:"column:env"`   // 运行环境(模板), e.g. dotnet:6; go:1.17
+	Name          string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
+	Env           string                  `json:"env" gorm:"column:env"`                     // 运行环境(模板), e.g. dotnet:6; go:1.17
 	SourceCodeID  uint                    `json:"source_code_id" gorm:"column:source_code_id"`
 	Branch        string                  `json:"branch" gorm:"column:branch"` // 分支名称
 	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by"`

@@ -915,6 +915,24 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/pipeline/{id}/build": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "启动构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/sourcecode/{id}": {
             "delete": {
                 "security": [
