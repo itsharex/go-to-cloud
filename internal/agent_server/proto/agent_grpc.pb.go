@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.9
-// source: agent.proto
+// source: internal/agent_server/proto/agent.proto
 
 package gotocloud
 
@@ -22,7 +22,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AgentClient interface {
-	// rpc GitClone (stream CloneRequest) returns (stream CloneResponse) {}  // 克隆代码(s->c)
 	Running(ctx context.Context, opts ...grpc.CallOption) (Agent_RunningClient, error)
 }
 
@@ -69,7 +68,6 @@ func (x *agentRunningClient) Recv() (*RunRequest, error) {
 // All implementations must embed UnimplementedAgentServer
 // for forward compatibility
 type AgentServer interface {
-	// rpc GitClone (stream CloneRequest) returns (stream CloneResponse) {}  // 克隆代码(s->c)
 	Running(Agent_RunningServer) error
 	mustEmbedUnimplementedAgentServer()
 }
@@ -135,5 +133,5 @@ var Agent_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "agent.proto",
+	Metadata: "internal/agent_server/proto/agent.proto",
 }

@@ -32,12 +32,12 @@ func setupK8sNode(agent *repositories.BuilderNode) error {
 	deploy := &kube.AppDeployConfig{
 		Namespace: agent.K8sWorkerSpace,
 		Name:      EnvAgentNodeName,
-		Replicas:  1,
+		Replicas:  agent.MaxWorkers,
 		Image:     *conf.GetAgentImage(),
 		Env: []kube.EnvVar{
 			{
 				Name:  EnvServerHost,
-				Value: conf.GetServerGrpcHost().Host,
+				Value: conf.GetServerGrpcHost().Url,
 			},
 			{
 				Name: EnvWorkId,

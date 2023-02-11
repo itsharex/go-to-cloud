@@ -17,12 +17,12 @@ import (
 
 func StartAgentServer() {
 	addr := conf.GetServerGrpcHost()
-	if u, err := url.Parse(addr.Host); err != nil {
+	if u, err := url.Parse(addr.Url); err != nil {
 		panic(err)
 	} else {
 		port := u.Port()
 		if len(port) == 0 {
-			panic(fmt.Sprintf("grpc port not found in server.host：%s", addr.Host))
+			panic(fmt.Sprintf("grpc port not found in server.host：%s", addr.Url))
 		}
 
 		err = agent_server.Startup(&port)

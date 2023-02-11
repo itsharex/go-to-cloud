@@ -5,19 +5,8 @@ option go_package = "/;gotocloud";
 package gotocloud;
 
 service Agent {
-//  rpc GitClone (stream CloneRequest) returns (stream CloneResponse) {}  // 克隆代码(s->c)
   rpc Running (stream RunResult) returns (stream RunRequest) {}           // 执行CLI命令(s->c)
 }
-
-//message CloneRequest {
-//  string address = 1;
-//  string branch = 2;
-//  string encodedToken = 3;
-//}
-//
-//message CloneResponse {
-//  string workdir = 1;
-//}
 
 message RunCommandRequest {
   string command = 1;
@@ -26,15 +15,17 @@ message RunCommandRequest {
 }
 
 message RunRequest {
-  string uuid = 1;
-  string seq = 2; // 命令唯一标识
-  string workdir = 3;
-  RunCommandRequest command = 4;
+  int64 workId = 1;
+  string uuid = 2;
+  string seq = 3; // 命令唯一标识
+  string workdir = 4;
+  RunCommandRequest command = 5;
 }
 
 message RunResult {
   int32 code = 1;
-  string uuid = 2;
-  string seq = 3;
+  int64 work_id =2;
+  string uuid = 3;
+  string seq = 4;
 
 }

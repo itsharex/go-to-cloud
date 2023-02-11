@@ -12,15 +12,22 @@ import (
 	"sync"
 )
 
+type ClientAgentMap map[string]*gotocloud.Agent_RunningServer // key: node的全局唯一标识；val: 连接对象
+
 type LongRunner struct {
 	gotocloud.UnimplementedAgentServer
 
-	clients map[string]*gotocloud.Agent_RunningServer // 连接的代理端
+	nodesPool map[int64]ClientAgentMap // 节点包含的代理端池；key: build_nodes.ID; value: ClientAgentMap
+}
+
+// GetNodeCount 获取可运行的节点数量
+func (m *LongRunner) GetNodeCount(workId int64) int {
+	return len(m.nodesPool[workId])
 }
 
 func (m *LongRunner) Execute(request *gotocloud.RunRequest) error {
 	// TODO: RoundRobin 寻找可执行任务的节点
-	for uuid, client := range m.clients {
+	for uuid, client := range m.nodesPool[request.GetWorkId()] {
 		request.Uuid = uuid
 		return (*client).Send(request)
 	}
@@ -69,18 +76,29 @@ func (m *LongRunner) Running(server gotocloud.Agent_RunningServer) error {
 		for {
 			data, err := server.Recv()
 			if err == io.EOF || data == nil {
-				// 注销代理客户端
-				for id, runServer := range m.clients {
-					if runServer == &server {
-						delete(m.clients, id)
+				deleted := false
+				for workId, agentMap := range m.nodesPool {
+					for uuid, runServer := range agentMap {
+						if runServer == &server {
+							delete(m.nodesPool[workId], uuid)
+							deleted = true
+							break
+						}
+					}
+					if deleted {
+						break
 					}
 				}
-				break
 			} else {
 				// 注册代理客户端
 				if http.StatusCreated == data.GetCode() {
 					uuid := data.GetUuid()
-					m.clients[uuid] = &server
+					workId := data.GetWorkId()
+
+					if len(m.nodesPool[workId]) == 0 {
+						m.nodesPool[workId] = make(ClientAgentMap)
+					}
+					m.nodesPool[workId][uuid] = &server
 				}
 			}
 		}

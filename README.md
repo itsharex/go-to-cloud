@@ -60,5 +60,5 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
 3. 生成pb文件
 
 ```shell
-protoc ./internal/agent/proto/*.proto --go_out=./internal/agent/proto --go-grpc_out=./internal/agent/proto
+protoc ./internal/agent_server/proto/*.proto --go_out=./internal/agent_server/proto --go-grpc_out=./internal/agent_server/proto
 ```

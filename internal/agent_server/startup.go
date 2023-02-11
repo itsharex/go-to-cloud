@@ -42,8 +42,8 @@ func Startup(port *string) error {
 
 func init() {
 	Runner = &LongRunner{
-		clients: func() map[string]*gotocloud.Agent_RunningServer {
-			return make(map[string]*gotocloud.Agent_RunningServer)
+		nodesPool: func() map[int64]ClientAgentMap {
+			return make(map[int64]ClientAgentMap)
 		}(),
 	}
 }

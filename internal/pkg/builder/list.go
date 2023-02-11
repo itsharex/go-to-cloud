@@ -1,6 +1,7 @@
 package builder
 
 import (
+	agent "go-to-cloud/internal/agent_server"
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/repositories"
@@ -36,15 +37,17 @@ func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, er
 				}
 			}
 			rlt[i] = builder.NodesOnK8s{
-				Id:             m.ID,
-				Name:           m.Name,
-				OrgLites:       orgLites,
-				Remark:         m.Remark,
-				AgentVersion:   m.AgentVersion,
-				Workspace:      m.K8sWorkerSpace,
-				MaxWorkers:     m.MaxWorkers,
-				KubeConfig:     "***Hidden***", // func() string { return *m.DecryptKubeConfig() }(),
-				CurrentWorkers: 0,              // TODO:与Agent通信
+				Id:           m.ID,
+				Name:         m.Name,
+				OrgLites:     orgLites,
+				Remark:       m.Remark,
+				AgentVersion: m.AgentVersion,
+				Workspace:    m.K8sWorkerSpace,
+				MaxWorkers:   m.MaxWorkers,
+				KubeConfig:   "***Hidden***", // func() string { return *m.DecryptKubeConfig() }(),
+				CurrentWorkers: func() int {
+					return (agent.Runner).GetNodeCount(int64(m.ID))
+				}(),
 			}
 		}
 		return rlt, err

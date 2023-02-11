@@ -5,7 +5,7 @@ import (
 )
 
 type Server struct {
-	Host string
+	Url string
 }
 
 var server *Server
