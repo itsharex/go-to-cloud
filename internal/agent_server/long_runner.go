@@ -16,7 +16,7 @@ type ClientAgentMap map[string]*gotocloud.Agent_RunningServer // key: node的全
 
 type LongRunner struct {
 	gotocloud.UnimplementedAgentServer
-
+	locker    sync.Mutex
 	nodesPool map[int64]ClientAgentMap // 节点包含的代理端池；key: build_nodes.ID; value: ClientAgentMap
 }
 
@@ -75,8 +75,10 @@ func (m *LongRunner) Running(server gotocloud.Agent_RunningServer) error {
 
 		for {
 			data, err := server.Recv()
+
 			if err == io.EOF || data == nil {
 				deleted := false
+				m.locker.Lock()
 				for workId, agentMap := range m.nodesPool {
 					for uuid, runServer := range agentMap {
 						if runServer == &server {
@@ -89,16 +91,18 @@ func (m *LongRunner) Running(server gotocloud.Agent_RunningServer) error {
 						break
 					}
 				}
+				m.locker.Unlock()
 			} else {
 				// 注册代理客户端
 				if http.StatusCreated == data.GetCode() {
 					uuid := data.GetUuid()
 					workId := data.GetWorkId()
-
+					m.locker.Lock()
 					if len(m.nodesPool[workId]) == 0 {
 						m.nodesPool[workId] = make(ClientAgentMap)
 					}
 					m.nodesPool[workId][uuid] = &server
+					m.locker.Unlock()
 				}
 			}
 		}
