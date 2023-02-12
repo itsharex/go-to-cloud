@@ -7,12 +7,9 @@ import (
 )
 
 func GitClone(src, branch, accessToken string) error {
-	subCmd := &gotocloud.RunCommandRequest{
-		Command: "dotnet build",
-	}
-
 	cmd := &gotocloud.RunRequest{
 		Workdir: "./build",
+		WorkId:  8,
 		Command: &gotocloud.RunCommandRequest{
 			Command: "git",
 			Args: []string{
@@ -20,7 +17,6 @@ func GitClone(src, branch, accessToken string) error {
 				branch,
 				utils.Base64AesEny([]byte(accessToken)),
 			},
-			Next: subCmd,
 		},
 	}
 

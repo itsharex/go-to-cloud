@@ -26,10 +26,9 @@ func (m *LongRunner) GetNodeCount(workId int64) int {
 }
 
 func (m *LongRunner) Execute(request *gotocloud.RunRequest) error {
-	// TODO: RoundRobin 寻找可执行任务的节点
 	for uuid, client := range m.nodesPool[request.GetWorkId()] {
 		request.Uuid = uuid
-		return (*client).Send(request)
+		return (*client).Send(request) // 使劲薅第一台节点；TODO: RoundRobin 寻找可执行任务的节点
 	}
 	return errors.New("not found build node")
 }

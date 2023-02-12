@@ -1,11 +1,13 @@
 package repositories
 
 import (
+	"encoding/json"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/pipeline"
-	"go-to-cloud/internal/utils"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"time"
 )
 
 type ArtifactScript struct {
@@ -23,10 +25,11 @@ type Pipeline struct {
 	Name          string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
 	Env           string                  `json:"env" gorm:"column:env"`                     // 运行环境(模板), e.g. dotnet:6; go:1.17
 	SourceCodeID  uint                    `json:"source_code_id" gorm:"column:source_code_id"`
+	SourceCode    ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
 	Branch        string                  `json:"branch" gorm:"column:branch"` // 分支名称
 	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by"`
 	Remark        string                  `json:"remark" gorm:"column:remark"`
-	LastRunAt     *utils.JsonTime         `json:"last_run_at" gorm:"column:last_run_at"`         // 最近一次运行时间
+	LastRunAt     time.Time               `json:"last_run_at" gorm:"column:last_run_at"`         // 最近一次运行时间
 	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"` // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
 }
 
@@ -80,7 +83,7 @@ func QueryPlan(projectId uint) ([]Pipeline, error) {
 	return returnWithError(plans, err)
 }
 
-func DeletePlan(projectId uint, planId uint) error {
+func DeletePlan(projectId, planId uint) error {
 	db := conf.GetDbClient()
 
 	tx := db.Model(&Pipeline{})
@@ -94,4 +97,52 @@ func DeletePlan(projectId uint, planId uint) error {
 		tx.Model(&PipelineSteps{}).Where("ci_plan_id = ?", planId).Delete(&PipelineSteps{})
 	}
 	return err
+}
+
+// StartPlan 启动构建计划
+func StartPlan(projectId, planId, userId uint) (*Pipeline, error) {
+	db := conf.GetDbClient()
+
+	var plan Pipeline
+	db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Preload(clause.Associations).First(&plan, planId).Error; err != nil {
+			return err
+		}
+		var repo CodeRepo
+		tx.First(&repo, plan.SourceCode.CodeRepoID)
+		plan.SourceCode.CodeRepo = repo
+
+		now := time.Now()
+		state := pipeline.UnderBuilding
+		if err := tx.Model(&plan).Updates(&Pipeline{
+			LastRunAt:     now,
+			LastRunResult: state,
+		}).Error; err != nil {
+			return err
+		}
+		history := &PipelineHistory{
+			PipelineID:   planId,
+			ProjectID:    projectId,
+			Name:         plan.Name,
+			Env:          plan.Env,
+			SourceCodeID: plan.SourceCodeID,
+			Branch:       plan.Branch,
+			Params: func() datatypes.JSON {
+				j, _ := json.Marshal(plan.PipelineSteps)
+				return j
+			}(),
+			CreatedBy:   userId,
+			Remark:      plan.Remark,
+			BuildAt:     now,
+			BuildResult: state,
+		}
+		if err := tx.Omit("updated_at").Create(history).Error; err != nil {
+			return err
+		}
+
+		// 返回 nil 提交事务
+		return nil
+	})
+
+	return &plan, db.Error
 }

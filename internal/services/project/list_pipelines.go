@@ -3,6 +3,7 @@ package project
 import (
 	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
@@ -44,7 +45,10 @@ func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
 				LintCheck:       lint,
 				ArtifactEnabled: artifactEnabled,
 			},
-			LastBuildAt:     plan.LastRunAt,
+			LastBuildAt: func() *utils.JsonTime {
+				t := utils.JsonTime(plan.LastRunAt)
+				return &t
+			}(),
 			LastBuildResult: plan.LastRunResult,
 		}
 	}

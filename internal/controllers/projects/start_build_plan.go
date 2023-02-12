@@ -31,13 +31,13 @@ func StartBuildPlan(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, _, _ := utils.CurrentUser(ctx)
+	exists, userId, _, orgId, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
-	err = project.StartPipeline(userId, projectId, pipelineId)
+	err = project.StartPipeline(userId, orgId, projectId, pipelineId)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

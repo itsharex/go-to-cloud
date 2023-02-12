@@ -25,6 +25,7 @@ const (
 	BuildingSuccess   BuildingResult = 1
 	BuildingInterrupt BuildingResult = 2
 	BuildingFailed    BuildingResult = 3
+	UnderBuilding     BuildingResult = 99 // 正在构建中
 )
 
 // PlanModel 构建计划模型

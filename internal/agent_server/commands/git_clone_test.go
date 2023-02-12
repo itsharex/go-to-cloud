@@ -18,6 +18,6 @@ func TestGitClone(t *testing.T) {
 		assert.NoError(t, GitClone("src", "branch", "token"))
 	}()
 
-	port := "50010"
+	port := "18081"
 	server.Startup(&port)
 }
