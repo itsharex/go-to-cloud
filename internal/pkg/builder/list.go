@@ -1,12 +1,43 @@
 package builder
 
 import (
-	agent "go-to-cloud/internal/agent_server"
+	"go-to-cloud/internal/builders"
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
+	"sort"
 )
+
+type NodeStatus struct {
+	NodeId uint // 节点ID
+	Idle   int  // 空闲数量
+}
+
+// ListNodesOnK8sOrderByIdle 按空闲（最大可用）
+func ListNodesOnK8sOrderByIdle(orgs []uint) ([]NodeStatus, error) {
+	if merged, err := repositories.GetBuildNodesOnK8sByOrgId(orgs, "", nil); err != nil {
+		return nil, err
+	} else {
+		rlt := make([]NodeStatus, len(merged))
+		for i, m := range merged {
+			if n, e := builders.GetWorkingNodes(m.ID); e != nil {
+				return nil, e
+			} else {
+				rlt[i] = NodeStatus{
+					NodeId: m.ID,
+					Idle:   m.MaxWorkers - n,
+				}
+			}
+		}
+		if len(rlt) > 0 {
+			sort.SliceStable(rlt, func(i, j int) bool {
+				return rlt[i].Idle > rlt[j].Idle
+			})
+		}
+		return rlt, nil
+	}
+}
 
 func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, error) {
 	var orgId []uint
@@ -45,8 +76,12 @@ func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, er
 				Workspace:    m.K8sWorkerSpace,
 				MaxWorkers:   m.MaxWorkers,
 				KubeConfig:   "***Hidden***", // func() string { return *m.DecryptKubeConfig() }(),
-				CurrentWorkers: func() int {
-					return (agent.Runner).GetNodeCount(int64(m.ID))
+				AvailableWorkers: func() int {
+					if n, e := builders.GetWorkingNodes(m.ID); e != nil {
+						return 0
+					} else {
+						return m.MaxWorkers - n
+					}
 				}(),
 			}
 		}

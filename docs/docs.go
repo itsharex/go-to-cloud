@@ -1157,8 +1157,8 @@ const docTemplate = `{
                     "description": "代理版本",
                     "type": "string"
                 },
-                "currentWorkers": {
-                    "description": "当前工作数量",
+                "availableWorkers": {
+                    "description": "可用节点数",
                     "type": "integer"
                 },
                 "id": {

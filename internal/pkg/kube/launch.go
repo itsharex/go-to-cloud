@@ -7,7 +7,7 @@ import (
 	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
 )
 
-func (c *Client) Launch(appDeployConfig *AppDeployConfig) error {
+func (client *Client) Launch(appDeployConfig *AppDeployConfig) error {
 	deploy, service, err := GetYamlFromTemple(appDeployConfig)
 
 	if err != nil {
@@ -33,7 +33,7 @@ func (c *Client) Launch(appDeployConfig *AppDeployConfig) error {
 		fmt.Println(err)
 		return err
 	}
-	if _, e := c.ApplyDeployment(&appDeployConfig.Namespace, &deployCfg); e != nil {
+	if _, e := client.ApplyDeployment(&appDeployConfig.Namespace, &deployCfg); e != nil {
 		fmt.Println(e)
 		return e
 	}
@@ -45,7 +45,7 @@ func (c *Client) Launch(appDeployConfig *AppDeployConfig) error {
 			return err
 		}
 
-		if _, e := c.ApplyService(&appDeployConfig.Namespace, &serviceCfg); e != nil {
+		if _, e := client.ApplyService(&appDeployConfig.Namespace, &serviceCfg); e != nil {
 			fmt.Println(e)
 			return e
 		}

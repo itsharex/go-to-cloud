@@ -1,8 +1,10 @@
 package project
 
 import (
+	"errors"
 	agent "go-to-cloud/internal/agent_server"
 	gotocloud "go-to-cloud/internal/agent_server/proto"
+	"go-to-cloud/internal/pkg/builder"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
 	"strings"
@@ -11,20 +13,31 @@ import (
 func StartPipeline(userId uint, orgId []uint, projectId, pipelineId int64) error {
 	plan, err := repositories.StartPlan(uint(projectId), uint(pipelineId), userId)
 	if err == nil {
-		// look up available agent; todo: belongs org
-		if nodes, err := repositories.GetBuildNodesOnK8sByOrgId(orgId, "", nil); err != nil {
+		if sortedIdleNodes, err := builder.ListNodesOnK8sOrderByIdle(orgId); err != nil {
 			return err
 		} else {
-			workIdAndMax := func() map[int]int {
-				rlt := make(map[int]int)
-				for _, node := range nodes {
-					rlt[int(node.ID)] = node.MaxWorkers
-				}
-				return rlt
-			}()
-			command := setRequestCommand(workIdAndMax, plan)
-			agent.Runner.Execute(command)
+			if len(sortedIdleNodes) > 0 {
+				node := sortedIdleNodes[0]
+				_ = node
+				_ = plan
+				// TODO: 执行构建任务
+			} else {
+				return errors.New("没有足够可运行的构建节点，请稍后再试")
+			}
 		}
+		//if nodes, err := repositories.GetBuildNodesOnK8sByOrgId(orgId, "", nil); err != nil {
+		//	return err
+		//} else {
+		//	workIdAndMax := func() map[int]int {
+		//		rlt := make(map[int]int)
+		//		for _, node := range nodes {
+		//			rlt[int(node.ID)] = node.MaxWorkers
+		//		}
+		//		return rlt
+		//	}()
+		//	command := setRequestCommand(workIdAndMax, plan)
+		//	agent.Runner.Execute(command)
+		//}
 	}
 	return err
 }
