@@ -2,22 +2,10 @@ package builders
 
 import (
 	"bytes"
+	lang2 "go-to-cloud/internal/builders/lang"
 	"go-to-cloud/internal/repositories"
 	"strings"
 	"text/template"
-)
-
-const (
-	DotNet3 = "dot-net-3.1"
-	DotNet5 = "dot-net-5"
-	DotNet6 = "dot-net-6"
-	DotNet7 = "dot-net-7"
-
-	Go116 = "go-1.16"
-	Go117 = "go-1.17"
-	Go118 = "go-1.18"
-	Go119 = "go-1.19"
-	Go120 = "go-1.20"
 )
 
 type Step struct {
@@ -33,49 +21,26 @@ type PodSpecConfig struct {
 
 // BuildPodSpec 创建构建模板 k8s pod spec
 func BuildPodSpec(plan *repositories.Pipeline) {
+	var lang lang2.Tpl
+	switch plan.Env {
+	case lang2.DotNet3, lang2.DotNet5, lang2.DotNet6, lang2.DotNet7:
+		lang = &lang2.DotNet{}
+	case lang2.Go120, lang2.Go116, lang2.Go119, lang2.Go118, lang2.Go117:
+		lang = &lang2.Golang{}
+	}
 	spec := &PodSpecConfig{
 		TaskName:   plan.Name,
 		SourceCode: plan.SourceCode.GitUrl,
-		Sdk: func() string {
-			const dotnet = "mcr.microsoft.com/dotnet/sdk"
-			const golang = ""
-			switch plan.Env {
-			case DotNet3, DotNet7, DotNet6, DotNet5:
-				{
-					switch plan.Env {
-					case DotNet6:
-						return dotnet + ":6.0.0"
-					case DotNet5:
-						return dotnet + ":5.0.0"
-					case DotNet7:
-						return dotnet + "7.0.0"
-					case DotNet3:
-						return dotnet + "3.1.0"
-					}
-				}
-			case Go118, Go119, Go117, Go116, Go120:
-				{
-					switch plan.Env {
-					case Go118:
-						return golang + ":1.18"
-					case Go116:
-						return golang + ":1.16"
-					case Go117:
-						return golang + ":1.17"
-					case Go119:
-						return golang + ":1.19"
-					case Go120:
-						return golang + ":1.20"
-					}
-
-				}
+		Sdk:        lang.Sdk(plan.Env),
+		Steps: func() []Step {
+			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
+			steps := make([]Step, len(kvp))
+			i := 0
+			for _, cmd := range kvp {
+				steps[i] = Step{Command: cmd}
 			}
-			return ""
+			return steps
 		}(),
-		Steps: func(env string) []Step {
-			panic("not implemented")
-			return nil
-		}(plan.Env),
 	}
 
 	_, _ = makeTemplate(spec)

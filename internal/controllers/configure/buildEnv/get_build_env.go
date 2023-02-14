@@ -2,7 +2,7 @@ package buildEnv
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-to-cloud/internal/builders"
+	"go-to-cloud/internal/builders/lang"
 	"go-to-cloud/internal/pkg/response"
 )
 
@@ -29,16 +29,16 @@ func BuildEnv(ctx *gin.Context) {
 				Label string `json:"label"`
 			}{
 				{
-					Value: builders.DotNet3,
+					Value: lang.DotNet3,
 					Label: ".NET Core 3.1",
 				}, {
-					Value: builders.DotNet5,
+					Value: lang.DotNet5,
 					Label: ".NET 5",
 				}, {
-					Value: builders.DotNet6,
+					Value: lang.DotNet6,
 					Label: ".NET 6",
 				}, {
-					Value: builders.DotNet7,
+					Value: lang.DotNet7,
 					Label: ".NET 7",
 				},
 			},
@@ -50,19 +50,19 @@ func BuildEnv(ctx *gin.Context) {
 				Label string `json:"label"`
 			}{
 				{
-					Value: builders.Go116,
+					Value: lang.Go116,
 					Label: "Go 1.16",
 				}, {
-					Value: builders.Go117,
+					Value: lang.Go117,
 					Label: "Go 1.17",
 				}, {
-					Value: builders.Go118,
+					Value: lang.Go118,
 					Label: "Go 1.18",
 				}, {
-					Value: builders.Go119,
+					Value: lang.Go119,
 					Label: "Go 1.19",
 				}, {
-					Value: builders.Go120,
+					Value: lang.Go120,
 					Label: "Go 1.20",
 				},
 			},
