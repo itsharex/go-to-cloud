@@ -39,8 +39,6 @@ func main() {
 	port := runMode()
 	// 迁移数据库
 	migrations.AutoMigrate()
-	// 启动agent服务
-	go routers.StartAgentServer()
 	// server模式运行
 	routers.SetRouters().Run(port)
 }

@@ -1,36 +1,16 @@
 package routers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-to-cloud/conf"
 	"go-to-cloud/docs"
-	"go-to-cloud/internal/agent_server"
 	"go-to-cloud/internal/middlewares"
 	"go-to-cloud/internal/pkg/response"
 	"io"
 	"net/http"
-	"net/url"
 )
-
-func StartAgentServer() {
-	addr := conf.GetServerGrpcHost()
-	if u, err := url.Parse(addr.Url); err != nil {
-		panic(err)
-	} else {
-		port := u.Port()
-		if len(port) == 0 {
-			panic(fmt.Sprintf("grpc port not found in server.host：%s", addr.Url))
-		}
-
-		err = agent_server.Startup(&port)
-		if err != nil {
-			panic(err)
-		}
-	}
-}
 
 // SetRouters 设置API路由
 func SetRouters() (routers *gin.Engine) {
