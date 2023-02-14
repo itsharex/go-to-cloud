@@ -3,6 +3,7 @@ package buildEnv
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-to-cloud/internal/builders"
 	"go-to-cloud/internal/pkg/response"
 	"net/http"
 )
@@ -39,18 +40,19 @@ func init() {
 		UnitTest:  "dotnet test --collect:\"XPlat Code Coverage\" --logger \"html;logfilename=testresults.html\"",
 		LintCheck: "dotnet format --verify-no-changes --report .",
 	}
-	envCmd[dotNet3] = dotNetCmd
-	envCmd[dotNet5] = dotNetCmd
-	envCmd[dotNet6] = dotNetCmd
-	envCmd[dotNet7] = dotNetCmd
+	envCmd[builders.DotNet3] = dotNetCmd
+	envCmd[builders.DotNet5] = dotNetCmd
+	envCmd[builders.DotNet6] = dotNetCmd
+	envCmd[builders.DotNet7] = dotNetCmd
 
 	golangCmd := &cmd{
 		UnitTest: "go test -cover -test.short ./... | tee testresults.txt",
 		LintCheck: `wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s 
                     ./bin/golangci-lint run ./... | tee lintcheck-result.txt`,
 	}
-	envCmd[go116] = golangCmd
-	envCmd[go117] = golangCmd
-	envCmd[go118] = golangCmd
-	envCmd[go119] = golangCmd
+	envCmd[builders.Go116] = golangCmd
+	envCmd[builders.Go117] = golangCmd
+	envCmd[builders.Go118] = golangCmd
+	envCmd[builders.Go119] = golangCmd
+	envCmd[builders.Go120] = golangCmd
 }

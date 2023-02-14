@@ -2,11 +2,13 @@ package project
 
 import (
 	"errors"
+	"go-to-cloud/internal/builders"
 	"go-to-cloud/internal/pkg/builder"
 	"go-to-cloud/internal/repositories"
 )
 
 func build(nodeId uint, plan *repositories.Pipeline) error {
+	builders.BuildPodSpec(plan)
 	return errors.New("not implemented")
 }
 
@@ -20,7 +22,7 @@ func StartPipeline(userId uint, orgId []uint, projectId, pipelineId int64) error
 				node := sortedIdleNodes[0]
 				return build(node.NodeId, plan)
 			} else {
-				return errors.New("没有足够可运行的构建节点，请稍后再试")
+				return errors.New("没有足够可运行的构建节点，请稍后再试") // TODO: 未来计划使用构建队列
 			}
 		}
 	}
