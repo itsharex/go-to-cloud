@@ -1,7 +1,6 @@
 package builders
 
 import (
-	"errors"
 	lang2 "go-to-cloud/internal/builders/lang"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
@@ -33,6 +32,9 @@ func BuildPodSpec(node *repositories.BuilderNode, plan *repositories.Pipeline) e
 	}
 	_ = spec
 
-	return errors.New("not implemented")
-	// TODO: kube.ApplyPod
+	if client, err := kube.NewClient(node.DecryptKubeConfig()); err != nil {
+		return err
+	} else {
+		return client.Build(spec)
+	}
 }
