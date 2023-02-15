@@ -99,9 +99,15 @@ spec:
       - -ec
       - |
         cd /workdir
-        dotnet build
+        set -e
 {{- range .Steps}}
-        {{.Command}}
+{{- if .Command}}
+        if {{.Command}};then
+          echo "success"
+        else
+          echo "failure"
+        fi
+{{- end}}
 {{- end}}
       volumeMounts:
       - name: workdir

@@ -1,14 +1,14 @@
 package utils
 
 func Intersect(a, b []uint) []uint {
-	counter := make(map[uint]int)
+	counter := make(map[uint]bool)
 	rlt := make([]uint, 0)
 	for _, a := range a {
-		counter[a]++
+		counter[a] = true
 	}
 	for _, b := range b {
 		sz, _ := counter[b]
-		if sz == 1 {
+		if sz {
 			rlt = append(rlt, b)
 		}
 	}

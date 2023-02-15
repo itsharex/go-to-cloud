@@ -46,8 +46,12 @@ func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
 				ArtifactEnabled: artifactEnabled,
 			},
 			LastBuildAt: func() *utils.JsonTime {
-				t := utils.JsonTime(plan.LastRunAt)
-				return &t
+				if plan.LastRunAt == nil {
+					return nil
+				} else {
+					t := utils.JsonTime(*plan.LastRunAt)
+					return &t
+				}
 			}(),
 			LastBuildResult: plan.LastRunResult,
 		}
