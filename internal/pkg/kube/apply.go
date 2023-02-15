@@ -25,6 +25,14 @@ func (client *Client) ApplyService(namespace *string, yml *corev1.ServiceApplyCo
 	return client.clientSet.CoreV1().Services(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
 }
 
+// ApplyPod kubectl apply -f yml
+func (client *Client) ApplyPod(namespace *string, yml *corev1.PodApplyConfiguration) (*cv1.Pod, error) {
+	if _, err := client.getOrCreateNamespace(namespace); err != nil {
+		return nil, err
+	}
+	return client.clientSet.CoreV1().Pods(*namespace).Apply(context.TODO(), yml, *client.defaultApplyOptions)
+}
+
 const namespace_yml = `
 apiVersion: v1
 kind: Namespace

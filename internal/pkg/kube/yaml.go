@@ -18,7 +18,7 @@ type ConfigValidation interface {
 	validate(args ...string) error
 }
 
-// DecodeYaml 解析yaml文件，支持kind: Deployment / Service
+// DecodeYaml 解析yaml文件，支持kind: Deployment / Service / Pod
 func DecodeYaml[T Kinds](yml *string, conf *T) error {
 	buf := bytes.NewBufferString(*yml)
 	decoder := yaml.NewYAMLOrJSONDecoder(buf, 4096)

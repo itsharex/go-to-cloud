@@ -8,8 +8,11 @@ import (
 )
 
 func build(nodeId uint, plan *repositories.Pipeline) error {
-	builders.BuildPodSpec(plan)
-	return errors.New("not implemented")
+	if node, err := repositories.GetBuildNodesById(nodeId); err != nil {
+		return err
+	} else {
+		return builders.BuildPodSpec(node, plan)
+	}
 }
 
 func StartPipeline(userId uint, orgId []uint, projectId, pipelineId int64) error {

@@ -22,3 +22,14 @@ type Tpl interface {
 	Sdk(env string) string //获取sdk镜像地址
 	Steps(env string, steps []repositories.PipelineSteps) map[pipeline.PlanStepType]string
 }
+
+type TplCommon struct {
+}
+
+func (m *TplCommon) Steps(env string, steps []repositories.PipelineSteps) map[pipeline.PlanStepType]string {
+	rlt := make(map[pipeline.PlanStepType]string)
+	for _, step := range steps {
+		rlt[pipeline.PlanStepType(step.Type)] = step.Script
+	}
+	return rlt
+}

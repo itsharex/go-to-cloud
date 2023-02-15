@@ -1,11 +1,7 @@
 package lang
 
-import (
-	"go-to-cloud/internal/models/pipeline"
-	"go-to-cloud/internal/repositories"
-)
-
 type DotNet struct {
+	TplCommon
 }
 
 func (m *DotNet) Sdk(env string) string {
@@ -22,9 +18,4 @@ func (m *DotNet) Sdk(env string) string {
 	}
 
 	return dotnet + ":latest"
-}
-
-func (m *DotNet) Steps(env string, steps []repositories.PipelineSteps) map[pipeline.PlanStepType]string {
-	// TODO: steps
-	panic("not implemented")
 }

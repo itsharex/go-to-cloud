@@ -8,5 +8,6 @@ import (
 type Kinds interface {
 	core.ServiceApplyConfiguration |
 		apps.DeploymentApplyConfiguration |
-		core.NamespaceApplyConfiguration
+		core.NamespaceApplyConfiguration |
+		core.PodApplyConfiguration
 }
