@@ -4,10 +4,12 @@ import (
 	lang2 "go-to-cloud/internal/builders/lang"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
+	"strconv"
+	"strings"
 )
 
 // BuildPodSpec 创建构建模板 k8s pod spec
-func BuildPodSpec(node *repositories.BuilderNode, plan *repositories.Pipeline) error {
+func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositories.Pipeline) (*kube.PodSpecConfig, error) {
 	var lang lang2.Tpl
 	switch plan.Env {
 	case lang2.DotNet3, lang2.DotNet5, lang2.DotNet6, lang2.DotNet7:
@@ -16,25 +18,35 @@ func BuildPodSpec(node *repositories.BuilderNode, plan *repositories.Pipeline) e
 		lang = &lang2.Golang{}
 	}
 	spec := &kube.PodSpecConfig{
-		Namespace:  node.K8sWorkerSpace,
-		TaskName:   plan.Name,
+		Namespace: node.K8sWorkerSpace,
+		TaskName: plan.Name + "-" + func(buildId uint, exceptedLen int) string {
+			str := strconv.Itoa(int(buildId))
+			if len(str) >= exceptedLen {
+				return str
+			}
+			padding := strings.Repeat("0", exceptedLen-len(str))
+			return padding + str
+		}(buildId, 5),
 		SourceCode: plan.SourceCode.GitUrl,
 		Sdk:        lang.Sdk(plan.Env),
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
 			steps := make([]kube.Step, len(kvp))
 			i := 0
-			for _, cmd := range kvp {
-				steps[i] = kube.Step{Command: cmd}
+			for t, cmd := range kvp {
+				steps[i] = kube.Step{
+					Command:     cmd,
+					CommandType: (&t).GetTypeName(),
+				}
+				i++
 			}
 			return steps
 		}(),
 	}
-	_ = spec
 
 	if client, err := kube.NewClient(node.DecryptKubeConfig()); err != nil {
-		return err
+		return nil, err
 	} else {
-		return client.Build(spec)
+		return spec, client.Build(spec)
 	}
 }

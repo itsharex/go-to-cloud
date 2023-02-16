@@ -18,6 +18,24 @@ const (
 	Deploy                 = 5
 )
 
+func (m *PlanStepType) GetTypeName() string {
+	switch *m {
+	case UnitTest:
+		return "单元测试"
+	case LintCheck:
+		return "静态代码分析"
+	case Doc:
+		return "生成文档"
+	case Image:
+		return "构建镜像"
+	case Deploy:
+		return "部署发布"
+	case Cli:
+		return "执行命令"
+	}
+	return "Unknown Stage"
+}
+
 type BuildingResult int
 
 const (

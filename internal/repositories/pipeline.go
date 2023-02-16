@@ -100,10 +100,11 @@ func DeletePlan(projectId, planId uint) error {
 }
 
 // StartPlan 启动构建计划
-func StartPlan(projectId, planId, userId uint) (*Pipeline, error) {
+func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 	db := conf.GetDbClient()
 
 	var plan Pipeline
+	var historyId uint // 本次构建记录ID
 	db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Preload(clause.Associations).First(&plan, planId).Error; err != nil {
 			return err
@@ -140,9 +141,11 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, error) {
 			return err
 		}
 
+		historyId = history.ID
+
 		// 返回 nil 提交事务
 		return nil
 	})
 
-	return &plan, db.Error
+	return &plan, historyId, db.Error
 }

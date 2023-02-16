@@ -10,9 +10,8 @@ import (
 )
 
 type Step struct {
-	Command        string
-	ErrorMessage   string // 异常消息
-	SuccessMessage string // 成功消息
+	CommandType string
+	Command     string
 } // 构建步骤
 
 type PodSpecConfig struct {
@@ -55,7 +54,7 @@ func (client *Client) Build(podSpecConfig *PodSpecConfig) error {
 }
 
 func makeTemplate(spec *PodSpecConfig) (*string, error) {
-	tpl, err := template.New("k8s").Parse(BuildTemplate)
+	tpl, err := template.New("k8s-pod").Parse(BuildTemplate)
 
 	if err != nil {
 		return nil, err
@@ -96,6 +95,10 @@ spec:
     - name: compile
       image: {{.Sdk}}
       imagePullPolicy: IfNotPresent
+      lifecycle: 
+      preStop:
+        exec:
+          command: ["/bin/sh", "-c", "echo '构建任务完成'"]
       command:
       - /bin/sh
       - -ec
@@ -104,19 +107,13 @@ spec:
         set -e
 {{- range .Steps}}
 {{- if .Command}}
+        echo ">>>{{.CommandType}} 开始"
         if {{.Command}};then
-{{- if .SuccessMessage}}
-          echo "{{.SuccessMessage}}"
-{{- else}}
-          echo "success"
-{{- end}}
+          echo ">>>{{.CommandType}} 成功"
         else
-{{- if .ErrorMessage}}
-          echo "{{.ErrorMessage}}"
-{{- else}}
-          echo "success"
-{{- end}}
+          echo ">>>{{.CommandType}} 失败"
         fi
+        echo "\n"
 {{- end}}
 {{- end}}
       volumeMounts:
