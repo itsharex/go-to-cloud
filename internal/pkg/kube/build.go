@@ -10,7 +10,9 @@ import (
 )
 
 type Step struct {
-	Command string
+	Command        string
+	ErrorMessage   string // 异常消息
+	SuccessMessage string // 成功消息
 } // 构建步骤
 
 type PodSpecConfig struct {
@@ -103,9 +105,17 @@ spec:
 {{- range .Steps}}
 {{- if .Command}}
         if {{.Command}};then
+{{- if .SuccessMessage}}
+          echo "{{.SuccessMessage}}"
+{{- else}}
           echo "success"
+{{- end}}
         else
-          echo "failure"
+{{- if .ErrorMessage}}
+          echo "{{.ErrorMessage}}"
+{{- else}}
+          echo "success"
+{{- end}}
         fi
 {{- end}}
 {{- end}}
