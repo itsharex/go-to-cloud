@@ -1,7 +1,7 @@
 package builder
 
 import (
-	"go-to-cloud/internal/builders"
+	builder3 "go-to-cloud/internal/builder"
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/models/builder"
 	"go-to-cloud/internal/repositories"
@@ -21,7 +21,7 @@ func ListNodesOnK8sOrderByIdle(orgs []uint) ([]NodeStatus, error) {
 	} else {
 		rlt := make([]NodeStatus, len(merged))
 		for i, m := range merged {
-			if n, e := builders.GetWorkingNodes(m.ID); e != nil {
+			if n, e := builder3.GetWorkingNodes(m.ID); e != nil {
 				return nil, e
 			} else {
 				rlt[i] = NodeStatus{
@@ -68,7 +68,16 @@ func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, er
 				}
 			}
 			rlt[i] = builder.NodesOnK8s{
-				Id:           m.ID,
+				AvailableNodesOnK8s: builder.AvailableNodesOnK8s{
+					Id: m.ID,
+					AvailableWorkers: func() int {
+						if n, e := builder3.GetWorkingNodes(m.ID); e != nil {
+							return 0
+						} else {
+							return m.MaxWorkers - n
+						}
+					}(),
+				},
 				Name:         m.Name,
 				OrgLites:     orgLites,
 				Remark:       m.Remark,
@@ -76,13 +85,7 @@ func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, er
 				Workspace:    m.K8sWorkerSpace,
 				MaxWorkers:   m.MaxWorkers,
 				KubeConfig:   "***Hidden***", // func() string { return *m.DecryptKubeConfig() }(),
-				AvailableWorkers: func() int {
-					if n, e := builders.GetWorkingNodes(m.ID); e != nil {
-						return 0
-					} else {
-						return m.MaxWorkers - n
-					}
-				}(),
+
 			}
 		}
 		return rlt, err

@@ -1,3 +1,3 @@
-package builders
+package builder
 
 const BuilderNodeSelectorLabel = "gotocloud-builder"

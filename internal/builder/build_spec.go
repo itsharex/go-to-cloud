@@ -1,7 +1,7 @@
-package builders
+package builder
 
 import (
-	lang2 "go-to-cloud/internal/builders/lang"
+	lang2 "go-to-cloud/internal/builder/lang"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 	"strconv"
@@ -47,6 +47,12 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 	if client, err := kube.NewClient(node.DecryptKubeConfig()); err != nil {
 		return nil, err
 	} else {
+		if err = client.Build(spec); err != nil {
+			idleNodes.Delete(strconv.Itoa(int(node.ID)))
+			return spec, err
+		} else {
+			return spec, nil
+		}
 		return spec, client.Build(spec)
 	}
 }

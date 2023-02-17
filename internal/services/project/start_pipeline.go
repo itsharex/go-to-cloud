@@ -2,7 +2,7 @@ package project
 
 import (
 	"errors"
-	"go-to-cloud/internal/builders"
+	builder2 "go-to-cloud/internal/builder"
 	"go-to-cloud/internal/pkg/builder"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
@@ -13,7 +13,7 @@ func build(nodeId, buildId uint, plan *repositories.Pipeline) (*kube.PodSpecConf
 	if node, err := repositories.GetBuildNodesById(nodeId); err != nil {
 		return nil, err
 	} else {
-		return builders.BuildPodSpec(buildId, node, plan)
+		return builder2.BuildPodSpec(buildId, node, plan)
 	}
 }
 

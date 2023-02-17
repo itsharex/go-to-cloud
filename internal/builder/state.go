@@ -1,4 +1,4 @@
-package builders
+package builder
 
 type State struct {
 }

@@ -353,6 +353,30 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/builder/nodes/k8s/available": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "查看节点可用工作单元",
+                "tags": [
+                    "Configure"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/builder.NodesOnK8s"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/configure/coderepo": {
             "get": {
                 "security": [
