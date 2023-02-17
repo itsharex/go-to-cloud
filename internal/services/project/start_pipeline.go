@@ -13,7 +13,17 @@ func build(nodeId, buildId uint, plan *repositories.Pipeline) (*kube.PodSpecConf
 	if node, err := repositories.GetBuildNodesById(nodeId); err != nil {
 		return nil, err
 	} else {
-		return builder2.BuildPodSpec(buildId, node, plan)
+		spec := builder2.BuildPodSpec(buildId, node, plan)
+
+		if client, err := kube.NewClient(node.DecryptKubeConfig()); err != nil {
+			return nil, err
+		} else {
+			err = client.Build(spec)
+			if err == nil {
+				builder2.ResetIdle(node)
+			}
+			return spec, err
+		}
 	}
 }
 

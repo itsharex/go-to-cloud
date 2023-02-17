@@ -8,8 +8,12 @@ import (
 	"strings"
 )
 
+func ResetIdle(node *repositories.BuilderNode) {
+	idleNodes.Delete(strconv.Itoa(int(node.ID)))
+}
+
 // BuildPodSpec 创建构建模板 k8s pod spec
-func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositories.Pipeline) (*kube.PodSpecConfig, error) {
+func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositories.Pipeline) *kube.PodSpecConfig {
 	var lang lang2.Tpl
 	switch plan.Env {
 	case lang2.DotNet3, lang2.DotNet5, lang2.DotNet6, lang2.DotNet7:
@@ -17,7 +21,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 	case lang2.Go120, lang2.Go116, lang2.Go119, lang2.Go118, lang2.Go117:
 		lang = &lang2.Golang{}
 	}
-	spec := &kube.PodSpecConfig{
+	return &kube.PodSpecConfig{
 		Namespace: node.K8sWorkerSpace,
 		TaskName: plan.Name + "-" + func(buildId uint, exceptedLen int) string {
 			str := strconv.Itoa(int(buildId))
@@ -42,17 +46,5 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 			}
 			return steps
 		}(),
-	}
-
-	if client, err := kube.NewClient(node.DecryptKubeConfig()); err != nil {
-		return nil, err
-	} else {
-		if err = client.Build(spec); err != nil {
-			idleNodes.Delete(strconv.Itoa(int(node.ID)))
-			return spec, err
-		} else {
-			return spec, nil
-		}
-		return spec, client.Build(spec)
 	}
 }

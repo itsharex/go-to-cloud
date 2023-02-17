@@ -59,5 +59,5 @@ func tryGetPodStatusFromCache(node *repositories.BuilderNode, f func(node *repos
 }
 
 func init() {
-	idleNodes = cache.New(5*time.Minute, 5*time.Minute)
+	idleNodes = cache.New(time.Minute, 0)
 }

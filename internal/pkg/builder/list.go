@@ -70,13 +70,13 @@ func ListNodesOnK8s(orgs []uint, query *builder.Query) ([]builder.NodesOnK8s, er
 			rlt[i] = builder.NodesOnK8s{
 				AvailableNodesOnK8s: builder.AvailableNodesOnK8s{
 					Id: m.ID,
-					AvailableWorkers: func() int {
-						if n, e := builder3.GetWorkingNodes(m.ID); e != nil {
-							return 0
-						} else {
-							return m.MaxWorkers - n
-						}
-					}(),
+					//AvailableWorkers: func() int {
+					//	if n, e := builder3.GetWorkingNodes(m.ID); e != nil {
+					//		return 0
+					//	} else {
+					//		return m.MaxWorkers - n
+					//	}
+					//}(),
 				},
 				Name:         m.Name,
 				OrgLites:     orgLites,
