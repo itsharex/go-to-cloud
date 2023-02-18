@@ -17,7 +17,7 @@ import (
 // @Param   id     path     int     true	"Project.ID"
 // @Security JWT
 func DeleteProject(ctx *gin.Context) {
-	val := ctx.Param("id")
+	val := ctx.Param("projectId")
 	projectId, err := strconv.ParseUint(val, 10, 64)
 
 	if err != nil {
