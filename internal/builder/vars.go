@@ -1,3 +1,4 @@
 package builder
 
-const BuilderNodeSelectorLabel = "gotocloud-builder"
+const NodeSelectorLabel = "gotocloud-builder"
+const BuildIdSelectorLabel = "build"

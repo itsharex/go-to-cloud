@@ -56,7 +56,11 @@ func GetBuildNodesOnK8sByOrgId(orgs []uint, repoNamePattern string, pager *model
 
 	tx = tx.Select("builder_nodes.*, org.Id AS orgId, org.Name AS orgName")
 	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(builder_nodes.belongs_to, cast(org.id as JSON), '$')")
-	tx = tx.Where("builder_nodes.node_type = ? AND org.ID IN ? AND org.deleted_at IS NULL", builder.K8s, orgs)
+	tx = tx.Where("builder_nodes.node_type = ? AND org.deleted_at IS NULL", builder.K8s)
+
+	if orgs != nil && len(orgs) > 0 {
+		tx = tx.Where("org.ID IN ?", orgs)
+	}
 
 	if len(repoNamePattern) > 0 {
 		tx = tx.Where("builder_nodes.name like ?", repoNamePattern+"%")

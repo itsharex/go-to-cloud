@@ -15,11 +15,14 @@ type Step struct {
 } // 构建步骤
 
 type PodSpecConfig struct {
-	Namespace  string
-	TaskName   string // pod name
-	SourceCode string // git url
-	Sdk        string // sdk 基础镜像
-	Steps      []Step
+	LabelFlag    string
+	LabelBuildId string
+	BuildId      uint
+	Namespace    string
+	TaskName     string // pod name
+	SourceCode   string // git url
+	Sdk          string // sdk 基础镜像
+	Steps        []Step
 }
 
 // Build 构建任务
@@ -77,7 +80,10 @@ kind: Pod
 metadata:
   name: {{.TaskName}}
   labels:
-    builder: gotocloud-builder
+    builder: {{.LabelFlag}}
+{{- if .LabelBuildId}}
+    {{.LabelBuildId}}: {{.LabelBuildId}}-{{.BuildId}}
+{{- end}}
 spec:
     initContainers:
     - name: coderepo

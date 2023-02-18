@@ -920,6 +920,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/pipeline/state": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取构建计划状态",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取构建计划状态",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/pipeline.PlanCardModel"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/pipeline/{id}": {
             "delete": {
                 "security": [
@@ -1323,6 +1348,56 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "pipeline.PlanCardModel": {
+            "type": "object",
+            "properties": {
+                "artifact_enabled": {
+                    "type": "boolean"
+                },
+                "artifact_repo_id": {
+                    "type": "integer"
+                },
+                "branch": {
+                    "type": "string"
+                },
+                "buildEnv": {
+                    "type": "string"
+                },
+                "deploy_enabled": {
+                    "type": "boolean"
+                },
+                "dockerfile": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastBuildAt": {
+                    "type": "string"
+                },
+                "lastBuildResult": {
+                    "type": "integer"
+                },
+                "lint_check": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qa_enabled": {
+                    "type": "boolean"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "source_code_id": {
+                    "type": "integer"
+                },
+                "unit_test": {
                     "type": "string"
                 }
             }

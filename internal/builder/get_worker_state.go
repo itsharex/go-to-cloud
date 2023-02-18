@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"context"
 	"errors"
 	"github.com/patrickmn/go-cache"
 	"go-to-cloud/internal/models/builder"
@@ -25,7 +26,7 @@ func GetWorkingNodes(workerId uint) (int, error) {
 
 	if node.NodeType == int(builder.K8s) {
 		return func() (int, error) {
-			if a, e := tryGetPodStatusFromCache(node, getPodStatus); e != nil {
+			if a, e := tryGetPodStatusFromCache(node, getPodDescription); e != nil {
 				return 0, e
 			} else {
 				return len(a), nil
@@ -36,18 +37,18 @@ func GetWorkingNodes(workerId uint) (int, error) {
 	return 0, errors.New("不支持的构建节点类型")
 }
 
-func getPodStatus(node *repositories.BuilderNode) ([]kube.PodStatus, error) {
+func getPodDescription(node *repositories.BuilderNode) ([]kube.PodDescription, error) {
 	client, err := kube.NewClient(node.DecryptKubeConfig())
 	if err != nil {
 		return nil, err
 	}
 
-	return client.GetPods(node.K8sWorkerSpace, BuilderNodeSelectorLabel)
+	return client.GetPods(context.TODO(), node.K8sWorkerSpace, NodeSelectorLabel, BuildIdSelectorLabel)
 }
 
-func tryGetPodStatusFromCache(node *repositories.BuilderNode, f func(node *repositories.BuilderNode) ([]kube.PodStatus, error)) ([]kube.PodStatus, error) {
+func tryGetPodStatusFromCache(node *repositories.BuilderNode, f func(node *repositories.BuilderNode) ([]kube.PodDescription, error)) ([]kube.PodDescription, error) {
 	if v, ok := idleNodes.Get(strconv.Itoa(int(node.ID))); ok {
-		return v.([]kube.PodStatus), nil
+		return v.([]kube.PodDescription), nil
 	} else {
 		if n, e := f(node); e != nil {
 			return nil, e

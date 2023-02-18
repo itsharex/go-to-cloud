@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"go-to-cloud/internal/builder"
 	"go-to-cloud/internal/repositories/migrations"
 	"go-to-cloud/internal/routers"
 	"os"
@@ -39,6 +40,8 @@ func main() {
 	port := runMode()
 	// 迁移数据库
 	migrations.AutoMigrate()
+	// 启动流水线监测
+	builder.PipelinesWatcher()
 	// server模式运行
 	routers.SetRouters().Run(port)
 }
