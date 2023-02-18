@@ -46,6 +46,12 @@ const (
 	UnderBuilding     BuildingResult = 99 // 正在构建中
 )
 
+func IsComplete(rlt BuildingResult) bool {
+	return rlt == BuildingSuccess ||
+		rlt == BuildingFailed ||
+		rlt == BuildingInterrupt
+}
+
 // PlanModel 构建计划模型
 type PlanModel struct {
 	Id              uint    `json:"id"`

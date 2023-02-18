@@ -1,8 +1,11 @@
 package repositories
 
 import (
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/pipeline"
+	"go-to-cloud/internal/pkg/kube"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -26,6 +29,38 @@ func (m *PipelineHistory) TableName() string {
 	return "pipeline_history"
 }
 
-func UpdateBuildLog(historyId uint, log *string) {
+func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, description *kube.PodDescription) error {
+	db := conf.GetDbClient()
 
+	return db.Transaction(func(tx *gorm.DB) (err error) {
+		var history PipelineHistory
+		err = tx.Model(&PipelineHistory{}).First(&history, historyId).Error
+		if err != nil {
+			return
+		}
+
+		if history.BuildResult == rlt {
+			return
+		}
+
+		err = tx.Model(&PipelineHistory{}).Where("id = ? AND run_result != ?", historyId, int(rlt)).Update("run_result", int(rlt)).Error
+		if err != nil {
+			return
+		}
+
+		if len(history.BuildLog) == 0 {
+			if description.GetLog != nil && pipeline.IsComplete(rlt) {
+				err = tx.Model(&PipelineHistory{}).Where("id = ?", historyId).Update("log", *description.GetLog(nil)).Error
+			}
+			if err != nil {
+				return
+			}
+		}
+
+		tx = tx.Session(&gorm.Session{NewDB: true})
+		err = tx.Model(&Pipeline{}).Where("id = ? AND last_run_id = ? AND last_run_result != ?", history.PipelineID, history.ID, int(rlt)).Update("last_run_result", int(rlt)).Error
+
+		// 返回 nil 提交事务
+		return
+	})
 }

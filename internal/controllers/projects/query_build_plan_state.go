@@ -33,7 +33,6 @@ func QueryBuildPlanState(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 		return
 	} else {
-		m[0].LastBuildResult = 1
 		response.Success(ctx, m)
 	}
 }

@@ -29,6 +29,7 @@ type Pipeline struct {
 	Branch        string                  `json:"branch" gorm:"column:branch"` // 分支名称
 	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by"`
 	Remark        string                  `json:"remark" gorm:"column:remark"`
+	LastRunId     uint                    `json:"last_run_id" gorm:"column:last_run_id"`         // 最近一次构建记录ID，即pipeline_history.id
 	LastRunAt     *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`         // 最近一次运行时间
 	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"` // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
 }
@@ -115,12 +116,6 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 
 		now := time.Now()
 		state := pipeline.UnderBuilding
-		if err := tx.Model(&plan).Updates(&Pipeline{
-			LastRunAt:     &now,
-			LastRunResult: state,
-		}).Error; err != nil {
-			return err
-		}
 		history := &PipelineHistory{
 			PipelineID:   planId,
 			ProjectID:    projectId,
@@ -143,6 +138,13 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 
 		historyId = history.ID
 
+		if err := tx.Model(&plan).Updates(&Pipeline{
+			LastRunId:     historyId,
+			LastRunAt:     &now,
+			LastRunResult: state,
+		}).Error; err != nil {
+			return err
+		}
 		// 返回 nil 提交事务
 		return nil
 	})

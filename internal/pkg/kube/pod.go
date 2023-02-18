@@ -3,26 +3,11 @@ package kube
 import (
 	"bytes"
 	"context"
-	"go-to-cloud/internal/repositories"
 	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"strconv"
-	"time"
-)
-
-const (
-	ContainersReady string = "ContainersReady"
-	PodInitialized  string = "Initialized"
-	PodReady        string = "Ready"
-	PodScheduled    string = "PodScheduled"
-)
-
-const (
-	ConditionTrue    string = "True"
-	ConditionFalse   string = "False"
-	ConditionUnknown string = "Unknown"
 )
 
 type PodDescription struct {
@@ -30,21 +15,23 @@ type PodDescription struct {
 	Status     coreV1.PodPhase
 	BuildId    uint
 	Containers []string
-	GetLog     func(*string) *bytes.Buffer // 获取容器日志
-
-	lastRefresh *time.Time // 最新一次更新时间
+	GetLog     func(*string) *string // 获取容器日志
 }
 
-func (m *PodDescription) Refresh() {
-	now := time.Now()
-	if m.lastRefresh != nil && now.Sub(*m.lastRefresh) > time.Second*25 {
-		if buf := m.GetLog(nil); buf != nil {
-			log := buf.String()
-			repositories.UpdateBuildLog(m.BuildId, &log)
-			m.lastRefresh = &now
-		}
-	}
-}
+/*
+Pending（悬决）	Pod 已被 Kubernetes 系统接受，但有一个或者多个容器尚未创建亦未运行。此阶段包括等待 Pod 被调度的时间和通过网络下载镜像的时间。
+Running（运行中）	Pod 已经绑定到了某个节点，Pod 中所有的容器都已被创建。至少有一个容器仍在运行，或者正处于启动或重启状态。
+Succeeded（成功）	Pod 中的所有容器都已成功终止，并且不会再重启。
+Failed（失败）	Pod 中的所有容器都已终止，并且至少有一个容器是因为失败终止。也就是说，容器以非 0 状态退出或者被系统终止。
+Unknown（未知）	因为某些原因无法取得 Pod 的状态。这种情况通常是因为与 Pod 所在主机通信失败。
+*/
+const (
+	Pending   coreV1.PodPhase = "Pending"
+	Running   coreV1.PodPhase = "Running"
+	Succeeded coreV1.PodPhase = "Succeeded"
+	Failed    coreV1.PodPhase = "Failed"
+	Unknown   coreV1.PodPhase = "Unknown"
+)
 
 // GetPods 获取指定名字空间
 func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline string) ([]PodDescription, error) {
@@ -65,7 +52,7 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 				return 0
 			}(),
 			Name:   pod.Name,
-			Status: getPodDescription(&pod),
+			Status: pod.Status.Phase,
 			Containers: func() []string {
 				c := make([]string, len(pod.Spec.Containers))
 				for i, container := range pod.Spec.Containers {
@@ -73,11 +60,12 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 				}
 				return c
 			}(),
-			GetLog: func(c *string) *bytes.Buffer {
+			GetLog: func(c *string) *string {
 				if podLogs, err := watchContainerLogWithPodNameAndContainerName(ctx, client.clientSet, ns, pod.Name, "", nil, false); err == nil {
 					buf := new(bytes.Buffer)
 					if _, err := io.Copy(buf, podLogs); err == nil {
-						return buf
+						log := buf.String()
+						return &log
 					}
 				}
 				return nil
@@ -88,29 +76,9 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 	return rlt, err
 }
 
-// getPodDescription 获取Pod状态
-func getPodDescription(pod *coreV1.Pod) coreV1.PodPhase {
-	for _, cond := range pod.Status.Conditions {
-		if string(cond.Type) == ContainersReady {
-			if string(cond.Status) != ConditionTrue {
-				return "Unavailable"
-			}
-		} else if string(cond.Type) == PodInitialized && string(cond.Status) != ConditionTrue {
-			return "Initializing"
-		} else if string(cond.Type) == PodReady {
-			if string(cond.Status) != ConditionTrue {
-				return "Unavailable"
-			}
-			for _, containerState := range pod.Status.ContainerStatuses {
-				if !containerState.Ready {
-					return "Unavailable"
-				}
-			}
-		} else if string(cond.Type) == PodScheduled && string(cond.Status) != ConditionTrue {
-			return "Scheduling"
-		}
-	}
-	return pod.Status.Phase
+// DeletePod 删除指定pod
+func (client *Client) DeletePod(ctx context.Context, ns, podName string) error {
+	return client.clientSet.CoreV1().Pods(ns).Delete(ctx, podName, metaV1.DeleteOptions{})
 }
 
 // watchContainerLogWithPodNameAndContainerName
