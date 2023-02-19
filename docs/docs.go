@@ -1376,6 +1376,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "image_name": {
+                    "type": "string"
+                },
                 "lastBuildAt": {
                     "type": "string"
                 },
@@ -1425,6 +1428,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "image_name": {
+                    "type": "string"
                 },
                 "lint_check": {
                     "type": "string"

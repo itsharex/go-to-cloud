@@ -29,9 +29,10 @@ type Pipeline struct {
 	Branch        string                  `json:"branch" gorm:"column:branch"` // 分支名称
 	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by"`
 	Remark        string                  `json:"remark" gorm:"column:remark"`
-	LastRunId     uint                    `json:"last_run_id" gorm:"column:last_run_id"`         // 最近一次构建记录ID，即pipeline_history.id
-	LastRunAt     *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`         // 最近一次运行时间
-	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"` // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
+	LastRunId     uint                    `json:"last_run_id" gorm:"column:last_run_id"`                        // 最近一次构建记录ID，即pipeline_history.id
+	LastRunAt     *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
+	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
+	ArtifactName  string                  `json:"artifact_name" gorm:"column:artifact_name;type:nvarchar(200)"` // 制品名称
 }
 
 func (m *Pipeline) TableName() string {
@@ -59,6 +60,7 @@ func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err
 		Branch:        model.Branch,
 		CreatedBy:     currentUserId,
 		Remark:        model.Remark,
+		ArtifactName:  model.ImageName,
 		LastRunResult: 0,
 		PipelineSteps: steps,
 	}

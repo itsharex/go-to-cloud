@@ -64,6 +64,7 @@ type PlanModel struct {
 	LintCheck       *string `json:"lint_check"`
 	ArtifactEnabled bool    `json:"artifact_enabled"`
 	Dockerfile      *string `json:"dockerfile"`
+	ImageName       string  `json:"image_name"`
 	ArtifactRepoId  *uint   `json:"artifact_repo_id"`
 	DeployEnabled   bool    `json:"deploy_enabled"`
 	Remark          string  `json:"remark"`
