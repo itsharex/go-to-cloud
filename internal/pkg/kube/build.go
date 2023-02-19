@@ -11,11 +11,12 @@ import (
 )
 
 type Step struct {
-	CommandType pipeline.PlanStepType
-	CommandText string
-	Command     string // 当StepType是Image时，Command无意义
-	Dockerfile  string
-	Registry    struct {
+	CommandType  pipeline.PlanStepType
+	CommandText  string
+	Command      string // 当StepType是Image时，Command无意义
+	Dockerfile   string
+	ArtifactName string // 制品名称
+	Registry     struct {
 		Url      string
 		User     string
 		Password string
@@ -46,6 +47,15 @@ func (m PodSpecConfig) IsBuildImage() bool {
 // GetBaseImage 获取构建镜像的基础镜像
 func (m PodSpecConfig) GetBaseImage() string {
 	return *conf.GetBuildImage()
+}
+
+func (m PodSpecConfig) GetDockerImageName() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return step.ArtifactName
+		}
+	}
+	return ""
 }
 
 func (m PodSpecConfig) GetDockerfile() string {
@@ -179,7 +189,9 @@ spec:
       args:
         - "--dockerfile={{.GetDockerfile}}"
         - "--context=/workdir"
-        - "--no-push"
+        - "--skip-tls-verify"
+        - "--insecure"
+        - "--destination={{.GetRegistryUrl}}/{{.GetDockerImageName}}"
       tty: true
       volumeMounts:
       - name: workdir

@@ -55,6 +55,8 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 					var model repositories.ArtifactScript
 					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
 						steps[i].Dockerfile = model.Dockerfile
+						// TODO: 镜像名称
+						steps[i].ArtifactName = "" + ":v1.0"
 						steps[i].Registry.Url = model.Registry
 						steps[i].Registry.User = model.Account
 						steps[i].Registry.Password = model.Password
