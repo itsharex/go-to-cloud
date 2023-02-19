@@ -13,7 +13,5 @@ kind:
   - dev   # 开发
   - qa    # 质量
   - op    # 运维
-agent:
-  image: gotocloud.vip/agent/image:latest
-server:
-  url: grpc://gotocloud.vip:18081 # gotocloud服务地址，可被agent访问，注意：这个host作用于agent通信，非web站点后端服务地址，使用grpc://作为host的scheme
+builder:
+  kaniko: go-to-cloud-docker.pkg.coding.net/devops/kaniko/executor:v1.9.1-debug

@@ -14,7 +14,7 @@ func TestPing_Should_Success(t *testing.T) {
 
 	//ok, err := Ping(&artifactModel.Testing{
 	//	IsSecurity: false,
-	//	Url:        "81.68.216.88:8080",
+	//	Kaniko:        "81.68.216.88:8080",
 	//	User:       "admin",
 	//	Password:   "some password",
 	//})

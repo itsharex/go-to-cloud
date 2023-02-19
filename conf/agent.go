@@ -2,18 +2,18 @@ package conf
 
 import "sync"
 
-var agentImage *string
+var kaniko *string
 
-var onceAgent sync.Once
+var onceBuild sync.Once
 
-func GetAgentImage() *string {
-	if agentImage == nil {
-		onceAgent.Do(func() {
-			if agentImage == nil {
-				j := getConf().Agent
-				agentImage = &j.Image
+func GetBuildImage() *string {
+	if kaniko == nil {
+		onceBuild.Do(func() {
+			if kaniko == nil {
+				j := getConf().Builder
+				kaniko = &j.Kaniko
 			}
 		})
 	}
-	return agentImage
+	return kaniko
 }

@@ -9,8 +9,8 @@ import (
 var once sync.Once
 
 type Conf struct {
-	Agent struct {
-		Image string
+	Builder struct {
+		Kaniko string
 	}
 	Db struct {
 		User     string
@@ -18,9 +18,8 @@ type Conf struct {
 		Host     string
 		Schema   string
 	}
-	Jwt    JWT
-	Kind   []string // 用户分类
-	Server Server
+	Jwt  JWT
+	Kind []string // 用户分类
 }
 
 var conf *Conf

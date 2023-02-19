@@ -1,7 +1,9 @@
 package builder
 
 import (
+	"encoding/json"
 	lang2 "go-to-cloud/internal/builder/lang"
+	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 	"strconv"
@@ -44,8 +46,22 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 			for t, cmd := range kvp {
 				steps[i] = kube.Step{
 					Command:     cmd,
-					CommandType: (&t).GetTypeName(),
+					CommandText: (&t).GetTypeName(),
+					CommandType: t,
 				}
+				switch t {
+				case pipeline.Image:
+					steps[i].Command = ""
+					var model repositories.ArtifactScript
+					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
+						steps[i].Dockerfile = model.Dockerfile
+						steps[i].Registry.Url = model.Registry
+						steps[i].Registry.User = model.Account
+						steps[i].Registry.Password = model.Password
+						steps[i].Registry.Security = model.IsSecurity
+					}
+				}
+
 				i++
 			}
 			return steps

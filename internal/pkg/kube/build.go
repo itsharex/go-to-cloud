@@ -4,14 +4,23 @@ import (
 	"bytes"
 	"fmt"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/models/pipeline"
 	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
 	"strings"
 	"text/template"
 )
 
 type Step struct {
-	CommandType string
-	Command     string
+	CommandType pipeline.PlanStepType
+	CommandText string
+	Command     string // 当StepType是Image时，Command无意义
+	Dockerfile  string
+	Registry    struct {
+		Url      string
+		User     string
+		Password string
+		Security bool
+	}
 } // 构建步骤
 
 type PodSpecConfig struct {
@@ -23,6 +32,64 @@ type PodSpecConfig struct {
 	SourceCode   string // git url
 	Sdk          string // sdk 基础镜像
 	Steps        []Step
+}
+
+func (m PodSpecConfig) IsBuildImage() bool {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return true
+		}
+	}
+	return false
+}
+
+// GetBaseImage 获取构建镜像的基础镜像
+func (m PodSpecConfig) GetBaseImage() string {
+	return *conf.GetBuildImage()
+}
+
+func (m PodSpecConfig) GetDockerfile() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return step.Dockerfile
+		}
+	}
+	return ""
+}
+
+func (m PodSpecConfig) GetRegistryUrl() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			if strings.HasPrefix(step.Registry.Url, "http://") || strings.HasPrefix(step.Registry.Url, "https://") {
+				schema := "http"
+				if step.Registry.Security {
+					schema = "https"
+				}
+				return schema + "//" + step.Registry.Url
+			} else {
+				return step.Registry.Url
+			}
+		}
+	}
+	return ""
+}
+
+func (m PodSpecConfig) GetRegistryUser() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return step.Registry.User
+		}
+	}
+	return ""
+}
+
+func (m PodSpecConfig) GetRegistryPassword() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return step.Registry.Password
+		}
+	}
+	return ""
 }
 
 // Build 构建任务
@@ -94,17 +161,40 @@ spec:
       - -ec
       - |
         git clone {{.SourceCode}} /git
+{{- if .IsBuildImage}}
+        echo '{"auths":{"{{.GetRegistryUrl}}":{"username":"{{.GetRegistryUser}}", "password":"{{.GetRegistryPassword}}"}}}' > /kaniko/.docker/config.json
+{{- end}}
+      tty: true
       volumeMounts:
       - name: workdir
         mountPath: "/git"
+{{- if .IsBuildImage}}
+      - name: kaniko-config
+        mountPath: "/kaniko/.docker"
+{{- end}}
     containers:
+{{- if .IsBuildImage}}
+    - name: image
+      image: {{.GetBaseImage}}
+      args:
+        - "--dockerfile={{.GetDockerfile}}"
+        - "--context=/workdir"
+        - "--no-push"
+      tty: true
+      volumeMounts:
+      - name: workdir
+        mountPath: "/workdir"
+      - name: kaniko-config
+        mountPath: "/kaniko/.docker"
+{{- end}}
     - name: compile
       image: {{.Sdk}}
       imagePullPolicy: IfNotPresent
+      tty: true
       lifecycle: 
-      preStop:
-        exec:
-          command: ["/bin/sh", "-c", "echo '构建任务完成'"]
+        preStop:
+          exec:
+            command: ["/bin/sh", "-c", "echo '构建任务完成'"]
       command:
       - /bin/sh
       - -ec
@@ -113,11 +203,11 @@ spec:
         set -e
 {{- range .Steps}}
 {{- if .Command}}
-        echo ">>>{{.CommandType}} 开始"
+        echo ">>>{{.CommandText}} 开始"
         if {{.Command}};then
-          echo ">>>{{.CommandType}} 成功"
+          echo ">>>{{.CommandText}} 成功"
         else
-          echo ">>>{{.CommandType}} 失败"
+          echo ">>>{{.CommandText}} 失败"
         fi
         echo "\n"
 {{- end}}
@@ -129,4 +219,8 @@ spec:
     volumes:
     - name: workdir
       emptyDir: {}
+{{- if .IsBuildImage}}
+    - name: kaniko-config
+      emptyDir: {}
+{{- end}}
 `
