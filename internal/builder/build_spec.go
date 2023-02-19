@@ -2,6 +2,7 @@ package builder
 
 import (
 	"encoding/json"
+	"fmt"
 	lang2 "go-to-cloud/internal/builder/lang"
 	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/pkg/kube"
@@ -25,20 +26,21 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		lang = &lang2.Golang{}
 	}
 	buildIdStr := strconv.Itoa(int(buildId))
+	padLeftBuildIdStr := func(exceptedLen int) string {
+		if len(buildIdStr) >= exceptedLen {
+			return buildIdStr
+		}
+		padding := strings.Repeat("0", exceptedLen-len(buildIdStr))
+		return padding + buildIdStr
+	}(5)
 	return &kube.PodSpecConfig{
 		LabelFlag:    NodeSelectorLabel,
 		LabelBuildId: BuildIdSelectorLabel,
 		BuildId:      buildId,
 		Namespace:    node.K8sWorkerSpace,
-		TaskName: plan.Name + "-" + func(exceptedLen int) string {
-			if len(buildIdStr) >= exceptedLen {
-				return buildIdStr
-			}
-			padding := strings.Repeat("0", exceptedLen-len(buildIdStr))
-			return padding + buildIdStr
-		}(5),
-		SourceCode: plan.SourceCode.GitUrl,
-		Sdk:        lang.Sdk(plan.Env),
+		TaskName:     plan.Name + "-" + padLeftBuildIdStr,
+		SourceCode:   plan.SourceCode.GitUrl,
+		Sdk:          lang.Sdk(plan.Env),
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
 			steps := make([]kube.Step, len(kvp))
@@ -55,8 +57,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 					var model repositories.ArtifactScript
 					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
 						steps[i].Dockerfile = model.Dockerfile
-						// TODO: 镜像名称
-						steps[i].ArtifactName = "" + ":v1.0"
+						steps[i].ArtifactName = fmt.Sprintf("%s:v%s", plan.ArtifactName, padLeftBuildIdStr)
 						steps[i].Registry.Url = model.Registry
 						steps[i].Registry.User = model.Account
 						steps[i].Registry.Password = model.Password
