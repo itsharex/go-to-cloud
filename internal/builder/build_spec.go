@@ -7,8 +7,8 @@ import (
 	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 	"strconv"
-	"strings"
 )
 
 func ResetIdle(node *repositories.BuilderNode) {
@@ -25,14 +25,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 	case lang2.Go120, lang2.Go116, lang2.Go119, lang2.Go118, lang2.Go117:
 		lang = &lang2.Golang{}
 	}
-	buildIdStr := strconv.Itoa(int(buildId))
-	padLeftBuildIdStr := func(exceptedLen int) string {
-		if len(buildIdStr) >= exceptedLen {
-			return buildIdStr
-		}
-		padding := strings.Repeat("0", exceptedLen-len(buildIdStr))
-		return padding + buildIdStr
-	}(5)
+	padLeftBuildIdStr := utils.DockerImageTagBuild(buildId)
 	return &kube.PodSpecConfig{
 		LabelFlag:    NodeSelectorLabel,
 		LabelBuildId: BuildIdSelectorLabel,
@@ -54,7 +47,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 				switch t {
 				case pipeline.Image:
 					steps[i].Command = ""
-					var model repositories.ArtifactScript
+					var model pipeline.ArtifactScript
 					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
 						steps[i].Dockerfile = model.Dockerfile
 						steps[i].ArtifactName = fmt.Sprintf("%s:v%s", plan.ArtifactName, padLeftBuildIdStr)

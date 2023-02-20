@@ -9,12 +9,12 @@ import (
 
 type PipelineSteps struct {
 	Model
-	PipelinePlan   Pipeline `json:"-" gorm:"foreignKey:pipeline_id"`
-	PipelinePlanID int64    `json:"pipeline_id" gorm:"column:pipeline_id"`
-	Sort           int      `json:"sort" gorm:"column:sort"`               // 执行顺序
-	Name           string   `json:"name" gorm:"column:name"`               // 步骤名称
-	Script         string   `json:"script" gorm:"column:script;type:text"` // 步骤脚本；当步骤类型为(5)部署时，script表示deployment和service的yml；为(4)生成制品时；由制品类型决定内容
-	Type           int      `json:"type" gorm:"column:type"`               // 节点类型; 1:运行单测；2：运行lint；3：生成文档；4：生成镜像；5：部署；0：其他cli命令
+	PipelinePlan   Pipeline              `json:"-" gorm:"foreignKey:pipeline_id"`
+	PipelinePlanID int64                 `json:"pipeline_id" gorm:"column:pipeline_id"`
+	Sort           int                   `json:"sort" gorm:"column:sort"`               // 执行顺序
+	Name           string                `json:"name" gorm:"column:name"`               // 步骤名称
+	Script         string                `json:"script" gorm:"column:script;type:text"` // 步骤脚本；当步骤类型为(5)部署时，script表示deployment和service的yml；为(4)生成制品时；由制品类型决定内容
+	Type           pipeline.PlanStepType `json:"type" gorm:"column:type"`               // 节点类型; 1:运行单测；2：运行lint；3：生成文档；4：生成镜像；5：部署；0：其他cli命令
 }
 
 func (m *PipelineSteps) TableName() string {
@@ -55,7 +55,7 @@ func (steps *steps) artifactStep(model *pipeline.PlanModel, sort *int) error {
 			if origin != 1 {
 				return errors.New("not docker registry")
 			}
-			script, _ := json.Marshal(ArtifactScript{
+			script, _ := json.Marshal(pipeline.ArtifactScript{
 				Dockerfile: *model.Dockerfile,
 				Registry:   *url,
 				IsSecurity: isSecurity,

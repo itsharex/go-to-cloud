@@ -19,7 +19,7 @@ func getAndSetNodesState() {
 
 var allK8sPipelines map[uint]*kube.PodDescription
 
-var artifactWatcher chan uint // pipelinehistory.ID
+var artifactWatcher chan uint // pipeline_history.ID
 
 func init() {
 	allK8sPipelines = make(map[uint]*kube.PodDescription)
@@ -37,11 +37,10 @@ func PipelinesWatcher() {
 		}
 	}()
 
+	// 制品生成监控
 	go func() {
 		for builderId := range artifactWatcher {
-			if history, _ := repositories.GetPipelineHistory(builderId); history != nil {
-				// TODO: 尝试记录制品
-			}
+			go SaveDockImage(builderId)
 		}
 	}()
 }

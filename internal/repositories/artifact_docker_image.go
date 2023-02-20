@@ -1,17 +1,23 @@
 package repositories
 
 import (
+	"fmt"
 	"go-to-cloud/conf"
 )
 
 type ArtifactDockerImages struct {
 	Model
-	PipelineId     uint   `json:"pipelineId" gorm:"column:pipeline_id;type:bigint"`
-	Name           string `json:"name" gorm:"column:name"`
+	PipelineId     uint   `json:"pipelineId" gorm:"column:pipeline_id;type:bigint unsigned"`
+	BuildId        uint   `json:"buildId" gorm:"column:build_id;type:bigint unsigned"`
+	Name           string `json:"name" gorm:"column:name;type:varchar(200)"`
 	ArtifactRepoID uint   `json:"artifactRepoId" gorm:"column:artifact_repo_id;index:artifact_docker_images_artifact_repo_id_index"`
-	Tag            string `json:"tag" gorm:"column:tag;type:text;"`
-	Hash           string `json:"hash" gorm:"column:hash;"`
-	FullAddress    string `json:"fullAddress" gorm:"column:full_address"`
+	Tag            string `json:"tag" gorm:"column:tag;type:varchar(100)"`
+	FullAddress    string `json:"fullAddress" gorm:"column:full_address;type:varchar(200)"`
+}
+
+// GetHashedCode 获取镜像唯一名称
+func (m *ArtifactDockerImages) GetHashedCode() string {
+	return fmt.Sprintf("%d,%d,%s", m.ArtifactRepoID, m.PipelineId, m.Name)
 }
 
 func (m *ArtifactDockerImages) TableName() string {
@@ -28,4 +34,10 @@ func QueryImages(artifactId uint) ([]ArtifactDockerImages, error) {
 	err := tx.Find(&images).Error
 
 	return images, err
+}
+
+func CreateArtifact(image *ArtifactDockerImages) {
+	db := conf.GetDbClient()
+
+	_ = db.Model(&ArtifactDockerImages{}).Create(image)
 }

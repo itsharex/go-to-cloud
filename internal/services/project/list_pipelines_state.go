@@ -7,7 +7,7 @@ import (
 )
 
 func ListPipelinesState(projectId uint) ([]pipeline.PlanCardModel, error) {
-	plans, err := repositories.QueryPlan(projectId)
+	plans, err := repositories.QueryPipelinesByProjectId(projectId)
 
 	if err != nil {
 		return nil, err

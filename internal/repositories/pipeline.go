@@ -10,29 +10,22 @@ import (
 	"time"
 )
 
-type ArtifactScript struct {
-	Dockerfile string `json:"dockerfile"`
-	Registry   string `json:"registry"`
-	IsSecurity bool   `json:"isSecurity"`
-	Account    string `json:"account"`
-	Password   string `json:"password"`
-}
-
 type Pipeline struct {
 	Model
-	PipelineSteps []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
-	ProjectID     uint                    `json:"project_id" gorm:"column:project_id"`
-	Name          string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
-	Env           string                  `json:"env" gorm:"column:env"`                     // 运行环境(模板), e.g. dotnet:6; go:1.17
-	SourceCodeID  uint                    `json:"source_code_id" gorm:"column:source_code_id"`
-	SourceCode    ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
-	Branch        string                  `json:"branch" gorm:"column:branch"` // 分支名称
-	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by"`
-	Remark        string                  `json:"remark" gorm:"column:remark"`
-	LastRunId     uint                    `json:"last_run_id" gorm:"column:last_run_id"`                        // 最近一次构建记录ID，即pipeline_history.id
-	LastRunAt     *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
-	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
-	ArtifactName  string                  `json:"artifact_name" gorm:"column:artifact_name;type:nvarchar(200)"` // 制品名称
+	PipelineSteps  []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
+	ProjectID      uint                    `json:"project_id" gorm:"column:project_id;type:bigint unsigned;"`
+	ArtifactRepoId *uint                   `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned"`
+	Name           string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
+	Env            string                  `json:"env" gorm:"column:env"`                     // 运行环境(模板), e.g. dotnet:6; go:1.17
+	SourceCodeID   uint                    `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned"`
+	SourceCode     ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
+	Branch         string                  `json:"branch" gorm:"column:branch"` // 分支名称
+	CreatedBy      uint                    `json:"created_by" gorm:"column:created_by;type:bigint unsigned"`
+	Remark         string                  `json:"remark" gorm:"column:remark"`
+	LastRunId      uint                    `json:"last_run_id" gorm:"column:last_run_id;type:bigint unsigned"`   // 最近一次构建记录ID，即pipeline_history.id
+	LastRunAt      *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
+	LastRunResult  pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
+	ArtifactName   string                  `json:"artifact_name" gorm:"column:artifact_name;type:nvarchar(200)"` // 制品名称
 }
 
 func (m *Pipeline) TableName() string {
@@ -53,16 +46,17 @@ func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err
 	}
 
 	plan := Pipeline{
-		ProjectID:     projectId,
-		Name:          model.Name,
-		Env:           model.Env,
-		SourceCodeID:  model.SourceCodeID,
-		Branch:        model.Branch,
-		CreatedBy:     currentUserId,
-		Remark:        model.Remark,
-		ArtifactName:  model.ImageName,
-		LastRunResult: 0,
-		PipelineSteps: steps,
+		ProjectID:      projectId,
+		ArtifactRepoId: model.ArtifactRepoId,
+		Name:           model.Name,
+		Env:            model.Env,
+		SourceCodeID:   model.SourceCodeID,
+		Branch:         model.Branch,
+		CreatedBy:      currentUserId,
+		Remark:         model.Remark,
+		ArtifactName:   model.ImageName,
+		LastRunResult:  0,
+		PipelineSteps:  steps,
 	}
 
 	tx := conf.GetDbClient()
@@ -72,7 +66,20 @@ func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err
 	return
 }
 
-func QueryPlan(projectId uint) ([]Pipeline, error) {
+func QueryPipeline(id uint) (*Pipeline, error) {
+	db := conf.GetDbClient()
+
+	var p Pipeline
+
+	tx := db.Model(&Pipeline{})
+
+	tx = tx.Preload(clause.Associations)
+	tx = tx.First(&p, id)
+
+	return returnWithError(&p, tx.Error)
+}
+
+func QueryPipelinesByProjectId(projectId uint) ([]Pipeline, error) {
 	db := conf.GetDbClient()
 
 	var plans []Pipeline

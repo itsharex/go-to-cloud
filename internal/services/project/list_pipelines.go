@@ -7,7 +7,7 @@ import (
 )
 
 func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
-	plans, err := repositories.QueryPlan(projectId)
+	plans, err := repositories.QueryPipelinesByProjectId(projectId)
 
 	if err != nil {
 		return nil, err
