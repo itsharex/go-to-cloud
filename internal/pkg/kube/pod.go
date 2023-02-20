@@ -8,6 +8,7 @@ import (
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"strconv"
+	"strings"
 )
 
 type PodDescription struct {
@@ -61,14 +62,20 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 				return c
 			}(),
 			GetLog: func(c *string) *string {
-				if podLogs, err := watchContainerLogWithPodNameAndContainerName(ctx, client.clientSet, ns, pod.Name, "", nil, false); err == nil {
-					buf := new(bytes.Buffer)
-					if _, err := io.Copy(buf, podLogs); err == nil {
-						log := buf.String()
-						return &log
+				logBuilder := strings.Builder{}
+				for _, container := range pod.Spec.Containers {
+					name := container.Name
+					logBuilder.WriteString("tl;dl;" + name + "\n")
+					if podLogs, err := watchContainerLogWithPodNameAndContainerName(ctx, client.clientSet, ns, pod.Name, name, nil, false); err == nil {
+						buf := new(bytes.Buffer)
+						if _, err := io.Copy(buf, podLogs); err == nil {
+							logBuilder.WriteString(buf.String())
+							logBuilder.WriteString("\n")
+						}
 					}
 				}
-				return nil
+				log := logBuilder.String()
+				return &log
 			},
 		}
 	}
