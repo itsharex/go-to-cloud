@@ -29,6 +29,15 @@ func (m *PipelineHistory) TableName() string {
 	return "pipeline_history"
 }
 
+func GetPipelineHistory(historyId uint) (*PipelineHistory, error) {
+	db := conf.GetDbClient()
+
+	var rlt PipelineHistory
+	tx := db.Model(&PipelineHistory{}).First(&rlt, historyId)
+
+	return returnWithError(&rlt, tx.Error)
+}
+
 func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, description *kube.PodDescription) error {
 	db := conf.GetDbClient()
 

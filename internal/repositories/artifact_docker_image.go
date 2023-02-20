@@ -6,6 +6,7 @@ import (
 
 type ArtifactDockerImages struct {
 	Model
+	PipelineId     uint   `json:"pipelineId" gorm:"column:pipeline_id;type:bigint"`
 	Name           string `json:"name" gorm:"column:name"`
 	ArtifactRepoID uint   `json:"artifactRepoId" gorm:"column:artifact_repo_id;index:artifact_docker_images_artifact_repo_id_index"`
 	Tag            string `json:"tag" gorm:"column:tag;type:text;"`
@@ -23,10 +24,7 @@ func QueryImages(artifactId uint) ([]ArtifactDockerImages, error) {
 
 	var images []ArtifactDockerImages
 
-	// TODO: 环境变量
-	tx := db.Debug()
-
-	tx = tx.Where(ArtifactDockerImages{ArtifactRepoID: artifactId})
+	tx := db.Where(ArtifactDockerImages{ArtifactRepoID: artifactId})
 	err := tx.Find(&images).Error
 
 	return images, err

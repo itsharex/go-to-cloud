@@ -19,8 +19,11 @@ func getAndSetNodesState() {
 
 var allK8sPipelines map[uint]*kube.PodDescription
 
+var artifactWatcher chan uint // pipelinehistory.ID
+
 func init() {
 	allK8sPipelines = make(map[uint]*kube.PodDescription)
+	artifactWatcher = make(chan uint, 5)
 }
 
 // PipelinesWatcher 流水线监测
@@ -31,6 +34,14 @@ func PipelinesWatcher() {
 			c := time.Tick(time.Second * 15)
 			<-c
 			getAndSetNodesState()
+		}
+	}()
+
+	go func() {
+		for builderId := range artifactWatcher {
+			if history, _ := repositories.GetPipelineHistory(builderId); history != nil {
+				// TODO: 尝试记录制品
+			}
 		}
 	}()
 }
@@ -51,6 +62,7 @@ func getAndSetK8sNodesState() {
 							case kube.Pending, kube.Running:
 								return pipeline.UnderBuilding
 							case kube.Succeeded:
+								// TODO: 根据容器的状态最终确定构建结果
 								return pipeline.BuildingSuccess
 							case kube.Failed:
 								return pipeline.BuildingFailed
@@ -61,6 +73,9 @@ func getAndSetK8sNodesState() {
 						if err := repositories.UpdatePipeline(pod.BuildId, rlt, &pods[i]); err == nil && pipeline.IsComplete(rlt) {
 							// 清理Pod
 							client.DeletePod(context.TODO(), node.K8sWorkerSpace, pod.Name)
+
+							// 通知制品监视器流水线构建完成
+							artifactWatcher <- pod.BuildId
 						}
 					}
 				}

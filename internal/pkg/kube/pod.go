@@ -12,11 +12,12 @@ import (
 )
 
 type PodDescription struct {
-	Name       string
-	Status     coreV1.PodPhase
-	BuildId    uint
-	Containers []string
-	GetLog     func(*string) *string // 获取容器日志
+	Name        string
+	Status      coreV1.PodPhase
+	BuildId     uint
+	Containers  []string
+	GetLog      func(*string) *string // 获取容器日志
+	GetArtifact func(*string) *string // 获取产物
 }
 
 /*
