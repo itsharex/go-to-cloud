@@ -38,6 +38,9 @@ func QueryArtifactRepo(ctx *gin.Context) {
 		return
 	}
 
+	for i := range result {
+		result[i].Password = ""
+	}
 	response.Success(ctx, result)
 }
 
