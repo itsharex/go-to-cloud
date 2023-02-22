@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// K8sRepo K8s部署环境
 type K8sRepo struct {
 	Model
 	Name          string         `json:"name" gorm:"column:name"`
