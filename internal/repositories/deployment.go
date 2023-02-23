@@ -47,3 +47,11 @@ func QueryDeploymentsByProjectId(projectId uint) ([]Deployment, error) {
 
 	return returnWithError(deployments, err)
 }
+
+func CreateDeployment(deployment *Deployment) error {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&Deployment{})
+
+	return tx.Create(deployment).Error
+}
