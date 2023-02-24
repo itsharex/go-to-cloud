@@ -79,5 +79,6 @@ func buildRouters(router *gin.Engine) {
 		project.PUT("/:projectId/deploy/restart", projects.Restart)
 		project.PUT("/:projectId/deploy/redeploy", projects.Redeployment)
 		project.DELETE("/:projectId/deploy/:id", projects.DeleteDeployment)
+		project.GET("/projectId/deploy/namespaces", projects.QueryNamespaces)
 	}
 }
