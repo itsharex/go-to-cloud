@@ -33,6 +33,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		Namespace:    node.K8sWorkerSpace,
 		TaskName:     plan.Name + "-" + padLeftBuildIdStr,
 		SourceCode:   plan.SourceCode.GitUrl,
+		Branch:       plan.Branch,
 		Sdk:          lang.Sdk(plan.Env),
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
@@ -50,7 +51,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 					var model pipeline.ArtifactScript
 					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
 						steps[i].Dockerfile = model.Dockerfile
-						steps[i].ArtifactName = fmt.Sprintf("%s:v%s", plan.ArtifactName, padLeftBuildIdStr)
+						steps[i].ArtifactName = fmt.Sprintf("%s-%s:v%s", plan.ArtifactName, plan.Branch, padLeftBuildIdStr)
 						steps[i].Registry.Url = model.Registry
 						steps[i].Registry.User = model.Account
 						steps[i].Registry.Password = model.Password

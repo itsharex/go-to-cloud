@@ -31,6 +31,7 @@ type PodSpecConfig struct {
 	Namespace    string
 	TaskName     string // pod name
 	SourceCode   string // git url
+	Branch       string
 	Sdk          string // sdk 基础镜像
 	Steps        []Step
 }
@@ -170,7 +171,7 @@ spec:
       - /bin/sh
       - -ec
       - |
-        git clone {{.SourceCode}} /git
+        git clone -b {{.Branch}} {{.SourceCode}} /git
 {{- if .IsBuildImage}}
         echo '{"auths":{"{{.GetRegistryUrl}}":{"username":"{{.GetRegistryUser}}", "password":"{{.GetRegistryPassword}}"}}}' > /kaniko/.docker/config.json
 {{- end}}

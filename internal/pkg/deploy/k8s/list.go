@@ -13,6 +13,9 @@ import (
 //	query: 查询条件
 func List(orgs []uint, query *k8s.Query) ([]k8s.K8s, error) {
 	var orgId []uint
+	if query == nil {
+		query = &k8s.Query{}
+	}
 	if len(query.Orgs) == 0 {
 		//	默认取当前用户所属全体组织
 		orgId = orgs

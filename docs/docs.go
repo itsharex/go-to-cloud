@@ -864,6 +864,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/deploy/env": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取部署环境列表，目前仅支持K8s环境",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取部署环境列表，目前仅支持K8s环境",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/deploy/namespaces": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "根据当前用户所属组织获取部署环境的可用名字空间",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取部署环境的可用名字空间",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/deploy.Deployment"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/deploy/redeploy": {
             "put": {
                 "security": [
