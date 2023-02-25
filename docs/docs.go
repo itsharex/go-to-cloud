@@ -1525,56 +1525,69 @@ const docTemplate = `{
         "deploy.Deployment": {
             "type": "object",
             "properties": {
-                "artifactDockerImageId": {
+                "artifact": {
                     "type": "integer"
                 },
-                "cpus": {
+                "cpuLimits": {
                     "type": "integer"
+                },
+                "cpuRequest": {
+                    "type": "integer"
+                },
+                "enableLimit": {
+                    "type": "boolean"
                 },
                 "env": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "varName": {
+                                "type": "string"
+                            },
+                            "varValue": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "healthcheck": {
                     "type": "string"
                 },
-                "k8SNamespace": {
-                    "type": "string"
-                },
-                "k8SRepoId": {
+                "healthcheckPort": {
                     "type": "integer"
                 },
-                "liveness": {
-                    "type": "string"
+                "k8s": {
+                    "type": "integer"
                 },
-                "nodeSelector": {
+                "memLimits": {
+                    "type": "integer"
+                },
+                "memRequest": {
+                    "type": "integer"
+                },
+                "namespace": {
                     "type": "string"
                 },
                 "ports": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "replicate": {
+                    "type": "integer"
+                },
+                "version": {
                     "type": "string"
-                },
-                "projectId": {
-                    "type": "integer"
-                },
-                "readiness": {
-                    "type": "string"
-                },
-                "replicas": {
-                    "type": "integer"
-                },
-                "resourceLimitCpuLimits": {
-                    "type": "integer"
-                },
-                "resourceLimitCpuRequest": {
-                    "type": "integer"
-                },
-                "resourceLimitMemLimits": {
-                    "type": "integer"
-                },
-                "resourceLimitMemRequest": {
-                    "type": "integer"
-                },
-                "rollingMaxSurge": {
-                    "type": "integer"
-                },
-                "rollingMaxUnavailable": {
-                    "type": "integer"
                 }
             }
         },

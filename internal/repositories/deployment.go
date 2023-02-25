@@ -15,9 +15,8 @@ type Deployment struct {
 	K8sRepo                 K8sRepo              `json:"-" gorm:"foreignKey:k8s_repo_id"`
 	ArtifactDockerImageId   uint                 `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned"`
 	ArtifactDockerImageRepo ArtifactDockerImages `json:"-" gorm:"foreignKey:artifact_docker_image_id"`
-	Ports                   datatypes.JSON       `json:"ports" gorm:"column:ports"` // 端口{containerPort: 80, servicePort: 80, nodePort: 30080, portName: 'http'}
-	Cpus                    uint                 `json:"cpus" gorm:"column:cpus;type:int unsigned"`
-	Env                     datatypes.JSON       `json:"env" gorm:"column:env;type:text"`                                             // 环境变量，json形式
+	Ports                   datatypes.JSON       `json:"ports" gorm:"column:ports"`                                                   // 端口{containerPort: 80, servicePort: 80, nodePort: 30080, portName: 'http'}
+	Env                     datatypes.JSON       `json:"env" gorm:"column:env;type:text"`                                             // 环境变量，[{'env_name': 'env_value'}]
 	Replicas                uint                 `json:"replicas" gorm:"column:replicas;type:int unsigned"`                           // 副本数量
 	Liveness                string               `json:"liveness" gorm:"column:liveness;type: varchar(500)"`                          // 存活检查地址
 	Readiness               string               `json:"readiness" gorm:"column:readiness;type: varchar(500)"`                        // 就绪检查地址

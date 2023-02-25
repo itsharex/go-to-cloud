@@ -1,6 +1,7 @@
 package project
 
 import (
+	"encoding/json"
 	"go-to-cloud/internal/models/deploy"
 	"go-to-cloud/internal/repositories"
 )
@@ -15,23 +16,42 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 	models := make([]deploy.Deployment, len(deployments))
 	for i := range deployments {
 		models[i] = deploy.Deployment{
-			ProjectId:               deployments[i].ProjectId,
-			K8sNamespace:            deployments[i].K8sNamespace,
-			K8sRepoId:               deployments[i].K8sRepoId,
-			ArtifactDockerImageId:   deployments[i].ArtifactDockerImageId,
-			Ports:                   string(deployments[i].Ports),
-			Cpus:                    deployments[i].Cpus,
-			Env:                     string(deployments[i].Env),
-			Replicas:                deployments[i].Replicas,
-			Liveness:                deployments[i].Liveness,
-			Readiness:               deployments[i].Readiness,
-			RollingMaxSurge:         deployments[i].RollingMaxSurge,
-			RollingMaxUnavailable:   deployments[i].RollingMaxUnavailable,
-			ResourceLimitCpuRequest: deployments[i].ResourceLimitCpuRequest,
-			ResourceLimitCpuLimits:  deployments[i].ResourceLimitCpuLimits,
-			ResourceLimitMemRequest: deployments[i].ResourceLimitMemRequest,
-			ResourceLimitMemLimits:  deployments[i].ResourceLimitMemLimits,
-			NodeSelector:            string(deployments[i].NodeSelector),
+			Namespace: deployments[i].K8sNamespace,
+			K8S:       deployments[i].K8sRepoId,
+			Artifact:  deployments[i].ArtifactDockerImageId,
+			Ports: func() []struct {
+				ServicePort   string `json:"text"`
+				ContainerPort string `json:"value"`
+			} {
+				var t []struct {
+					ServicePort   string `json:"text"`
+					ContainerPort string `json:"value"`
+				}
+				if json.Unmarshal(deployments[i].Ports, &t) != nil {
+					return nil
+				} else {
+					return t
+				}
+			}(),
+			Env: func() []struct {
+				VarName  string `json:"varName"`
+				VarValue string `json:"varValue"`
+			} {
+				var t []struct {
+					VarName  string `json:"varName"`
+					VarValue string `json:"varValue"`
+				}
+				if json.Unmarshal(deployments[i].Env, &t) != nil {
+					return nil
+				} else {
+					return t
+				}
+			}(),
+			Replicate:  deployments[i].Replicas,
+			CpuRequest: deployments[i].ResourceLimitCpuRequest,
+			CpuLimits:  deployments[i].ResourceLimitCpuLimits,
+			MemRequest: deployments[i].ResourceLimitMemRequest,
+			MemLimits:  deployments[i].ResourceLimitMemLimits,
 		}
 	}
 

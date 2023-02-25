@@ -1,30 +1,39 @@
 package project
 
 import (
+	"encoding/json"
 	"go-to-cloud/internal/models/deploy"
 	"go-to-cloud/internal/repositories"
 	"gorm.io/datatypes"
 )
 
-func CreateDeployments(_ uint64, d *deploy.Deployment) error {
+func CreateDeployments(projectId uint, d *deploy.Deployment) error {
+	ser := func(v any) string {
+		if m, e := json.Marshal(v); e != nil {
+			return ""
+		} else {
+			return string(m)
+		}
+	}
+	v := func(l uint) uint {
+		if d.EnableLimit {
+			return l
+		} else {
+			return 0
+		}
+	}
 	repo := repositories.Deployment{
-		ProjectId:               d.ProjectId,
-		K8sNamespace:            d.K8sNamespace,
-		K8sRepoId:               d.K8sRepoId,
-		ArtifactDockerImageId:   d.ArtifactDockerImageId,
-		Ports:                   datatypes.JSON(d.Ports),
-		Cpus:                    d.Cpus,
-		Env:                     datatypes.JSON(d.Env),
-		Replicas:                d.Replicas,
-		Liveness:                d.Liveness,
-		Readiness:               d.Readiness,
-		RollingMaxSurge:         d.RollingMaxSurge,
-		RollingMaxUnavailable:   d.RollingMaxUnavailable,
-		ResourceLimitCpuRequest: d.ResourceLimitCpuRequest,
-		ResourceLimitCpuLimits:  d.ResourceLimitCpuLimits,
-		ResourceLimitMemRequest: d.ResourceLimitMemRequest,
-		ResourceLimitMemLimits:  d.ResourceLimitMemLimits,
-		NodeSelector:            datatypes.JSON(d.NodeSelector),
+		ProjectId:               projectId,
+		K8sNamespace:            d.Namespace,
+		K8sRepoId:               d.K8S,
+		ArtifactDockerImageId:   d.Artifact,
+		Ports:                   datatypes.JSON(ser(d.Ports)),
+		Env:                     datatypes.JSON(ser(d.Env)),
+		Replicas:                d.Replicate,
+		ResourceLimitCpuRequest: v(d.CpuRequest),
+		ResourceLimitCpuLimits:  v(d.CpuLimits),
+		ResourceLimitMemRequest: v(d.MemRequest),
+		ResourceLimitMemLimits:  v(d.MemLimits),
 	}
 	return repositories.CreateDeployment(&repo)
 }

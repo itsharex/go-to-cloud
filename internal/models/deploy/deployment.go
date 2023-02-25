@@ -1,23 +1,26 @@
 package deploy
 
 type Deployment struct {
-	ProjectId               uint   `json:"projectId"`
-	K8sNamespace            string `json:"k8SNamespace"`
-	K8sRepoId               uint   `json:"k8SRepoId"`
-	ArtifactDockerImageId   uint   `json:"artifactDockerImageId"`
-	Ports                   string `json:"ports"`
-	Cpus                    uint   `json:"cpus"`
-	Env                     string `json:"env"`
-	Replicas                uint   `json:"replicas"`
-	Liveness                string `json:"liveness"`
-	Readiness               string `json:"readiness"`
-	RollingMaxSurge         uint   `json:"rollingMaxSurge"`
-	RollingMaxUnavailable   uint   `json:"rollingMaxUnavailable"`
-	ResourceLimitCpuRequest uint   `json:"resourceLimitCpuRequest"`
-	ResourceLimitCpuLimits  uint   `json:"resourceLimitCpuLimits"`
-	ResourceLimitMemRequest uint   `json:"resourceLimitMemRequest"`
-	ResourceLimitMemLimits  uint   `json:"resourceLimitMemLimits"`
-	NodeSelector            string `json:"nodeSelector"`
+	K8S             uint   `json:"k8s"`
+	Namespace       string `json:"namespace"`
+	Artifact        uint   `json:"artifact"`
+	Version         string `json:"version"`
+	Replicate       uint   `json:"replicate"`
+	Healthcheck     string `json:"healthcheck"`
+	HealthcheckPort uint   `json:"healthcheckPort"`
+	EnableLimit     bool   `json:"enableLimit"`
+	CpuLimits       uint   `json:"cpuLimits"`
+	CpuRequest      uint   `json:"cpuRequest"`
+	MemLimits       uint   `json:"memLimits"`
+	MemRequest      uint   `json:"memRequest"`
+	Ports           []struct {
+		ServicePort   string `json:"text"`
+		ContainerPort string `json:"value"`
+	} `json:"ports"`
+	Env []struct {
+		VarName  string `json:"varName"`
+		VarValue string `json:"varValue"`
+	} `json:"env"`
 }
 
 type Base struct {

@@ -1,7 +1,6 @@
 package projects
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/models/deploy"
@@ -34,11 +33,8 @@ func CreateDeployment(ctx *gin.Context) {
 		response.BadRequest(ctx, err)
 		return
 	}
-	if projectId != uint64(req.ProjectId) {
-		response.BadRequest(ctx, errors.New("unavailable project"))
-	}
 
-	if err := project.CreateDeployments(projectId, &req); err != nil {
+	if err := project.CreateDeployments(uint(projectId), &req); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 		return
