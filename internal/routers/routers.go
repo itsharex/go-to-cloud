@@ -82,5 +82,6 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/:projectId/deploy/:k8sRepoId/namespaces", projects.QueryNamespaces)
 		project.GET("/:projectId/deploy/env", projects.QueryDeploymentEnv)
 		project.GET("/:projectId/artifacts/:querystring", projects.QueryArtifacts)
+		project.GET("/:projectId/artifact/:artifactId/tags", projects.QueryArtifactTags)
 	}
 }

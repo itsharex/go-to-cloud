@@ -9,14 +9,14 @@ import (
 	"strconv"
 )
 
-// QueryArtifacts 获取项目中的制品镜像
+// QueryArtifactTags 获取项目中的制品镜像版本列表
 // @Tags Projects
 // @Description 获取项目中的制品镜像
 // @Summary 获取项目中的制品镜像
-// @Success 200 {array} any
-// @Router /api/projects/{projectId}/artifacts/{querystring} [get]
+// @Success 200 {array} string
+// @Router /api/projects/{projectId}/artifact/{artifactId}/tags [get]
 // @Security JWT
-func QueryArtifacts(ctx *gin.Context) {
+func QueryArtifactTags(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
@@ -27,11 +27,12 @@ func QueryArtifacts(ctx *gin.Context) {
 	projectIdStr := ctx.Param("projectId")
 	projectId, err := strconv.ParseUint(projectIdStr, 10, 64)
 
-	queryString := ctx.Param("querystring")
+	artifactIdStr := ctx.Param("artifactId")
+	artifactId, err := strconv.ParseUint(artifactIdStr, 10, 64)
 
-	artifacts, err := project.ListArtifactsByKeywords(uint(projectId), &queryString)
+	tags, err := project.ListArtifactTagsById(uint(projectId), uint(artifactId))
 	if err == nil {
-		response.Success(ctx, artifacts)
+		response.Success(ctx, tags)
 	} else {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

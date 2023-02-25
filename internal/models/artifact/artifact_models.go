@@ -37,3 +37,10 @@ type OrgLite struct {
 type Query struct {
 	Artifact
 }
+
+type FullName struct {
+	Id      uint   `json:"id"` // 制品ID
+	Name    string `json:"name"`
+	Tag     string `json:"tag"`
+	Address string `json:"address"`
+}

@@ -813,6 +813,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/artifact/{artifactId}/tags": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取项目中的制品镜像",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取项目中的制品镜像",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/artifacts/{querystring}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取项目中的制品镜像",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取项目中的制品镜像",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/deploy/app": {
             "post": {
                 "security": [

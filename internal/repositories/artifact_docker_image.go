@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/models/artifact"
 )
 
 type ArtifactDockerImages struct {
@@ -42,16 +43,36 @@ func CreateArtifact(image *ArtifactDockerImages) {
 	_ = db.Model(&ArtifactDockerImages{}).Create(image)
 }
 
-func QueryImagesByProjectId(projectId uint) ([]ArtifactDockerImages, error) {
+func QueryLatestImagesByProjectId(projectId uint) ([]artifact.FullName, error) {
 	db := conf.GetDbClient()
 
-	var images []ArtifactDockerImages
+	var images []artifact.FullName
 
 	tx := db.Raw(`
-select a.name, a.tag
+select a.id, a.name, a.tag, a.full_address address
 from artifact_docker_images a
          inner join pipeline p on p.id = a.pipeline_id
+         inner join (select max(d.updated_at) upd, d.pipeline_id pipelineId
+                     from artifact_docker_images d
+                     group by d.pipeline_id) x
+                    on x.upd = a.updated_at AND x.pipelineId = a.pipeline_id
 where p.project_id = ?`, projectId).Find(&images)
 
 	return returnWithError(images, tx.Error)
+}
+
+func QueryImageTagsById(id uint) ([]string, error) {
+	db := conf.GetDbClient()
+
+	var tags []string
+
+	tx := db.Raw(`
+	select tag
+		from artifact_docker_images b
+		inner join (select pipeline_id
+			from artifact_docker_images a
+			where a.id = ?) x on x.pipeline_id = b.pipeline_id
+			order by b.id desc`, id).Find(&tags)
+
+	return returnWithError(tags, tx.Error)
 }
