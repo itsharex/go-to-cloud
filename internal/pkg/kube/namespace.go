@@ -18,7 +18,7 @@ func (client *Client) GetAllNamespaces(includeKube bool) ([]string, error) {
 		ns := make([]string, 0)
 		for _, namespace := range all.Items {
 			if !includeKube {
-				if strings.HasPrefix(namespace.Name, "includeKube-") || strings.HasPrefix(namespace.Name, "kubernetes-") {
+				if strings.HasPrefix(namespace.Name, "kube-") || strings.HasPrefix(namespace.Name, "kubernetes-") {
 					continue
 				}
 			}

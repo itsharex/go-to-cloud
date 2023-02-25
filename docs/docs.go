@@ -883,31 +883,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{projectId}/deploy/namespaces": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "根据当前用户所属组织获取部署环境的可用名字空间",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "获取部署环境的可用名字空间",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/deploy.Deployment"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/projects/{projectId}/deploy/redeploy": {
             "put": {
                 "security": [
@@ -999,6 +974,31 @@ const docTemplate = `{
                 ],
                 "summary": "删除部署应用",
                 "responses": {}
+            }
+        },
+        "/api/projects/{projectId}/deploy/{k8sRepoId}/namespaces": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "根据当前用户所属组织获取部署环境的可用名字空间",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取部署环境的可用名字空间",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/projects/{projectId}/import": {

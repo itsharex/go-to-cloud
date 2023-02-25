@@ -9,26 +9,29 @@ import (
 	"strconv"
 )
 
-// QueryNamespaces 获取部署环境的可用名字空间
+// QueryArtifacts 获取项目中的制品镜像
 // @Tags Projects
-// @Description 根据当前用户所属组织获取部署环境的可用名字空间
-// @Summary 获取部署环境的可用名字空间
+// @Description 获取项目中的制品镜像
+// @Summary 获取项目中的制品镜像
 // @Success 200 {array} string
-// @Router /api/projects/{projectId}/deploy/{k8sRepoId}/namespaces [get]
+// @Router /api/projects/{projectId}/artifacts/{querystring} [get]
 // @Security JWT
-func QueryNamespaces(ctx *gin.Context) {
+func QueryArtifacts(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
-	k8sRepoIdStr := ctx.Param("k8sRepoId")
-	k8sRepoId, err := strconv.ParseUint(k8sRepoIdStr, 10, 64)
 
-	ns, err := project.ListNamespacesByK8sRepo(uint(k8sRepoId))
+	projectIdStr := ctx.Param("projectId")
+	projectId, err := strconv.ParseUint(projectIdStr, 10, 64)
+
+	queryString := ctx.Param("querystring")
+
+	artifacts, err := project.ListArtifacts(uint(projectId), &queryString)
 	if err == nil {
-		response.Success(ctx, ns)
+		response.Success(ctx, artifacts)
 	} else {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

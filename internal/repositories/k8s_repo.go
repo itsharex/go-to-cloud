@@ -34,6 +34,15 @@ type K8sRepoWithOrg struct {
 	OrgLite
 }
 
+func QueryK8sRepoById(id uint) (*K8sRepo, error) {
+	var repo K8sRepo
+	tx := conf.GetDbClient().Model(&repo)
+
+	tx.First(&repo, id)
+
+	return returnWithError(&repo, tx.Error)
+}
+
 func QueryK8sRepo(orgs []uint, repoNamePattern string, pager *models.Pager) ([]MergedK8sRepoWithOrg, error) {
 	var repo []K8sRepoWithOrg
 
