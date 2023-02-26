@@ -16,9 +16,11 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 	models := make([]deploy.Deployment, len(deployments))
 	for i := range deployments {
 		models[i] = deploy.Deployment{
-			Namespace: deployments[i].K8sNamespace,
-			K8S:       deployments[i].K8sRepoId,
-			Artifact:  deployments[i].ArtifactDockerImageId,
+			Namespace:    deployments[i].K8sNamespace,
+			K8S:          deployments[i].K8sRepoId,
+			K8sName:      deployments[i].K8sRepo.Name,
+			Artifact:     deployments[i].ArtifactDockerImageId,
+			ArtifactName: deployments[i].ArtifactDockerImageRepo.Name,
 			Ports: func() []struct {
 				ServicePort   string `json:"text"`
 				ContainerPort string `json:"value"`
@@ -34,24 +36,34 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 				}
 			}(),
 			Env: func() []struct {
-				VarName  string `json:"varName"`
-				VarValue string `json:"varValue"`
+				VarName  string `json:"text"`
+				VarValue string `json:"value"`
 			} {
 				var t []struct {
-					VarName  string `json:"varName"`
-					VarValue string `json:"varValue"`
+					VarName  string `json:"text"`
+					VarValue string `json:"value"`
 				}
+				t1 := make([]struct {
+					VarName  string `json:"text"`
+					VarValue string `json:"value"`
+				}, 0)
 				if json.Unmarshal(deployments[i].Env, &t) != nil {
 					return nil
 				} else {
-					return t
+					for i, s := range t {
+						if len(s.VarName) > 0 {
+							t1 = append(t1, t[i])
+						}
+					}
+					return t1
 				}
 			}(),
-			Replicate:  deployments[i].Replicas,
-			CpuRequest: deployments[i].ResourceLimitCpuRequest,
-			CpuLimits:  deployments[i].ResourceLimitCpuLimits,
-			MemRequest: deployments[i].ResourceLimitMemRequest,
-			MemLimits:  deployments[i].ResourceLimitMemLimits,
+			Replicate:   deployments[i].Replicas,
+			CpuRequest:  deployments[i].ResourceLimitCpuRequest,
+			CpuLimits:   deployments[i].ResourceLimitCpuLimits,
+			MemRequest:  deployments[i].ResourceLimitMemRequest,
+			MemLimits:   deployments[i].ResourceLimitMemLimits,
+			ArtifactTag: deployments[i].ArtifactTag,
 		}
 	}
 

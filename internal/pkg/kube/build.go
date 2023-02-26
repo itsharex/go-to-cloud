@@ -10,12 +10,15 @@ import (
 	"text/template"
 )
 
+const LatestTag = "latest"
+
 type Step struct {
 	CommandType  pipeline.PlanStepType
 	CommandText  string
 	Command      string // 当StepType是Image时，Command无意义
 	Dockerfile   string
 	ArtifactName string // 制品名称
+	ArtifactTag  string // 制品Tag
 	Registry     struct {
 		Url      string
 		User     string
@@ -53,7 +56,16 @@ func (m PodSpecConfig) GetBaseImage() string {
 func (m PodSpecConfig) GetDockerImageName() string {
 	for _, step := range m.Steps {
 		if step.CommandType == pipeline.Image {
-			return step.ArtifactName
+			return fmt.Sprintf("%s:%s", step.ArtifactName, step.ArtifactTag)
+		}
+	}
+	return ""
+}
+
+func (m PodSpecConfig) GetLatestDockerImage() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return fmt.Sprintf("%s:%s", step.ArtifactName, LatestTag)
 		}
 	}
 	return ""
@@ -193,6 +205,7 @@ spec:
         - "--skip-tls-verify"
         - "--insecure"
         - "--destination={{.GetRegistryUrl}}/{{.GetDockerImageName}}"
+        - "--destination={{.GetRegistryUrl}}/{{.GetLatestDockerImage}}"
       tty: true
       volumeMounts:
       - name: workdir

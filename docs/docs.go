@@ -1528,11 +1528,19 @@ const docTemplate = `{
                 "artifact": {
                     "type": "integer"
                 },
+                "artifactName": {
+                    "type": "string"
+                },
+                "artifactTag": {
+                    "type": "string"
+                },
                 "cpuLimits": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "cpuRequest": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "enableLimit": {
                     "type": "boolean"
@@ -1542,10 +1550,10 @@ const docTemplate = `{
                     "items": {
                         "type": "object",
                         "properties": {
-                            "varName": {
+                            "text": {
                                 "type": "string"
                             },
-                            "varValue": {
+                            "value": {
                                 "type": "string"
                             }
                         }
@@ -1555,16 +1563,22 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "healthcheckPort": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "k8s": {
                     "type": "integer"
                 },
+                "k8sName": {
+                    "type": "string"
+                },
                 "memLimits": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "memRequest": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "namespace": {
                     "type": "string"
@@ -1585,9 +1599,6 @@ const docTemplate = `{
                 },
                 "replicate": {
                     "type": "integer"
-                },
-                "version": {
-                    "type": "string"
                 }
             }
         },

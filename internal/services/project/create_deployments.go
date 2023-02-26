@@ -27,6 +27,7 @@ func CreateDeployments(projectId uint, d *deploy.Deployment) error {
 		K8sNamespace:            d.Namespace,
 		K8sRepoId:               d.K8S,
 		ArtifactDockerImageId:   d.Artifact,
+		ArtifactTag:             d.ArtifactTag,
 		Ports:                   datatypes.JSON(ser(d.Ports)),
 		Env:                     datatypes.JSON(ser(d.Env)),
 		Replicas:                d.Replicate,

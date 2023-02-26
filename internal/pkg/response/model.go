@@ -1,10 +1,8 @@
 package response
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -20,7 +18,7 @@ func GetResponse() *Response {
 	}
 }
 func BadRequest(ctx *gin.Context, data ...any) {
-	GetResponse().WithDataFailure(http.StatusBadRequest, ctx, data)
+	GetResponse().withDataAndHttpCode(http.StatusBadRequest, ctx, data)
 }
 
 // Success 业务成功响应
@@ -60,39 +58,44 @@ type Response struct {
 }
 
 // Fail 错误返回
-func (r *Response) Fail(ctx *gin.Context) {
+func (r *Response) Fail(ctx *gin.Context) *Response {
 	r.SetCode(http.StatusInternalServerError)
 	r.json(ctx)
+	return r
 }
 
 // FailCode 自定义错误码返回
-func (r *Response) FailCode(ctx *gin.Context, code int, msg ...string) {
+func (r *Response) FailCode(ctx *gin.Context, code int, msg ...string) *Response {
 	r.SetCode(code)
 	if msg != nil {
 		r.WithMessage(msg[0])
 	}
 	r.json(ctx)
+	return r
 }
 
 // Success 正确返回
-func (r *Response) Success(ctx *gin.Context) {
+func (r *Response) Success(ctx *gin.Context) *Response {
 	r.SetCode(http.StatusOK)
 	r.json(ctx)
+	return r
 }
 
 // WithDataSuccess 成功后需要返回值
-func (r *Response) WithDataSuccess(ctx *gin.Context, data interface{}) {
+func (r *Response) WithDataSuccess(ctx *gin.Context, data interface{}) *Response {
 	r.SetCode(http.StatusOK)
 	r.WithData(data)
 	r.json(ctx)
+	return r
 }
 
-func (r *Response) WithDataFailure(code int, ctx *gin.Context, data interface{}) {
+func (r *Response) withDataAndHttpCode(code int, ctx *gin.Context, data interface{}) *Response {
 	r.SetHttpCode(code)
 	if data != nil {
 		r.WithData(data)
 	}
 	r.json(ctx)
+	return r
 }
 
 // SetCode 设置返回code码
@@ -130,12 +133,6 @@ func (r *Response) WithMessage(message string) *Response {
 
 // json 返回 gin 框架的 HandlerFunc
 func (r *Response) json(ctx *gin.Context) {
-	if len(strings.Trim(r.Result.Message, " ")) > 0 {
-		if r.Result.Code >= http.StatusBadRequest {
-			r.Result.Message = fmt.Sprintf("msg: %s\r\nplease visit https://http.cat/%d for reason", r.Result.Message, r.Result.Code)
-		}
-	}
-
 	r.Result.Cost = time.Since(ctx.GetTime("requestStartTime")).String()
 	ctx.AbortWithStatusJSON(r.httpCode, r.Result)
 }

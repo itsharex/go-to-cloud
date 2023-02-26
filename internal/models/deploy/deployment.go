@@ -2,24 +2,26 @@ package deploy
 
 type Deployment struct {
 	K8S             uint   `json:"k8s"`
+	K8sName         string `json:"k8sName"`
 	Namespace       string `json:"namespace"`
 	Artifact        uint   `json:"artifact"`
-	Version         string `json:"version"`
+	ArtifactName    string `json:"artifactName"`
+	ArtifactTag     string `json:"artifactTag"`
 	Replicate       uint   `json:"replicate"`
 	Healthcheck     string `json:"healthcheck"`
-	HealthcheckPort uint   `json:"healthcheckPort"`
+	HealthcheckPort uint   `json:"healthcheckPort,string"`
 	EnableLimit     bool   `json:"enableLimit"`
-	CpuLimits       uint   `json:"cpuLimits"`
-	CpuRequest      uint   `json:"cpuRequest"`
-	MemLimits       uint   `json:"memLimits"`
-	MemRequest      uint   `json:"memRequest"`
+	CpuLimits       uint   `json:"cpuLimits,string"`
+	CpuRequest      uint   `json:"cpuRequest,string"`
+	MemLimits       uint   `json:"memLimits,string"`
+	MemRequest      uint   `json:"memRequest,string"`
 	Ports           []struct {
 		ServicePort   string `json:"text"`
 		ContainerPort string `json:"value"`
 	} `json:"ports"`
 	Env []struct {
-		VarName  string `json:"varName"`
-		VarValue string `json:"varValue"`
+		VarName  string `json:"text"`
+		VarValue string `json:"value"`
 	} `json:"env"`
 }
 

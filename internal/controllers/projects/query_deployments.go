@@ -9,14 +9,14 @@ import (
 	"strconv"
 )
 
-// QueryDeployedApps 获取部署应用列表
+// QueryDeployments 获取部署应用列表
 // @Tags Projects
 // @Description 获取构建计划
 // @Summary 获取构建计划
 // @Success 200 {array} deploy.Deployment
 // @Router /api/projects/{projectId}/deploy/apps [get]
 // @Security JWT
-func QueryDeployedApps(ctx *gin.Context) {
+func QueryDeployments(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
