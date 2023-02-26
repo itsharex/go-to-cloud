@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
+	"strconv"
 )
 
 func StartDeploy(projectId, deployId uint) error {
@@ -14,6 +15,7 @@ func StartDeploy(projectId, deployId uint) error {
 	}
 
 	cfg := kube.AppDeployConfig{
+		AppId:     strconv.Itoa(int(deployId)),
 		Namespace: deployment.K8sNamespace,
 		Name:      deployment.ArtifactDockerImageRepo.Name,
 		Ports: func() []kube.Port {

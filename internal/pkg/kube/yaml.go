@@ -265,6 +265,7 @@ type ContainerExtract struct {
 
 // AppDeployConfig 应用部署配置
 type AppDeployConfig struct {
+	AppId             string // 对应Deployment ID
 	Namespace         string // 名字空间
 	Name              string //	应用名称
 	Ports             []Port // 端口
@@ -319,6 +320,7 @@ metadata:
   name: {{.Name}}-deployment
   labels:
     app: {{.Name}}
+    appId: {{.AppId}}
 spec:
   replicas: {{.Replicas}}
 {{- if .RollingUpdate}}
