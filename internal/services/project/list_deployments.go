@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"go-to-cloud/internal/models/deploy"
 	"go-to-cloud/internal/repositories"
+	"go-to-cloud/internal/utils"
 )
 
 func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
@@ -64,6 +65,15 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 			MemRequest:  deployments[i].ResourceLimitMemRequest,
 			MemLimits:   deployments[i].ResourceLimitMemLimits,
 			ArtifactTag: deployments[i].ArtifactTag,
+			LastDeployAt: func() *utils.JsonTime {
+				t := deployments[i].LastDeployAt
+				if t == nil {
+					return nil
+				} else {
+					m := utils.JsonTime(*t)
+					return &m
+				}
+			}(),
 		}
 	}
 

@@ -4,6 +4,7 @@ import (
 	"go-to-cloud/conf"
 	"gorm.io/datatypes"
 	"gorm.io/gorm/clause"
+	"time"
 )
 
 // Deployment k8s环境部署方案
@@ -28,6 +29,7 @@ type Deployment struct {
 	ResourceLimitMemRequest uint                 `json:"resourceLimitMemRequest" gorm:"resource_limit_mem_request;type:int unsigned"`       // 资源限制：内在分配数量，单位Mi
 	ResourceLimitMemLimits  uint                 `json:"resourceLimitMemLimits" gorm:"resource_limit_mem_limits;type:int unsigned"`         // 资源限制：内在分配上限，单位Mi
 	NodeSelector            datatypes.JSON       `json:"nodeSelector" gorm:"node_selector;"`                                                // 节点选择，json，[{"labelName": "labelValue"}]
+	LastDeployAt            *time.Time           `json:"lastDeployAt" gorm:"last_deploy_at"`                                                // 最近一次部署时间
 }
 
 func (m *Deployment) TableName() string {

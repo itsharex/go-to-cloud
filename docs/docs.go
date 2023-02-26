@@ -1572,6 +1572,9 @@ const docTemplate = `{
                 "k8sName": {
                     "type": "string"
                 },
+                "lastDeployAt": {
+                    "type": "string"
+                },
                 "memLimits": {
                     "type": "string",
                     "example": "0"

@@ -1,5 +1,7 @@
 package deploy
 
+import "go-to-cloud/internal/utils"
+
 type Deployment struct {
 	K8S             uint   `json:"k8s"`
 	K8sName         string `json:"k8sName"`
@@ -23,6 +25,7 @@ type Deployment struct {
 		VarName  string `json:"text"`
 		VarValue string `json:"value"`
 	} `json:"env"`
+	LastDeployAt *utils.JsonTime `json:"lastDeployAt"`
 }
 
 type Base struct {
