@@ -57,3 +57,11 @@ func CreateDeployment(deployment *Deployment) error {
 
 	return tx.Create(deployment).Error
 }
+
+func DeleteDeployment(projectId, deploymentId uint) error {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&Deployment{})
+
+	return tx.Where("project_id = ?", projectId).Delete(&Deployment{}, deploymentId).Error
+}

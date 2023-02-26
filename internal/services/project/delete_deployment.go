@@ -1,9 +1,9 @@
 package project
 
 import (
-	"errors"
+	"go-to-cloud/internal/repositories"
 )
 
 func DeleteDeployment(projectId, id uint) error {
-	return errors.New("not implemented")
+	return repositories.DeleteDeployment(projectId, id)
 }

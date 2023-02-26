@@ -3,6 +3,7 @@ package deploy
 import "go-to-cloud/internal/utils"
 
 type Deployment struct {
+	Id              uint   `json:"id"`
 	K8S             uint   `json:"k8s"`
 	K8sName         string `json:"k8sName"`
 	Namespace       string `json:"namespace"`

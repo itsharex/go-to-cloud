@@ -17,6 +17,7 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 	models := make([]deploy.Deployment, len(deployments))
 	for i := range deployments {
 		models[i] = deploy.Deployment{
+			Id:           deployments[i].ID,
 			Namespace:    deployments[i].K8sNamespace,
 			K8S:          deployments[i].K8sRepoId,
 			K8sName:      deployments[i].K8sRepo.Name,

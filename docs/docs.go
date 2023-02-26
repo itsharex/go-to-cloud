@@ -1566,6 +1566,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "0"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "k8s": {
                     "type": "integer"
                 },
