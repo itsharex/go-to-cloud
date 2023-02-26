@@ -8,6 +8,7 @@ import (
 	"go-to-cloud/internal/services/project"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // CreateDeployment 创建部署应用
@@ -25,6 +26,11 @@ func CreateDeployment(ctx *gin.Context) {
 		return
 	}
 
+	launchStr := ctx.Query("launch")
+	launch := func() bool {
+		return strings.EqualFold("true", launchStr)
+	}()
+
 	projectIdStr := ctx.Param("projectId")
 	projectId, _ := strconv.ParseUint(projectIdStr, 10, 64)
 
@@ -34,12 +40,16 @@ func CreateDeployment(ctx *gin.Context) {
 		return
 	}
 
-	if err := project.CreateDeployments(uint(projectId), &req); err != nil {
+	if newId, err := project.CreateDeployments(uint(projectId), &req); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 		return
 	} else {
+		if launch {
+			go project.StartDeploy(uint(projectId), newId)
+		}
 		response.Success(ctx, gin.H{
+			"id":      newId,
 			"success": true,
 		})
 	}

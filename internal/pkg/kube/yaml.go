@@ -411,26 +411,26 @@ spec:
 {{- end}}
 {{- if .Liveness }}
 {{- with .Liveness}}
-  		livenessProbe:
-		  httpGet:
-			path: {{.Path}}
-			port: {{.Port}}
-		  initialDelaySeconds: {{.Delay}}
-		  periodSeconds: {{.Period}}
-		  failureThreshold: {{.FailureThreshold}}
-		  successThreshold: {{.SuccessThreshold}}
+        livenessProbe:
+          httpGet:
+            path: {{.Path}}
+            port: {{.Port}}
+          initialDelaySeconds: {{.Delay}}
+          periodSeconds: {{.Period}}
+          failureThreshold: {{.FailureThreshold}}
+          successThreshold: {{.SuccessThreshold}}
 {{- end}}
 {{- end}}
 {{- if .Readiness}}
 {{- with .Readiness}}
-		readinessProbe:
-		  httpGet:
-			path: {{.Path}}
-			port: {{.Port}}
-		  initialDelaySeconds: {{.Delay}}
+        readinessProbe:
+          httpGet:
+            path: {{.Path}}
+            port: {{.Port}}
+          initialDelaySeconds: {{.Delay}}
 		  periodSeconds: {{.Period}}
-		  failureThreshold: {{.FailureThreshold}}
-		  successThreshold: {{.SuccessThreshold}}
+          failureThreshold: {{.FailureThreshold}}
+          successThreshold: {{.SuccessThreshold}}
 {{- end}}
 {{- end}}
 {{- if .Dependencies }}

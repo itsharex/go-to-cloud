@@ -933,32 +933,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/projects/{projectId}/deploy/redeploy": {
-            "put": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "重新部署",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "重新部署",
-                "parameters": [
-                    {
-                        "description": "Request",
-                        "name": "ContentBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/deploy.Redeployment"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/api/projects/{projectId}/deploy/restart": {
             "put": {
                 "security": [
@@ -1012,6 +986,19 @@ const docTemplate = `{
             }
         },
         "/api/projects/{projectId}/deploy/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "开始部署",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "开始部署",
+                "responses": {}
+            },
             "delete": {
                 "security": [
                     {
@@ -1604,15 +1591,6 @@ const docTemplate = `{
                     }
                 },
                 "replicate": {
-                    "type": "integer"
-                }
-            }
-        },
-        "deploy.Redeployment": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "deployment id",
                     "type": "integer"
                 }
             }

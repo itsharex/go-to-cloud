@@ -7,7 +7,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-func CreateDeployments(projectId uint, d *deploy.Deployment) error {
+func CreateDeployments(projectId uint, d *deploy.Deployment) (uint, error) {
 	ser := func(v any) string {
 		if m, e := json.Marshal(v); e != nil {
 			return ""
@@ -35,6 +35,8 @@ func CreateDeployments(projectId uint, d *deploy.Deployment) error {
 		ResourceLimitCpuLimits:  v(d.CpuLimits),
 		ResourceLimitMemRequest: v(d.MemRequest),
 		ResourceLimitMemLimits:  v(d.MemLimits),
+		Liveness:                d.Healthcheck,
+		LivenessPort:            d.HealthcheckPort,
 	}
 	return repositories.CreateDeployment(&repo)
 }

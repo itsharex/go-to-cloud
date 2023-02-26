@@ -21,7 +21,9 @@ type Deployment struct {
 	Env                     datatypes.JSON       `json:"env" gorm:"column:env;type:text"`                                                   // 环境变量，[{'env_name': 'env_value'}]
 	Replicas                uint                 `json:"replicas" gorm:"column:replicas;type:int unsigned"`                                 // 副本数量
 	Liveness                string               `json:"liveness" gorm:"column:liveness;type: varchar(500)"`                                // 存活检查地址
+	LivenessPort            uint                 `json:"livenessPort" gorm:"column:liveness_port;type: int unsigned"`                       // 存活检查端口
 	Readiness               string               `json:"readiness" gorm:"column:readiness;type: varchar(500)"`                              // 就绪检查地址
+	ReadinessPort           uint                 `json:"readinessPort" gorm:"column:readiness_port;type: int unsigned"`                     // 存活检查端口
 	RollingMaxSurge         uint                 `json:"rollingMaxSurge" gorm:"column:rolling_max_surge;type:int unsigned"`                 // 滚动发布策略：激增数量上限（1～100）
 	RollingMaxUnavailable   uint                 `json:"rollingMaxUnavailable" gorm:"rolling_max_unavailable;type:int unsigned"`            // 滚动发布策略：最大不可用上限(1~100)
 	ResourceLimitCpuRequest uint                 `json:"resourceLimitCpuRequest" gorm:"resource_limit_cpu_request;type:int unsigned"`       // 资源限制：cpu分配数量，单位m
@@ -50,12 +52,17 @@ func QueryDeploymentsByProjectId(projectId uint) ([]Deployment, error) {
 	return returnWithError(deployments, err)
 }
 
-func CreateDeployment(deployment *Deployment) error {
+func CreateDeployment(deployment *Deployment) (uint, error) {
 	db := conf.GetDbClient()
 
 	tx := db.Model(&Deployment{})
 
-	return tx.Create(deployment).Error
+	err := tx.Create(deployment).Error
+	if err != nil {
+		return 0, err
+	} else {
+		return deployment.ID, err
+	}
 }
 
 func DeleteDeployment(projectId, deploymentId uint) error {
@@ -64,4 +71,22 @@ func DeleteDeployment(projectId, deploymentId uint) error {
 	tx := db.Model(&Deployment{})
 
 	return tx.Where("project_id = ?", projectId).Delete(&Deployment{}, deploymentId).Error
+}
+
+func GetDeploymentById(projectId, deploymentId uint) (*Deployment, error) {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&Deployment{}).Preload(clause.Associations)
+	var rlt Deployment
+	err := tx.First(&rlt, deploymentId).Where("project_id = ?", projectId).Error
+	return returnWithError(&rlt, err)
+}
+
+func UpdateDeploymentDeployTime(projectId, deploymentId uint) error {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&Deployment{})
+	var rlt Deployment
+	err := tx.First(&rlt, deploymentId).Where("project_id = ?", projectId).Update("last_deploy_at", time.Now()).Error
+	return err
 }

@@ -75,6 +75,8 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 					return &m
 				}
 			}(),
+			Healthcheck:     deployments[i].Liveness,
+			HealthcheckPort: deployments[i].LivenessPort,
 		}
 	}
 
