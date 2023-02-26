@@ -41,7 +41,3 @@ type ScalePods struct {
 type RestartPods struct {
 	Base
 }
-
-type Redeployment struct {
-	Base
-}

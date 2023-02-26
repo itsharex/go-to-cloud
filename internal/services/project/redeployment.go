@@ -2,9 +2,8 @@ package project
 
 import (
 	"errors"
-	"go-to-cloud/internal/models/deploy"
 )
 
-func Redeployment(scale *deploy.Redeployment) error {
+func StartDeploy(projectId, deployId uint) error {
 	return errors.New("not implemented")
 }
