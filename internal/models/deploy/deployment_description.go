@@ -1,6 +1,8 @@
 package deploy
 
-import "time"
+import (
+	"go-to-cloud/internal/utils"
+)
 
 type ConditionStatus string
 
@@ -18,10 +20,11 @@ type DeploymentCondition struct {
 
 // DeploymentDescription 裁剪后的Deployment Spec
 type DeploymentDescription struct {
-	Id              uint      `json:"id"`              // deployment.ID
-	Replicate       uint      `json:"replicate"`       // 副本数
-	AvailablePods   uint      `json:"availablePods"`   // 可用副本数
-	UnavailablePods uint      `json:"unavailablePods"` // 不可用副本数
-	CreatedAt       time.Time `json:"createdAt"`       // 创建时间
-	Conditions      []string  `json:"conditions"`      // 状态
+	Id              uint                  `json:"id"`              // deployment.ID
+	Replicate       uint                  `json:"replicate"`       // 副本数
+	AvailablePods   uint                  `json:"availablePods"`   // 可用副本数
+	UnavailablePods uint                  `json:"unavailablePods"` // 不可用副本数
+	CreatedAt       utils.JsonTime        `json:"createdAt"`       // 创建时间
+	Conditions      []DeploymentCondition `json:"conditions"`      // 状态
+
 }
