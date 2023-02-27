@@ -15,9 +15,10 @@ func StartDeploy(projectId, deployId uint) error {
 	}
 
 	cfg := kube.AppDeployConfig{
-		AppId:     strconv.Itoa(int(deployId)),
-		Namespace: deployment.K8sNamespace,
-		Name:      deployment.ArtifactDockerImageRepo.Name,
+		LabelSelector: kube.DeploymentLabelSelector,
+		AppId:         strconv.Itoa(int(deployId)),
+		Namespace:     deployment.K8sNamespace,
+		Name:          deployment.ArtifactDockerImageRepo.Name,
 		Ports: func() []kube.Port {
 			var ports []struct {
 				ServicePort   int `json:"text,string"`
