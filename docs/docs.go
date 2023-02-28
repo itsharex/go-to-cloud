@@ -682,6 +682,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/monitor/{k8s}/apps/query/": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出安装的应用",
+                "tags": [
+                    "Monitor"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "project id",
+                        "name": "projectId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "deployment id， 用于从部署方案中跳转到对应的应用",
+                        "name": "deploymentId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "k8s repo id",
+                        "name": "k8s",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/deploy.DeploymentDescription"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/monitor/{k8s}/apps/restart": {
             "put": {
                 "security": [
@@ -732,45 +777,6 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
-            }
-        },
-        "/api/monitor/{k8s}/list/": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "列出安装的应用",
-                "tags": [
-                    "Monitor"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "project id",
-                        "name": "projectId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "k8s repo id",
-                        "name": "k8s",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/deploy.DeploymentDescription"
-                            }
-                        }
-                    }
-                }
             }
         },
         "/api/projects": {

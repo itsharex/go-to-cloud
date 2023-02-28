@@ -37,5 +37,10 @@ func QueryK8sRepos(ctx *gin.Context) {
 		return
 	}
 
+	// 脱敏
+	for i := range result {
+		*result[i].KubeConfig = "***Hidden***"
+	}
+
 	response.Success(ctx, result)
 }

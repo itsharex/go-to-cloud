@@ -28,6 +28,7 @@ func List(orgs []uint, query *k8s.Query) ([]k8s.K8s, error) {
 		return nil, err
 	} else {
 		rlt := make([]k8s.K8s, len(merged))
+		var hidden = "***Hidden***"
 		for i, m := range merged {
 			orgLites := make([]k8s.OrgLite, len(m.Org))
 			for i, lite := range m.Org {
@@ -39,7 +40,7 @@ func List(orgs []uint, query *k8s.Query) ([]k8s.K8s, error) {
 			rlt[i] = k8s.K8s{
 				Testing: k8s.Testing{
 					Id:         m.ID,
-					KubeConfig: &m.KubeConfig,
+					KubeConfig: &hidden,
 				},
 				Name:          m.Name,
 				OrgLites:      orgLites,

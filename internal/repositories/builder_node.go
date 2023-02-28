@@ -202,7 +202,7 @@ func UpdateBuilderNode(model *builder.OnK8sModel, userId uint, orgs []uint) erro
 
 	tx := conf.GetDbClient()
 
-	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
+	err = tx.Omit("created_at", "created_by", "k8s_kubeconfig_encrypted").Where("id = ?", model.Id).Updates(&repo).Error
 	return err
 }
 

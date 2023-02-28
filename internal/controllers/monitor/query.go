@@ -8,16 +8,16 @@ import (
 	"net/http"
 )
 
-// List
+// Query
 // @Tags Monitor
 // @Description 列出安装的应用
 // @Success 200 {array} deploy.DeploymentDescription
-// @Router /api/monitor/{k8s}/list/ [get]
+// @Router /api/monitor/{k8s}/apps/query/ [get]
 // @Param        projectId    query     string  false  "project id"
-// @Param        deploymentId    query     string  false  "deployment id"
+// @Param        deploymentId    query     string  false  "deployment id， 用于从部署方案中跳转到对应的应用"
 // @Param        k8s    path     string  true  "k8s repo id"
 // @Security JWT
-func List(ctx *gin.Context) {
+func Query(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
@@ -41,7 +41,7 @@ func List(ctx *gin.Context) {
 		return
 	}
 
-	m, err := monitor.QueryApps(projectId, k8sRepoId, deploymentId)
+	m, err := monitor.QueryApps(projectId, deploymentId, k8sRepoId)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

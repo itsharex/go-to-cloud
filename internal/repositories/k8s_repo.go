@@ -124,7 +124,6 @@ func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *Model) (*
 	repo := K8sRepo{
 		Model:         *gormModel,
 		Name:          model.Name,
-		KubeConfig:    *model.KubeConfig,
 		CreatedBy:     userId,
 		BelongsTo:     datatypes.JSON(belongs),
 		ServerVersion: model.ServerVersion,
@@ -163,7 +162,7 @@ func UpdateK8sRepo(model *k8s.K8s, userId uint, orgs []uint) error {
 
 	tx := conf.GetDbClient()
 
-	err = tx.Omit("created_at", "created_by").Where("id = ?", model.Id).Updates(&repo).Error
+	err = tx.Omit("created_at", "created_by", "kube_config").Where("id = ?", model.Id).Updates(&repo).Error
 	return err
 }
 

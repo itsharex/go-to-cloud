@@ -84,7 +84,7 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/:projectId/artifact/:artifactId/tags", projects.QueryArtifactTags)
 
 		monitoring := api.Group("/monitor")
-		monitoring.GET("/:k8s/apps/list", monitor.List)
+		monitoring.GET("/:k8s/apps/query", monitor.Query)
 		monitoring.PUT("/:k8s/apps/restart", monitor.Restart)
 		monitoring.PUT("/:k8s/apps/scale", monitor.Scale)
 	}
