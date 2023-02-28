@@ -52,6 +52,20 @@ func QueryDeploymentsByProjectId(projectId uint) ([]Deployment, error) {
 	return returnWithError(deployments, err)
 }
 
+func QueryDeploymentsByK8s(k8sRepoId uint) ([]Deployment, error) {
+	db := conf.GetDbClient()
+
+	var deployments []Deployment
+
+	tx := db.Model(&Deployment{})
+
+	tx = tx.Preload(clause.Associations)
+	tx = tx.Where("k8s_repo_id = ?", k8sRepoId)
+	err := tx.Find(&deployments).Error
+
+	return returnWithError(deployments, err)
+}
+
 func CreateDeployment(deployment *Deployment) (uint, error) {
 	db := conf.GetDbClient()
 

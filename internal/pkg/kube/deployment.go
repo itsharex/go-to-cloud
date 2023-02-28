@@ -21,7 +21,7 @@ func init() {
 }
 
 // GetDeployments 获取部署工作负载
-func (client *Client) GetDeployments(ctx context.Context, ns string, projectId uint) ([]deploy.DeploymentDescription, error) {
+func (client *Client) GetDeployments(ctx context.Context, ns string, deploymentsId *map[uint]bool) ([]deploy.DeploymentDescription, error) {
 	var rlt []deploy.DeploymentDescription
 
 	if tmp, ok := deploymentCache.Get(ns); !ok || len(tmp.([]deploy.DeploymentDescription)) == 0 {
@@ -66,11 +66,15 @@ func (client *Client) GetDeployments(ctx context.Context, ns string, projectId u
 		rlt = tmp.([]deploy.DeploymentDescription)
 	}
 
-	found := make([]deploy.DeploymentDescription, 0)
-	for i, description := range rlt {
-		if description.Id == projectId {
-			found = append(found, rlt[i])
+	if deploymentsId == nil {
+		return rlt, nil
+	} else {
+		found := make([]deploy.DeploymentDescription, 0)
+		for i, description := range rlt {
+			if (*deploymentsId)[description.Id] {
+				found = append(found, rlt[i])
+			}
 		}
+		return found, nil
 	}
-	return found, nil
 }
