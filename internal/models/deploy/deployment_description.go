@@ -21,6 +21,7 @@ type DeploymentCondition struct {
 // DeploymentDescription 裁剪后的Deployment Spec
 type DeploymentDescription struct {
 	Id              uint                  `json:"id"`              // deployment.ID
+	Name            string                `json:"name"`            // 应用名称
 	Namespace       string                `json:"namespace"`       // 名字空间
 	Replicate       uint                  `json:"replicate"`       // 副本数
 	AvailablePods   uint                  `json:"availablePods"`   // 可用副本数

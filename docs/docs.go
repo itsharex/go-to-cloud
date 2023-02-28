@@ -1677,6 +1677,10 @@ const docTemplate = `{
                     "description": "deployment.ID",
                     "type": "integer"
                 },
+                "name": {
+                    "description": "应用名称",
+                    "type": "string"
+                },
                 "namespace": {
                     "description": "名字空间",
                     "type": "string"

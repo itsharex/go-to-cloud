@@ -43,6 +43,7 @@ func (client *Client) GetDeployments(ctx context.Context, ns string, deployments
 						return uint(id)
 					}
 				}(),
+				Name:            item.Name,
 				Namespace:       item.Namespace,
 				Replicate:       uint(*item.Spec.Replicas),
 				AvailablePods:   uint(item.Status.AvailableReplicas),
