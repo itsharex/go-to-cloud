@@ -7,6 +7,9 @@ import (
 )
 
 func TestListDeployments(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 	conf := /*`apiVersion: v1
 		clusters:
 		- cluster:
