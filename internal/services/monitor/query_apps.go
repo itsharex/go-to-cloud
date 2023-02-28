@@ -2,8 +2,6 @@ package monitor
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"go-to-cloud/internal/models/deploy"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
@@ -59,23 +57,14 @@ func QueryApps(projectId, deploymentId, k8sId uint) ([]deploy.DeploymentDescript
 	}
 	ns := utils.Distinct(nsAll)
 
+	rlt := make([]deploy.DeploymentDescription, 0)
 	for _, namespace := range ns {
-		client.GetDeployments(context.TODO(), namespace, deploymentIdFilter)
+		if a, err := client.GetDeployments(context.TODO(), namespace, deploymentIdFilter); err == nil {
+			for i := range a {
+				rlt = append(rlt, a[i])
+			}
+		}
 	}
 
-	return nil, errors.New("not implement")
-}
-
-func ab() {
-	a, err := returnErr("a")
-	_ = a
-	fmt.Println(err.Error())
-
-	b, err := returnErr("b")
-	_ = b
-	fmt.Println(err.Error())
-}
-
-func returnErr(str string) (string, error) {
-	return str, errors.New(str)
+	return rlt, nil
 }

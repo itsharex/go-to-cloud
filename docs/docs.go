@@ -1677,6 +1677,10 @@ const docTemplate = `{
                     "description": "deployment.ID",
                     "type": "integer"
                 },
+                "namespace": {
+                    "description": "名字空间",
+                    "type": "string"
+                },
                 "replicate": {
                     "description": "副本数",
                     "type": "integer"
