@@ -682,6 +682,97 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/monitor/{k8s}/apps/restart": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "重启容器",
+                "tags": [
+                    "Monitor"
+                ],
+                "summary": "重启容器",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/deploy.RestartPods"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/monitor/{k8s}/apps/scale": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "伸缩容器",
+                "tags": [
+                    "Monitor"
+                ],
+                "summary": "伸缩容器",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/deploy.ScalePods"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/monitor/{k8s}/list/": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出安装的应用",
+                "tags": [
+                    "Monitor"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "project id",
+                        "name": "projectId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "k8s repo id",
+                        "name": "k8s",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/deploy.DeploymentDescription"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects": {
             "put": {
                 "security": [
@@ -931,58 +1022,6 @@ const docTemplate = `{
                         "description": "OK"
                     }
                 }
-            }
-        },
-        "/api/projects/{projectId}/deploy/restart": {
-            "put": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "重启容器",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "重启容器",
-                "parameters": [
-                    {
-                        "description": "Request",
-                        "name": "ContentBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/deploy.RestartPods"
-                        }
-                    }
-                ],
-                "responses": {}
-            }
-        },
-        "/api/projects/{projectId}/deploy/scale": {
-            "put": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "伸缩容器",
-                "tags": [
-                    "Projects"
-                ],
-                "summary": "伸缩容器",
-                "parameters": [
-                    {
-                        "description": "Request",
-                        "name": "ContentBody",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/deploy.ScalePods"
-                        }
-                    }
-                ],
-                "responses": {}
             }
         },
         "/api/projects/{projectId}/deploy/{id}": {
@@ -1563,6 +1602,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastDeployAt": {
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "memLimits": {
@@ -1591,6 +1631,52 @@ const docTemplate = `{
                     }
                 },
                 "replicate": {
+                    "type": "integer"
+                }
+            }
+        },
+        "deploy.DeploymentCondition": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "deploy.DeploymentDescription": {
+            "type": "object",
+            "properties": {
+                "availablePods": {
+                    "description": "可用副本数",
+                    "type": "integer"
+                },
+                "conditions": {
+                    "description": "状态",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/deploy.DeploymentCondition"
+                    }
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "deployment.ID",
+                    "type": "integer"
+                },
+                "replicate": {
+                    "description": "副本数",
+                    "type": "integer"
+                },
+                "unavailablePods": {
+                    "description": "不可用副本数",
                     "type": "integer"
                 }
             }
@@ -1712,6 +1798,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastBuildAt": {
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "lastBuildResult": {
@@ -1863,11 +1950,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "latestBuildAt": {
-                    "description": "导入时间",
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "updatedAt": {
-                    "description": "导入时间",
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "url": {

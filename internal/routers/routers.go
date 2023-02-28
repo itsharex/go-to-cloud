@@ -8,6 +8,7 @@ import (
 	"go-to-cloud/internal/controllers/configure/builder"
 	"go-to-cloud/internal/controllers/configure/deploy/k8s"
 	"go-to-cloud/internal/controllers/configure/scm"
+	"go-to-cloud/internal/controllers/monitor"
 	"go-to-cloud/internal/controllers/projects"
 	"go-to-cloud/internal/controllers/users"
 	"go-to-cloud/internal/middlewares"
@@ -73,15 +74,18 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/:projectId/pipeline/state", projects.QueryBuildPlanState)
 		project.DELETE("/:projectId/pipeline/:id", projects.DeleteBuildPlan)
 		project.POST("/:projectId/pipeline/:id/build", projects.StartBuildPlan)
+		project.PUT("/:projectId/deploy/:id", projects.Deploying)
 		project.GET("/:projectId/deploy/apps", projects.QueryDeployments)
 		project.POST("/:projectId/deploy/app", projects.CreateDeployment)
-		project.PUT("/:projectId/deploy/scale", projects.Scale)
-		project.PUT("/:projectId/deploy/restart", projects.Restart)
-		project.PUT("/:projectId/deploy/:id", projects.Deploying)
 		project.DELETE("/:projectId/deploy/:id", projects.DeleteDeployment)
 		project.GET("/:projectId/deploy/:k8sRepoId/namespaces", projects.QueryNamespaces)
 		project.GET("/:projectId/deploy/env", projects.QueryDeploymentEnv)
 		project.GET("/:projectId/artifacts/:querystring", projects.QueryArtifacts)
 		project.GET("/:projectId/artifact/:artifactId/tags", projects.QueryArtifactTags)
+
+		monitoring := api.Group("/monitor")
+		monitoring.GET("/:k8s/apps/list", monitor.List)
+		monitoring.PUT("/:k8s/apps/restart", monitor.Restart)
+		monitoring.PUT("/:k8s/apps/scale", monitor.Scale)
 	}
 }
