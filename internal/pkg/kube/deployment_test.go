@@ -35,7 +35,7 @@ users:
 
 	m := make(map[uint]bool)
 	m[1] = true
-	lst, err2 := kubeClient.GetDeployments(context.TODO(), "default", &m)
+	lst, err2 := kubeClient.GetDeployments(context.TODO(), 1, "default", &m)
 	assert.NoError(t, err2)
 
 	assert.NotEmpty(t, lst)

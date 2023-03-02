@@ -21,10 +21,10 @@ func init() {
 }
 
 // GetDeployments 获取部署工作负载
-func (client *Client) GetDeployments(ctx context.Context, ns string, deploymentsId *map[uint]bool) ([]deploy.DeploymentDescription, error) {
+func (client *Client) GetDeployments(ctx context.Context, k8sId uint, ns string, deploymentsId *map[uint]bool) ([]deploy.DeploymentDescription, error) {
 	var rlt []deploy.DeploymentDescription
 
-	if tmp, ok := deploymentCache.Get(ns); !ok || len(tmp.([]deploy.DeploymentDescription)) == 0 {
+	if tmp, ok := deploymentCache.Get(fmt.Sprintf("%d.%s", k8sId, ns)); !ok {
 		d, err := client.clientSet.AppsV1().Deployments(ns).List(ctx, metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("deployed=%s", DeploymentLabelSelector),
 		})
@@ -45,7 +45,7 @@ func (client *Client) GetDeployments(ctx context.Context, ns string, deployments
 				}(),
 				Name:            item.Name,
 				Namespace:       item.Namespace,
-				Replicate:       uint(*item.Spec.Replicas),
+				Replicas:        uint(*item.Spec.Replicas),
 				AvailablePods:   uint(item.Status.AvailableReplicas),
 				UnavailablePods: uint(item.Status.UnavailableReplicas),
 				CreatedAt:       utils.JsonTime(item.ObjectMeta.GetCreationTimestamp().Time),
@@ -63,7 +63,7 @@ func (client *Client) GetDeployments(ctx context.Context, ns string, deployments
 			}
 		}
 
-		deploymentCache.Set(ns, rlt, 0)
+		deploymentCache.Set(fmt.Sprintf("%d.%s", k8sId, ns), rlt, 0)
 	} else {
 		rlt = tmp.([]deploy.DeploymentDescription)
 	}

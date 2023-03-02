@@ -59,7 +59,7 @@ func QueryApps(projectId, deploymentId, k8sId uint) ([]deploy.DeploymentDescript
 
 	rlt := make([]deploy.DeploymentDescription, 0)
 	for _, namespace := range ns {
-		if a, err := client.GetDeployments(context.TODO(), namespace, deploymentIdFilter); err == nil {
+		if a, err := client.GetDeployments(context.TODO(), k8sId, namespace, deploymentIdFilter); err == nil {
 			for i := range a {
 				rlt = append(rlt, a[i])
 			}

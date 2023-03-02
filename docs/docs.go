@@ -1685,7 +1685,7 @@ const docTemplate = `{
                     "description": "名字空间",
                     "type": "string"
                 },
-                "replicate": {
+                "replicas": {
                     "description": "副本数",
                     "type": "integer"
                 },

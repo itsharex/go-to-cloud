@@ -23,7 +23,7 @@ type DeploymentDescription struct {
 	Id              uint                  `json:"id"`              // deployment.ID
 	Name            string                `json:"name"`            // 应用名称
 	Namespace       string                `json:"namespace"`       // 名字空间
-	Replicate       uint                  `json:"replicate"`       // 副本数
+	Replicas        uint                  `json:"replicas"`        // 副本数
 	AvailablePods   uint                  `json:"availablePods"`   // 可用副本数
 	UnavailablePods uint                  `json:"unavailablePods"` // 不可用副本数
 	CreatedAt       utils.JsonTime        `json:"createdAt"`       // 创建时间
