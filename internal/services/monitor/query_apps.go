@@ -11,7 +11,7 @@ import (
 // QueryApps 查找应用
 // projectId 如果为0表示查找所有项目的所有应用
 // deploymentId 如果为0表示查找所有应用
-func QueryApps(projectId, deploymentId, k8sId uint) ([]deploy.DeploymentDescription, error) {
+func QueryApps(projectId, deploymentId, k8sId uint, force bool) ([]deploy.DeploymentDescription, error) {
 	repo, err := repositories.QueryK8sRepoById(k8sId)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func QueryApps(projectId, deploymentId, k8sId uint) ([]deploy.DeploymentDescript
 
 	rlt := make([]deploy.DeploymentDescription, 0)
 	for _, namespace := range ns {
-		if a, err := client.GetDeployments(context.TODO(), k8sId, namespace, deploymentIdFilter); err == nil {
+		if a, err := client.GetDeployments(context.TODO(), k8sId, namespace, deploymentIdFilter, force); err == nil {
 			for i := range a {
 				rlt = append(rlt, a[i])
 			}

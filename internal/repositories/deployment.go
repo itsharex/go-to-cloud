@@ -87,7 +87,16 @@ func DeleteDeployment(projectId, deploymentId uint) error {
 	return tx.Where("project_id = ?", projectId).Delete(&Deployment{}, deploymentId).Error
 }
 
-func GetDeploymentById(projectId, deploymentId uint) (*Deployment, error) {
+func GetDeploymentById(deploymentId uint) (*Deployment, error) {
+	db := conf.GetDbClient()
+
+	tx := db.Model(&Deployment{}).Preload(clause.Associations)
+	var rlt Deployment
+	err := tx.First(&rlt, deploymentId).Error
+	return returnWithError(&rlt, err)
+}
+
+func GetDeploymentByProjectId(projectId, deploymentId uint) (*Deployment, error) {
 	db := conf.GetDbClient()
 
 	tx := db.Model(&Deployment{}).Preload(clause.Associations)

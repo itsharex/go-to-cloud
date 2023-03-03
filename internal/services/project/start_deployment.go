@@ -9,7 +9,7 @@ import (
 )
 
 func StartDeploy(projectId, deployId uint) error {
-	deployment, err := repositories.GetDeploymentById(projectId, deployId)
+	deployment, err := repositories.GetDeploymentByProjectId(projectId, deployId)
 	if err != nil {
 		return err
 	}

@@ -695,6 +695,12 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
+                        "type": "boolean",
+                        "description": "force refresh",
+                        "name": "force",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "project id",
                         "name": "projectId",

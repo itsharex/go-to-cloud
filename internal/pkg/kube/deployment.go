@@ -21,10 +21,10 @@ func init() {
 }
 
 // GetDeployments 获取部署工作负载
-func (client *Client) GetDeployments(ctx context.Context, k8sId uint, ns string, deploymentsId *map[uint]bool) ([]deploy.DeploymentDescription, error) {
+func (client *Client) GetDeployments(ctx context.Context, k8sId uint, ns string, deploymentsId *map[uint]bool, force bool) ([]deploy.DeploymentDescription, error) {
 	var rlt []deploy.DeploymentDescription
 
-	if tmp, ok := deploymentCache.Get(fmt.Sprintf("%d.%s", k8sId, ns)); !ok {
+	if tmp, ok := deploymentCache.Get(fmt.Sprintf("%d.%s", k8sId, ns)); !ok || force {
 		d, err := client.clientSet.AppsV1().Deployments(ns).List(ctx, metav1.ListOptions{
 			LabelSelector: fmt.Sprintf("deployed=%s", DeploymentLabelSelector),
 		})
