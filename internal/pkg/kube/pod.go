@@ -21,20 +21,17 @@ type PodDescription struct {
 // tailLine: 从末尾开始的行数，nil时从开始显示
 // previous: 返回之前已终止的容器日志
 func (client *Client) GetPodLogs(ctx context.Context, ns, podName, containerName string, tailLine *int64, previous bool) ([]byte, error) {
-	logOpt := &coreV1.PodLogOptions{
-		Container: containerName,
-		Follow:    false,
-		TailLines: tailLine,
-		Previous:  previous,
+	if s, err := client.GetPodStreamLogs(ctx, ns, podName, containerName, tailLine, false, previous); err != nil {
+		return nil, err
+	} else {
+		return io.ReadAll(s)
 	}
-	req := client.clientSet.CoreV1().Pods(ns).GetLogs(podName, logOpt)
-	return req.Do(ctx).Raw()
 }
 
-// GetPodStreamLogs 读取容器日志
+// GetPodStreamLogs 读取容器日志流
 // tailLine: 从末尾开始的行数，nil时从开始显示
 // previous: 返回之前已终止的容器日志
-// follow: 是否跟踪获取最新日志
+// follow: 是否跟踪获取最新日志，如果为true
 func (client *Client) GetPodStreamLogs(ctx context.Context, ns, podName, containerName string, tailLine *int64, follow, previous bool) (io.ReadCloser, error) {
 	logOpt := &coreV1.PodLogOptions{
 		Container: containerName,

@@ -23,6 +23,7 @@ require (
 	k8s.io/api v0.26.1
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
+	k8s.io/klog/v2 v2.90.0
 )
 
 require (
@@ -92,7 +93,6 @@ require (
 	gorm.io/driver/postgres v1.4.8 // indirect
 	gorm.io/driver/sqlserver v1.4.2 // indirect
 	gorm.io/plugin/dbresolver v1.4.1 // indirect
-	k8s.io/klog/v2 v2.90.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20230217203603-ff9a8e8fa21d // indirect
 	k8s.io/utils v0.0.0-20230209194617-a36077c30491 // indirect
 	modernc.org/libc v1.22.2 // indirect
