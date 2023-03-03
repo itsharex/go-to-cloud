@@ -1,10 +1,14 @@
 package monitor
 
 import (
-	"errors"
 	"go-to-cloud/internal/models/deploy"
 )
 
-func RestartApps(k8sId uint, scale *deploy.RestartPods) error {
-	return errors.New("not implemented")
+func RestartApps(k8sRepoId uint, restart *deploy.RestartPods) error {
+
+	if client, ns, name, err := getKubeClient(k8sRepoId, restart.Id); err != nil {
+		return err
+	} else {
+		return client.Restart(&ns, &name)
+	}
 }

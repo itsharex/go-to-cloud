@@ -47,10 +47,11 @@ func PipelinesWatcher() {
 
 func getAndSetK8sNodesState() {
 	var lock sync.Mutex
+	ctx := context.TODO()
 	if nodes, err := repositories.GetBuildNodesOnK8sByOrgId(nil, "", nil); err == nil {
 		for _, node := range nodes {
 			if client, err := kube.NewClient(node.DecryptKubeConfig()); err == nil {
-				if pods, err := client.GetPods(context.TODO(), node.K8sWorkerSpace, NodeSelectorLabel, BuildIdSelectorLabel); err == nil {
+				if pods, err := client.GetPods(ctx, node.K8sWorkerSpace, NodeSelectorLabel, BuildIdSelectorLabel); err == nil {
 					for i, pod := range pods {
 						lock.Lock()
 						allK8sPipelines[pod.BuildId] = &pods[i]
@@ -69,7 +70,14 @@ func getAndSetK8sNodesState() {
 								return pipeline.NeverBuild
 							}
 						}()
-						if err := repositories.UpdatePipeline(pod.BuildId, rlt, &pods[i]); err == nil && pipeline.IsComplete(rlt) {
+
+						log := ""
+						logBytes, err := client.GetPodLogs(ctx, node.K8sWorkerSpace, pod.Name, pod.Containers[0], nil, false)
+						if err == nil {
+							log = string(logBytes)
+						}
+
+						if err := repositories.UpdatePipeline(pod.BuildId, rlt, &log); err == nil && pipeline.IsComplete(rlt) {
 							// 清理Pod
 							client.DeletePod(context.TODO(), node.K8sWorkerSpace, pod.Name)
 

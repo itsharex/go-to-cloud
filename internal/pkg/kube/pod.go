@@ -1,23 +1,49 @@
 package kube
 
 import (
-	"bytes"
 	"context"
 	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	"strconv"
-	"strings"
 )
 
 type PodDescription struct {
-	Name        string
-	Status      coreV1.PodPhase
-	BuildId     uint
-	Containers  []string
-	GetLog      func(*string) *string // 获取容器日志
+	Name       string
+	Status     coreV1.PodPhase
+	BuildId    uint
+	Containers []string
+	// GetLog      func(*string, *string, *int64, bool) *string // 获取容器日志,p1: pod name; p2: container name; p3: tail line; p4: get previous terminate container also
 	GetArtifact func(*string) *string // 获取产物
+}
+
+// GetPodLogs 读取容器日志
+// tailLine: 从末尾开始的行数，nil时从开始显示
+// previous: 返回之前已终止的容器日志
+func (client *Client) GetPodLogs(ctx context.Context, ns, podName, containerName string, tailLine *int64, previous bool) ([]byte, error) {
+	logOpt := &coreV1.PodLogOptions{
+		Container: containerName,
+		Follow:    false,
+		TailLines: tailLine,
+		Previous:  previous,
+	}
+	req := client.clientSet.CoreV1().Pods(ns).GetLogs(podName, logOpt)
+	return req.Do(ctx).Raw()
+}
+
+// GetPodStreamLogs 读取容器日志
+// tailLine: 从末尾开始的行数，nil时从开始显示
+// previous: 返回之前已终止的容器日志
+// follow: 是否跟踪获取最新日志
+func (client *Client) GetPodStreamLogs(ctx context.Context, ns, podName, containerName string, tailLine *int64, follow, previous bool) (io.ReadCloser, error) {
+	logOpt := &coreV1.PodLogOptions{
+		Container: containerName,
+		Follow:    follow,
+		TailLines: tailLine,
+		Previous:  previous,
+	}
+	req := client.clientSet.CoreV1().Pods(ns).GetLogs(podName, logOpt)
+	return req.Stream(ctx)
 }
 
 /*
@@ -38,17 +64,25 @@ const (
 // GetPods 获取指定名字空间
 func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline string) ([]PodDescription, error) {
 	pods, err := client.clientSet.CoreV1().Pods(ns).List(context.TODO(), metaV1.ListOptions{
-		LabelSelector: "builder=" + label,
+		LabelSelector: func() string {
+			if len(label) > 0 {
+				return "builder=" + label
+			} else {
+				return ""
+			}
+		}(),
 	})
 
 	rlt := make([]PodDescription, len(pods.Items))
 	for i, pod := range pods.Items {
 		rlt[i] = PodDescription{
 			BuildId: func() uint {
-				if label, ok := pod.GetObjectMeta().GetLabels()[labelPipeline]; ok {
-					idStr := label[len(labelPipeline)+1:]
-					if id, err := strconv.ParseUint(idStr, 10, 64); err == nil {
-						return uint(id)
+				if len(labelPipeline) > 0 {
+					if label, ok := pod.GetObjectMeta().GetLabels()[labelPipeline]; ok {
+						idStr := label[len(labelPipeline)+1:]
+						if id, err := strconv.ParseUint(idStr, 10, 64); err == nil {
+							return uint(id)
+						}
 					}
 				}
 				return 0
@@ -62,22 +96,31 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 				}
 				return c
 			}(),
-			GetLog: func(c *string) *string {
-				logBuilder := strings.Builder{}
-				for _, container := range pod.Spec.Containers {
-					name := container.Name
-					logBuilder.WriteString("tl;dl;" + name + "\n")
-					if podLogs, err := watchContainerLogWithPodNameAndContainerName(ctx, client.clientSet, ns, pod.Name, name, nil, false); err == nil {
-						buf := new(bytes.Buffer)
-						if _, err := io.Copy(buf, podLogs); err == nil {
-							logBuilder.WriteString(buf.String())
-							logBuilder.WriteString("\n")
-						}
-					}
-				}
-				log := logBuilder.String()
-				return &log
-			},
+			//GetLog: func(podName, c *string, tailLine *int64, previous bool) *string {
+			//	if podName == nil || c == nil {
+			//		return nil
+			//	}
+			//	logBuilder := strings.Builder{}
+			//	logBuilder.WriteString("tl;dl;" + *podName + "\n")
+			//	if podLogs, err := GetPodStreamLogs(client, ctx, ns, *podName, *c, tailLine, previous); err == nil {
+			//		defer podLogs.Close()
+			//		buf := make([]byte, 1024)
+			//		for {
+			//			if n, err := podLogs.Read(buf); err == nil {
+			//				logBuilder.WriteString(string(buf[:n]))
+			//			}
+			//			time.Sleep(1 * time.Second)
+			//		}
+			//		//if buf, err := io.ReadAll(podLogs); err == nil {
+			//		//	logBuilder.WriteString(string(buf))
+			//		//	logBuilder.WriteString("\n")
+			//		//} else {
+			//		//	_ = err
+			//		//}
+			//	}
+			//	log := logBuilder.String()
+			//	return &log
+			//},
 		}
 	}
 
@@ -87,27 +130,4 @@ func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline stri
 // DeletePod 删除指定pod
 func (client *Client) DeletePod(ctx context.Context, ns, podName string) error {
 	return client.clientSet.CoreV1().Pods(ns).Delete(ctx, podName, metaV1.DeleteOptions{})
-}
-
-// watchContainerLogWithPodNameAndContainerName
-// 读取容器日志流
-// 入参：
-// Container:容器名称
-// Follow:跟踪Pod的日志流，默认为false（关闭）对应kubectl logs命令中的 -f 参数
-// TailLines:如果设置，则显示从日志末尾开始的行数。如果未指定，则从容器的创建开始或从秒开始或从时间开始显示日志
-// Previous:返回以前终止的容器日志。默认为false（关闭）
-func watchContainerLogWithPodNameAndContainerName(
-	ctx context.Context,
-	client *kubernetes.Clientset,
-	namespace,
-	podName,
-	containerName string, tailLine *int64, previous bool) (io.ReadCloser, error) {
-	logOpt := &coreV1.PodLogOptions{
-		Container: containerName,
-		Follow:    true,
-		TailLines: tailLine,
-		Previous:  previous,
-	}
-	req := client.CoreV1().Pods(namespace).GetLogs(podName, logOpt)
-	return req.Stream(ctx)
 }

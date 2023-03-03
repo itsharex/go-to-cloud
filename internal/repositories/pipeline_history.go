@@ -3,7 +3,6 @@ package repositories
 import (
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/pipeline"
-	"go-to-cloud/internal/pkg/kube"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"time"
@@ -38,7 +37,7 @@ func GetPipelineHistory(historyId uint) (*PipelineHistory, error) {
 	return returnWithError(&rlt, tx.Error)
 }
 
-func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, description *kube.PodDescription) error {
+func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, buildLog *string) error {
 	db := conf.GetDbClient()
 
 	return db.Transaction(func(tx *gorm.DB) (err error) {
@@ -58,8 +57,8 @@ func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, description *ku
 		}
 
 		if len(history.BuildLog) == 0 {
-			if description.GetLog != nil && pipeline.IsComplete(rlt) {
-				err = tx.Model(&PipelineHistory{}).Where("id = ?", historyId).Update("log", *description.GetLog(nil)).Error
+			if pipeline.IsComplete(rlt) {
+				err = tx.Model(&PipelineHistory{}).Where("id = ?", historyId).Update("log", *buildLog).Error
 			}
 			if err != nil {
 				return
