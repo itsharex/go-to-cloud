@@ -785,6 +785,51 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/monitor/{k8s}/pod/{deploymentId}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出应用中的Pod信息",
+                "tags": [
+                    "Monitor"
+                ],
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "force refresh",
+                        "name": "force",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "deployment id， 用于从部署方案中跳转到对应的应用",
+                        "name": "deploymentId",
+                        "in": "path"
+                    },
+                    {
+                        "type": "string",
+                        "description": "k8s repo id",
+                        "name": "k8s",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/deploy.DeploymentDescription"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects": {
             "put": {
                 "security": [

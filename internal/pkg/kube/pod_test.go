@@ -24,7 +24,7 @@ func TestGetPod(t *testing.T) {
 	client, err := NewClientByRestConfig(restcfg)
 	assert.NoError(t, err)
 
-	pods, err := client.GetPods(context.TODO(), "kube-system", "", "")
+	pods, err := client.GetPods(context.TODO(), "kube-system", "", func() string { return "" }, true)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, pods)
 

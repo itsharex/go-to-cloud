@@ -43,7 +43,9 @@ func getPodDescription(node *repositories.BuilderNode) ([]kube.PodDescription, e
 		return nil, err
 	}
 
-	return client.GetPods(context.TODO(), node.K8sWorkerSpace, NodeSelectorLabel, BuildIdSelectorLabel)
+	return client.GetPods(context.TODO(), node.K8sWorkerSpace, BuildIdSelectorLabel, func() string {
+		return "builder=" + NodeSelectorLabel
+	}, true)
 }
 
 func tryGetPodStatusFromCache(node *repositories.BuilderNode, f func(node *repositories.BuilderNode) ([]kube.PodDescription, error)) ([]kube.PodDescription, error) {

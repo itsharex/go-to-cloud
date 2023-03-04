@@ -51,7 +51,9 @@ func getAndSetK8sNodesState() {
 	if nodes, err := repositories.GetBuildNodesOnK8sByOrgId(nil, "", nil); err == nil {
 		for _, node := range nodes {
 			if client, err := kube.NewClient(node.DecryptKubeConfig()); err == nil {
-				if pods, err := client.GetPods(ctx, node.K8sWorkerSpace, NodeSelectorLabel, BuildIdSelectorLabel); err == nil {
+				if pods, err := client.GetPods(ctx, node.K8sWorkerSpace, BuildIdSelectorLabel, func() string {
+					return "builder=" + NodeSelectorLabel
+				}, true); err == nil {
 					for i, pod := range pods {
 						lock.Lock()
 						allK8sPipelines[pod.BuildId] = &pods[i]

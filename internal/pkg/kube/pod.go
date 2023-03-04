@@ -2,18 +2,26 @@ package kube
 
 import (
 	"context"
+	"fmt"
+	"github.com/patrickmn/go-cache"
 	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strconv"
+	"time"
 )
 
+var podsCache *cache.Cache
+
+func init() {
+	podsCache = cache.New(time.Second*5, 0)
+}
+
 type PodDescription struct {
-	Name       string
-	Status     coreV1.PodPhase
-	BuildId    uint
-	Containers []string
-	// GetLog      func(*string, *string, *int64, bool) *string // 获取容器日志,p1: pod name; p2: container name; p3: tail line; p4: get previous terminate container also
+	Name        string
+	Status      coreV1.PodPhase
+	BuildId     uint // 构建时使用的Pod，对应pipeline id
+	Containers  []string
 	GetArtifact func(*string) *string // 获取产物
 }
 
@@ -59,69 +67,43 @@ const (
 )
 
 // GetPods 获取指定名字空间
-func (client *Client) GetPods(ctx context.Context, ns, label, labelPipeline string) ([]PodDescription, error) {
-	pods, err := client.clientSet.CoreV1().Pods(ns).List(context.TODO(), metaV1.ListOptions{
-		LabelSelector: func() string {
-			if len(label) > 0 {
-				return "builder=" + label
-			} else {
-				return ""
-			}
-		}(),
-	})
-
-	rlt := make([]PodDescription, len(pods.Items))
-	for i, pod := range pods.Items {
-		rlt[i] = PodDescription{
-			BuildId: func() uint {
-				if len(labelPipeline) > 0 {
-					if label, ok := pod.GetObjectMeta().GetLabels()[labelPipeline]; ok {
-						idStr := label[len(labelPipeline)+1:]
-						if id, err := strconv.ParseUint(idStr, 10, 64); err == nil {
-							return uint(id)
+func (client *Client) GetPods(ctx context.Context, ns, labelPipeline string, labelSelector func() string, force bool) ([]PodDescription, error) {
+	selector := labelSelector()
+	key := fmt.Sprintf("%s.%s", ns, selector)
+	if v, ok := podsCache.Get(key); !ok || force {
+		pods, err := client.clientSet.CoreV1().Pods(ns).List(ctx, metaV1.ListOptions{
+			LabelSelector: selector,
+		})
+		rlt := make([]PodDescription, len(pods.Items))
+		for i, pod := range pods.Items {
+			rlt[i] = PodDescription{
+				BuildId: func() uint {
+					if len(labelPipeline) > 0 {
+						if label, ok := pod.GetObjectMeta().GetLabels()[labelPipeline]; ok {
+							idStr := label[len(labelPipeline)+1:]
+							if id, err := strconv.ParseUint(idStr, 10, 64); err == nil {
+								return uint(id)
+							}
 						}
 					}
-				}
-				return 0
-			}(),
-			Name:   pod.Name,
-			Status: pod.Status.Phase,
-			Containers: func() []string {
-				c := make([]string, len(pod.Spec.Containers))
-				for i, container := range pod.Spec.Containers {
-					c[i] = container.Name
-				}
-				return c
-			}(),
-			//GetLog: func(podName, c *string, tailLine *int64, previous bool) *string {
-			//	if podName == nil || c == nil {
-			//		return nil
-			//	}
-			//	logBuilder := strings.Builder{}
-			//	logBuilder.WriteString("tl;dl;" + *podName + "\n")
-			//	if podLogs, err := GetPodStreamLogs(client, ctx, ns, *podName, *c, tailLine, previous); err == nil {
-			//		defer podLogs.Close()
-			//		buf := make([]byte, 1024)
-			//		for {
-			//			if n, err := podLogs.Read(buf); err == nil {
-			//				logBuilder.WriteString(string(buf[:n]))
-			//			}
-			//			time.Sleep(1 * time.Second)
-			//		}
-			//		//if buf, err := io.ReadAll(podLogs); err == nil {
-			//		//	logBuilder.WriteString(string(buf))
-			//		//	logBuilder.WriteString("\n")
-			//		//} else {
-			//		//	_ = err
-			//		//}
-			//	}
-			//	log := logBuilder.String()
-			//	return &log
-			//},
+					return 0
+				}(),
+				Name:   pod.Name,
+				Status: pod.Status.Phase,
+				Containers: func() []string {
+					c := make([]string, len(pod.Spec.Containers))
+					for i, container := range pod.Spec.Containers {
+						c[i] = container.Name
+					}
+					return c
+				}(),
+			}
 		}
-	}
 
-	return rlt, err
+		return rlt, err
+	} else {
+		return v.([]PodDescription), nil
+	}
 }
 
 // DeletePod 删除指定pod
