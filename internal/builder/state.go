@@ -56,17 +56,17 @@ func getAndSetK8sNodesState() {
 				}, true); err == nil {
 					for i, pod := range pods {
 						lock.Lock()
-						allK8sPipelines[pod.BuildId] = &pods[i]
+						allK8sPipelines[pod.BuildId] = &pods[i].PodDescription
 						lock.Unlock()
 
 						rlt := func() pipeline.BuildingResult {
 							switch pods[i].Status {
-							case kube.Pending, kube.Running:
+							case string(kube.Pending), string(kube.Running):
 								return pipeline.UnderBuilding
-							case kube.Succeeded:
+							case string(kube.Succeeded):
 								// TODO: 根据容器的状态最终确定构建结果
 								return pipeline.BuildingSuccess
-							case kube.Failed:
+							case string(kube.Failed):
 								return pipeline.BuildingFailed
 							default:
 								return pipeline.NeverBuild
@@ -74,7 +74,8 @@ func getAndSetK8sNodesState() {
 						}()
 
 						log := ""
-						logBytes, err := client.GetPodLogs(ctx, node.K8sWorkerSpace, pod.Name, pod.Containers[0], nil, false)
+						// 构建Pod只有一个容器，所以取第一个容器的日志即构建日志
+						logBytes, err := client.GetPodLogs(ctx, node.K8sWorkerSpace, pod.Name, pod.Containers[0].Name, nil, false)
 						if err == nil {
 							log = string(logBytes)
 						}

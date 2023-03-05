@@ -11,7 +11,7 @@ import (
 // QueryPods
 // @Tags Monitor
 // @Description 列出应用中的Pod信息
-// @Success 200 {array} deploy.DeploymentDescription
+// @Success 200 {array} kube.PodDetailDescription
 // @Router /api/monitor/{k8s}/pod/{deploymentId} [get]
 // @Param        force    query     bool  false  "force refresh"
 // @Param        deploymentId    path     string  false  "deployment id， 用于从部署方案中跳转到对应的应用"

@@ -7,7 +7,7 @@ import (
 )
 
 // QueryPods 查找Pods
-func QueryPods(deploymentId, k8sId uint, force bool) ([]kube.PodDescription, error) {
+func QueryPods(deploymentId, k8sId uint, force bool) ([]kube.PodDetailDescription, error) {
 	repo, err := repositories.QueryK8sRepoById(k8sId)
 	if err != nil {
 		return nil, err
@@ -33,5 +33,6 @@ func QueryPods(deploymentId, k8sId uint, force bool) ([]kube.PodDescription, err
 	if err != nil {
 		return nil, err
 	}
+
 	return pods, nil
 }

@@ -823,7 +823,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/deploy.DeploymentDescription"
+                                "$ref": "#/definitions/kube.PodDetailDescription"
                             }
                         }
                     }
@@ -1820,6 +1820,48 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "kubeconfig": {
+                    "type": "string"
+                }
+            }
+        },
+        "kube.ContainerDescription": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "kube.PodDetailDescription": {
+            "type": "object",
+            "properties": {
+                "buildId": {
+                    "description": "构建时使用的Pod，对应pipeline id",
+                    "type": "integer"
+                },
+                "containers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/kube.ContainerDescription"
+                    }
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "qos": {
+                    "type": "string"
+                },
+                "restartCounter": {
+                    "type": "integer"
+                },
+                "status": {
                     "type": "string"
                 }
             }
