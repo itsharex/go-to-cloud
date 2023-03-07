@@ -1,7 +1,7 @@
 package monitor
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -15,17 +15,14 @@ var Upgrade = websocket.Upgrader{
 	},
 }
 
-type logHeader struct {
-	TailLine int64 `json:"tailLine"`
-}
-
-func XTermInteractive(ws *websocket.Conn, k8sRepoId uint, containerName string, cancel <-chan struct{}) {
+func XTermInteractive(ws *websocket.Conn, k8sRepoId, deploymentId uint, podName, containerName string, cancel <-chan struct{}) {
 
 	go func() {
 		<-cancel
 		fmt.Println("finished")
 	}()
 
+	c := context.Background()
 	for {
 		mt, message, err := ws.ReadMessage()
 		if err != nil {
@@ -34,10 +31,12 @@ func XTermInteractive(ws *websocket.Conn, k8sRepoId uint, containerName string, 
 		}
 		switch mt {
 		case websocket.TextMessage:
-			// TODO: 从消息中解析需要获取的日志行号
-			var log logHeader
-			_ = json.Unmarshal(message, &log)
-			err = ws.WriteMessage(mt, []byte("dddddddd"))
+			containerName = string(message)
+			c.Done()
+			go FollowLogs(c, k8sRepoId, deploymentId, podName, containerName, false, func(log []byte) {
+				ws.WriteMessage(websocket.TextMessage, log)
+			})
+
 		case websocket.PingMessage:
 			_ = k8sRepoId
 			_ = containerName
