@@ -102,5 +102,5 @@ var upgrade = websocket.Upgrader{
 
 func buildWebSocket(router *gin.Engine) {
 	ws := router.Group("/ws")
-	ws.GET("/monitor/:k8s/pod/log", monitor.Cli)
+	ws.GET("/monitor/:k8s/pod/log", monitor.DisplayLog)
 }

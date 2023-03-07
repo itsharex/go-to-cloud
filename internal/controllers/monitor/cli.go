@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-// Cli 进入容器内部执行命令行交互
-func Cli(ctx *gin.Context) {
+// DisplayLog 进入容器内部执行命令行交互
+func DisplayLog(ctx *gin.Context) {
 
 	k8sRepoId, err := getUIntParamFromQueryOrPath("k8s", ctx, false)
 	if err != nil {
