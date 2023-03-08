@@ -11,30 +11,42 @@ import (
 type Client struct {
 	clientSet           *kubernetes.Clientset
 	defaultApplyOptions *meta.ApplyOptions
+	config              *rest.Config
 }
 
 func (client *Client) GetClientSet() *kubernetes.Clientset {
 	return client.clientSet
 }
 
-func NewClientByRestConfig(cfg *rest.Config) (*Client, error) {
-	c, e := kubernetes.NewForConfig(cfg)
-
+func newClient(c *kubernetes.Clientset, config *rest.Config) (*Client, error) {
 	m := meta.ApplyOptions{
 		FieldManager: "application/apply-patch+yaml",
 		Force:        true,
 	}
 
-	if e != nil {
+	client := Client{
+		clientSet:           c,
+		defaultApplyOptions: &m,
+		config:              config,
+	}
+	return &client, nil
+
+}
+
+func NewClientByRestConfig(cfg *rest.Config) (*Client, error) {
+	if c, e := kubernetes.NewForConfig(cfg); e != nil {
 		return nil, e
 	} else {
-
-		client := Client{
-			clientSet:           c,
-			defaultApplyOptions: &m,
-		}
-		return &client, nil
+		return newClient(c, cfg)
 	}
+}
+
+func NewClientFromToken(token, host *string) (*Client, error) {
+	return NewClientByRestConfig(&rest.Config{
+		BearerToken:     *token,
+		TLSClientConfig: rest.TLSClientConfig{Insecure: true},
+		Host:            *host,
+	})
 }
 
 // NewClient 创建k8s客户端对象
@@ -46,21 +58,9 @@ func NewClient(config *string) (*Client, error) {
 		return nil, err
 	}
 
-	m := meta.ApplyOptions{
-		FieldManager: "application/apply-patch+yaml",
-		Force:        true,
-	}
-
-	c, e := kubernetes.NewForConfig(kubeConfig)
-
-	if e != nil {
+	if c, e := kubernetes.NewForConfig(kubeConfig); e != nil {
 		return nil, e
 	} else {
-
-		client := Client{
-			clientSet:           c,
-			defaultApplyOptions: &m,
-		}
-		return &client, nil
+		return newClient(c, kubeConfig)
 	}
 }

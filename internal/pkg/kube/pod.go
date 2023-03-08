@@ -8,6 +8,8 @@ import (
 	"io"
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/tools/remotecommand"
 	"strconv"
 	"strings"
 	"time"
@@ -168,4 +170,36 @@ func (client *Client) GetPods(ctx context.Context, ns, labelPipeline string, lab
 // DeletePod 删除指定pod
 func (client *Client) DeletePod(ctx context.Context, ns, podName string) error {
 	return client.clientSet.CoreV1().Pods(ns).Delete(ctx, podName, metaV1.DeleteOptions{})
+}
+
+// Shell 与容器交互
+func (client *Client) Shell(ctx context.Context, ns, podName, containerName string, session *TerminalSession) error {
+	req := client.clientSet.CoreV1().RESTClient().Post().
+		Resource("pods").
+		Name(podName).
+		Namespace(ns).
+		SubResource("exec")
+
+	req.VersionedParams(&coreV1.PodExecOptions{
+		Container: containerName,
+		Command:   []string{"/bin/bash"},
+		Stdin:     true,
+		Stdout:    true,
+		Stderr:    true,
+		TTY:       true,
+	}, scheme.ParameterCodec)
+
+	executor, err := remotecommand.NewSPDYExecutor(client.config, "POST", req.URL())
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return executor.StreamWithContext(ctx, remotecommand.StreamOptions{
+		Stdin:             session,
+		Stdout:            session,
+		Stderr:            session,
+		TerminalSizeQueue: session,
+		Tty:               true,
+	})
 }

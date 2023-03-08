@@ -6,7 +6,7 @@ import (
 	"go-to-cloud/internal/repositories"
 )
 
-func FollowLogs(ctx context.Context, k8sId, deploymentId uint, podName, containerName string, previous bool, logs func([]byte)) error {
+func followLogs(ctx context.Context, k8sId, deploymentId uint, podName, containerName string, previous bool, logs func([]byte)) error {
 	repo, err := repositories.QueryK8sRepoById(k8sId)
 	if err != nil {
 		return err

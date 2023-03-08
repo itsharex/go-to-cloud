@@ -23,7 +23,7 @@ func getWebSocketParams(ctx *gin.Context) (ws *websocket.Conn, k8sRepoId, deploy
 	podName = ctx.Param("podName")         // 允许为空，空时进入默认第一个容器内部
 	containerName = ctx.Query("container") // 允许为空，空时进入默认第一个容器内部
 
-	ws, err = monitor.Upgrade.Upgrade(ctx.Writer, ctx.Request, nil)
+	ws, err = monitor.Upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
 		msg := err.Error()
