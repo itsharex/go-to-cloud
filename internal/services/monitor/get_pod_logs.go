@@ -6,7 +6,7 @@ import (
 	"go-to-cloud/internal/repositories"
 )
 
-func FollowLogs(ctx context.Context, deploymentId, k8sId uint, podName string, previous bool, logs func([]byte)) error {
+func FollowLogs(ctx context.Context, k8sId, deploymentId uint, podName, containerName string, previous bool, logs func([]byte)) error {
 	repo, err := repositories.QueryK8sRepoById(k8sId)
 	if err != nil {
 		return err
@@ -23,7 +23,10 @@ func FollowLogs(ctx context.Context, deploymentId, k8sId uint, podName string, p
 	}
 
 	lines := int64(100)
-	stream, err := client.GetPodStreamLogs(ctx, deployment.K8sNamespace, podName, deployment.ArtifactDockerImageRepo.Name, &lines, true, previous)
+	if len(containerName) == 0 {
+		containerName = deployment.ArtifactDockerImageRepo.Name
+	}
+	stream, err := client.GetPodStreamLogs(ctx, deployment.K8sNamespace, podName, containerName, &lines, true, previous)
 	if err != nil {
 		return err
 	}

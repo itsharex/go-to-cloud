@@ -15,7 +15,13 @@ func DisplayLog(ctx *gin.Context) {
 		response.BadRequest(ctx, err.Error())
 		return
 	}
-	container := ctx.Param("container") // 允许为空，空时进入默认第一个容器内部
+	deploymentId, err := getUIntParamFromQueryOrPath("deploymentId", ctx, false)
+	if err != nil {
+		response.BadRequest(ctx, err.Error())
+		return
+	}
+	podName := ctx.Param("podName")     // 允许为空，空时进入默认第一个容器内部
+	container := ctx.Query("container") // 允许为空，空时进入默认第一个容器内部
 
 	if err != nil {
 		msg := err.Error()
@@ -34,5 +40,5 @@ func DisplayLog(ctx *gin.Context) {
 		ws.Close()
 	}()
 
-	monitor.XTermInteractive(ws, k8sRepoId, container, ctx.Done())
+	monitor.XTermInteractive(ws, k8sRepoId, deploymentId, podName, container, ctx.Done())
 }
