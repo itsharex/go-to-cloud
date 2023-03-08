@@ -128,6 +128,7 @@ func buildK8sRepo(model *k8s.K8s, userId uint, orgs []uint, gormModel *Model) (*
 		BelongsTo:     datatypes.JSON(belongs),
 		ServerVersion: model.ServerVersion,
 		Remark:        model.Remark,
+		KubeConfig:    *model.KubeConfig,
 	}
 
 	return &repo, nil
