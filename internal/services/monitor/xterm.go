@@ -15,7 +15,41 @@ var Upgrade = websocket.Upgrader{
 	},
 }
 
-func XTermInteractive(ws *websocket.Conn, k8sRepoId, deploymentId uint, podName, containerName string, cancel <-chan struct{}) {
+func XTermInteractiveLogs(ws *websocket.Conn, k8sRepoId, deploymentId uint, podName, containerName string, cancel <-chan struct{}) {
+
+	go func() {
+		<-cancel
+		fmt.Println("finished")
+	}()
+
+	c := context.Background()
+	for {
+		mt, message, err := ws.ReadMessage()
+		if err != nil {
+			fmt.Println("read error")
+			break
+		}
+		switch mt {
+		case websocket.TextMessage:
+			containerName = string(message)
+			c.Done()
+			go FollowLogs(c, k8sRepoId, deploymentId, podName, containerName, false, func(log []byte) {
+				ws.WriteMessage(websocket.TextMessage, log)
+			})
+
+		case websocket.PingMessage:
+			_ = k8sRepoId
+			_ = containerName
+			err = ws.WriteMessage(websocket.PongMessage, []byte("pong"))
+		}
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+	}
+}
+
+func XTermInteractiveShell(ws *websocket.Conn, k8sRepoId, deploymentId uint, podName, containerName string, cancel <-chan struct{}) {
 
 	go func() {
 		<-cancel
