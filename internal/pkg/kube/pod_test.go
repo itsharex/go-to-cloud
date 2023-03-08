@@ -31,7 +31,7 @@ func TestGetPod(t *testing.T) {
 	pod := func() *PodDescription {
 		for i, p := range pods {
 			if p.Name == "kube-apiserver-docker-desktop" {
-				return &pods[i]
+				return &pods[i].PodDescription
 			}
 		}
 		return nil
