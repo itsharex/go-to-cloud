@@ -682,6 +682,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/monitor/{k8s}/apps/delete": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除容器",
+                "tags": [
+                    "Monitor"
+                ],
+                "summary": "删除容器",
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/deploy.DeletePod"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/monitor/{k8s}/apps/query/": {
             "get": {
                 "security": [
@@ -1601,6 +1627,18 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "orgName": {
+                    "type": "string"
+                }
+            }
+        },
+        "deploy.DeletePod": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "deployment id",
+                    "type": "integer"
+                },
+                "podName": {
                     "type": "string"
                 }
             }

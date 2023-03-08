@@ -41,3 +41,8 @@ type ScalePods struct {
 type RestartPods struct {
 	Base
 }
+
+type DeletePod struct {
+	Base
+	PodName string `json:"podName"`
+}

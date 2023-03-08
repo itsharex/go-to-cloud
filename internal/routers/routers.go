@@ -88,6 +88,7 @@ func buildRouters(router *gin.Engine) {
 		monitoring := api.Group("/monitor")
 		monitoring.GET("/:k8s/apps/query", monitor.Query)
 		monitoring.PUT("/:k8s/apps/restart", monitor.Restart)
+		monitoring.PUT("/:k8s/apps/delete", monitor.DeletePod)
 		monitoring.PUT("/:k8s/apps/scale", monitor.Scale)
 		monitoring.GET("/:k8s/pods/:deploymentId", monitor.QueryPods)
 
