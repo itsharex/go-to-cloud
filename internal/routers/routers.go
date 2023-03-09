@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/configure/artifact"
 	"go-to-cloud/internal/controllers/configure/buildEnv"
@@ -13,7 +12,6 @@ import (
 	"go-to-cloud/internal/controllers/projects"
 	"go-to-cloud/internal/controllers/users"
 	"go-to-cloud/internal/middlewares"
-	"net/http"
 )
 
 // buildRouters 构建路由表
@@ -91,14 +89,9 @@ func buildRouters(router *gin.Engine) {
 		monitoring.PUT("/:k8s/apps/delete", monitor.DeletePod)
 		monitoring.PUT("/:k8s/apps/scale", monitor.Scale)
 		monitoring.GET("/:k8s/pods/:deploymentId", monitor.QueryPods)
+		monitoring.DELETE("/:k8s/apps/delete/:deploymentId", monitor.DeleteDeployment)
 
 	}
-}
-
-var upgrade = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
 }
 
 func buildWebSocket(router *gin.Engine) {
