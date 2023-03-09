@@ -3,6 +3,7 @@ package repositories
 import (
 	"go-to-cloud/conf"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
 )
@@ -105,11 +106,21 @@ func GetDeploymentByProjectId(projectId, deploymentId uint) (*Deployment, error)
 	return returnWithError(&rlt, err)
 }
 
-func UpdateDeploymentDeployTime(projectId, deploymentId uint) error {
+func Deployed(projectId, deploymentId uint) error {
+
 	db := conf.GetDbClient()
 
-	tx := db.Model(&Deployment{})
-	var rlt Deployment
-	err := tx.First(&rlt, deploymentId).Where("project_id = ?", projectId).Update("last_deploy_at", time.Now()).Error
-	return err
+	return db.Transaction(func(tx *gorm.DB) error {
+		tx.Model(&Deployment{})
+		var rlt Deployment
+		err := tx.First(&rlt, deploymentId).Where("project_id = ?", projectId).Update("last_deploy_at", time.Now()).Error
+		if err != nil {
+			return err
+		}
+
+		var rlt2 DeploymentHistory
+		rlt2.Deployment = rlt
+
+		return tx.Model(&DeploymentHistory{}).Omit("id").Create(&rlt2).Error
+	})
 }

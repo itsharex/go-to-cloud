@@ -82,10 +82,10 @@ func StartDeploy(projectId, deployId uint) error {
 		return err
 	}
 
-	err = repositories.UpdateDeploymentDeployTime(projectId, deployId)
+	err = client.Launch(&cfg)
 	if err != nil {
 		return err
 	}
 
-	return client.Launch(&cfg)
+	return repositories.Deployed(projectId, deployId)
 }
