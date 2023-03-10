@@ -31,14 +31,17 @@ func QueryImages(artifactID uint) ([]*docker_image.Image, error) {
 					Hash:            image.GetHashedCode(),
 					Name:            image.Name,
 					FullName:        image.FullAddress,
-					Tags:            make([]string, 0),
+					Tags:            make([]docker_image.Tag, 0),
 					PublishedAt:     utils.JsonTime(image.CreatedAt),
 					LatestVer:       image.Tag,
 					LatestPublishAt: image.CreatedAt,
 				}
 			}
 			extractLatestVer(aggImage[hashedCode], &image)
-			aggImage[hashedCode].Tags = append(aggImage[hashedCode].Tags, image.Tag)
+			aggImage[hashedCode].Tags = append(aggImage[hashedCode].Tags, docker_image.Tag{
+				Tag:         image.Tag,
+				PublishedAt: utils.JsonTime(image.CreatedAt),
+			})
 		}
 		rlt = make([]*docker_image.Image, len(aggImage))
 		i := 0
