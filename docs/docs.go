@@ -708,6 +708,21 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/monitor/{k8s}/apps/delete/{deploymentId}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除应用",
+                "tags": [
+                    "Monitor"
+                ],
+                "summary": "删除应用",
+                "responses": {}
+            }
+        },
         "/api/monitor/{k8s}/apps/query/": {
             "get": {
                 "security": [
@@ -1063,6 +1078,31 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/projects/{projectId}/deploy/app/{deploymentId}/history": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取部署方案",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取部署方案",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/deploy.DeploymentHistory"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/deploy/apps": {
             "get": {
                 "security": [
@@ -1070,11 +1110,11 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "获取构建计划",
+                "description": "获取部署方案列表",
                 "tags": [
                     "Projects"
                 ],
-                "summary": "获取构建计划",
+                "summary": "获取部署方案列表",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1784,6 +1824,96 @@ const docTemplate = `{
                 }
             }
         },
+        "deploy.DeploymentHistory": {
+            "type": "object",
+            "properties": {
+                "artifact": {
+                    "type": "integer"
+                },
+                "artifactName": {
+                    "type": "string"
+                },
+                "artifactTag": {
+                    "type": "string"
+                },
+                "cpuLimits": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "cpuRequest": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "deploymentId": {
+                    "type": "integer"
+                },
+                "enableLimit": {
+                    "type": "boolean"
+                },
+                "env": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "healthcheck": {
+                    "type": "string"
+                },
+                "healthcheckPort": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "k8s": {
+                    "type": "integer"
+                },
+                "k8sName": {
+                    "type": "string"
+                },
+                "lastDeployAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "memLimits": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "memRequest": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "replicate": {
+                    "type": "integer"
+                }
+            }
+        },
         "deploy.RestartPods": {
             "type": "object",
             "properties": {
@@ -1915,6 +2045,17 @@ const docTemplate = `{
                 }
             }
         },
+        "pipeline.BranchRef": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "sha": {
+                    "type": "string"
+                }
+            }
+        },
         "pipeline.PlanCardModel": {
             "type": "object",
             "properties": {
@@ -1925,7 +2066,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "branch": {
-                    "type": "string"
+                    "$ref": "#/definitions/pipeline.BranchRef"
                 },
                 "buildEnv": {
                     "type": "string"
@@ -1979,7 +2120,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "branch": {
-                    "type": "string"
+                    "$ref": "#/definitions/pipeline.BranchRef"
                 },
                 "buildEnv": {
                     "type": "string"

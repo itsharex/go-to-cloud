@@ -18,7 +18,7 @@ func TestBuildPodSpec(t *testing.T) {
 	err = tpl.Execute(buf, kube.PodSpecConfig{
 		TaskName:   "Test",
 		SourceCode: "DFDF.git",
-		Branch:     "test-branch",
+		Sha:        "test-branch",
 		Sdk:        "6.0",
 		Steps: []kube.Step{
 			{

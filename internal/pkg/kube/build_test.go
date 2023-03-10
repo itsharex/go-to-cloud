@@ -13,7 +13,7 @@ func TestParseTemplate(t *testing.T) {
 		Namespace:  "testNs",
 		TaskName:   "testTask",
 		SourceCode: "testSource",
-		Branch:     "test-branch",
+		Sha:        "test-branch",
 		Sdk:        "testSdk",
 		Steps: []Step{
 			{
