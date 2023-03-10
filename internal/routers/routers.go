@@ -76,6 +76,7 @@ func buildRouters(router *gin.Engine) {
 		project.POST("/:projectId/pipeline/:id/build", projects.StartBuildPlan)
 		project.PUT("/:projectId/deploy/:id", projects.Deploying)
 		project.GET("/:projectId/deploy/apps", projects.QueryDeployments)
+		project.GET("/:projectId/deploy/app/:deploymentId/history", projects.QueryDeploymentHistory)
 		project.POST("/:projectId/deploy/app", projects.CreateDeployment)
 		project.DELETE("/:projectId/deploy/:id", projects.DeleteDeployment)
 		project.GET("/:projectId/deploy/:k8sRepoId/namespaces", projects.QueryNamespaces)

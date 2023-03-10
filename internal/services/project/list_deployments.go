@@ -7,6 +7,71 @@ import (
 	"go-to-cloud/internal/utils"
 )
 
+func deploymentMapper(repo repositories.Deployment) deploy.Deployment {
+	return deploy.Deployment{
+		Id:           repo.ID,
+		Namespace:    repo.K8sNamespace,
+		K8S:          repo.K8sRepoId,
+		K8sName:      repo.K8sRepo.Name,
+		Artifact:     repo.ArtifactDockerImageId,
+		ArtifactName: repo.ArtifactDockerImageRepo.Name,
+		Ports: func() []struct {
+			ServicePort   string `json:"text"`
+			ContainerPort string `json:"value"`
+		} {
+			var t []struct {
+				ServicePort   string `json:"text"`
+				ContainerPort string `json:"value"`
+			}
+			if json.Unmarshal(repo.Ports, &t) != nil {
+				return nil
+			} else {
+				return t
+			}
+		}(),
+		Env: func() []struct {
+			VarName  string `json:"text"`
+			VarValue string `json:"value"`
+		} {
+			var t []struct {
+				VarName  string `json:"text"`
+				VarValue string `json:"value"`
+			}
+			t1 := make([]struct {
+				VarName  string `json:"text"`
+				VarValue string `json:"value"`
+			}, 0)
+			if json.Unmarshal(repo.Env, &t) != nil {
+				return nil
+			} else {
+				for i, s := range t {
+					if len(s.VarName) > 0 {
+						t1 = append(t1, t[i])
+					}
+				}
+				return t1
+			}
+		}(),
+		Replicate:   repo.Replicas,
+		CpuRequest:  repo.ResourceLimitCpuRequest,
+		CpuLimits:   repo.ResourceLimitCpuLimits,
+		MemRequest:  repo.ResourceLimitMemRequest,
+		MemLimits:   repo.ResourceLimitMemLimits,
+		ArtifactTag: repo.ArtifactTag,
+		LastDeployAt: func() *utils.JsonTime {
+			t := repo.LastDeployAt
+			if t == nil {
+				return nil
+			} else {
+				m := utils.JsonTime(*t)
+				return &m
+			}
+		}(),
+		Healthcheck:     repo.Liveness,
+		HealthcheckPort: repo.LivenessPort,
+	}
+}
+
 func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 	deployments, err := repositories.QueryDeploymentsByProjectId(projectId)
 
@@ -16,68 +81,7 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 
 	models := make([]deploy.Deployment, len(deployments))
 	for i := range deployments {
-		models[i] = deploy.Deployment{
-			Id:           deployments[i].ID,
-			Namespace:    deployments[i].K8sNamespace,
-			K8S:          deployments[i].K8sRepoId,
-			K8sName:      deployments[i].K8sRepo.Name,
-			Artifact:     deployments[i].ArtifactDockerImageId,
-			ArtifactName: deployments[i].ArtifactDockerImageRepo.Name,
-			Ports: func() []struct {
-				ServicePort   string `json:"text"`
-				ContainerPort string `json:"value"`
-			} {
-				var t []struct {
-					ServicePort   string `json:"text"`
-					ContainerPort string `json:"value"`
-				}
-				if json.Unmarshal(deployments[i].Ports, &t) != nil {
-					return nil
-				} else {
-					return t
-				}
-			}(),
-			Env: func() []struct {
-				VarName  string `json:"text"`
-				VarValue string `json:"value"`
-			} {
-				var t []struct {
-					VarName  string `json:"text"`
-					VarValue string `json:"value"`
-				}
-				t1 := make([]struct {
-					VarName  string `json:"text"`
-					VarValue string `json:"value"`
-				}, 0)
-				if json.Unmarshal(deployments[i].Env, &t) != nil {
-					return nil
-				} else {
-					for i, s := range t {
-						if len(s.VarName) > 0 {
-							t1 = append(t1, t[i])
-						}
-					}
-					return t1
-				}
-			}(),
-			Replicate:   deployments[i].Replicas,
-			CpuRequest:  deployments[i].ResourceLimitCpuRequest,
-			CpuLimits:   deployments[i].ResourceLimitCpuLimits,
-			MemRequest:  deployments[i].ResourceLimitMemRequest,
-			MemLimits:   deployments[i].ResourceLimitMemLimits,
-			ArtifactTag: deployments[i].ArtifactTag,
-			LastDeployAt: func() *utils.JsonTime {
-				t := deployments[i].LastDeployAt
-				if t == nil {
-					return nil
-				} else {
-					m := utils.JsonTime(*t)
-					return &m
-				}
-			}(),
-			Healthcheck:     deployments[i].Liveness,
-			HealthcheckPort: deployments[i].LivenessPort,
-		}
+		models[i] = deploymentMapper(deployments[i])
 	}
 
 	return models, nil

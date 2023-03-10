@@ -9,10 +9,10 @@ import (
 	"strconv"
 )
 
-// QueryDeployments 获取部署应用列表
+// QueryDeployments 获取部署方案列表
 // @Tags Projects
-// @Description 获取构建计划
-// @Summary 获取构建计划
+// @Description 获取部署方案列表
+// @Summary 获取部署方案列表
 // @Success 200 {array} deploy.Deployment
 // @Router /api/projects/{projectId}/deploy/apps [get]
 // @Security JWT
