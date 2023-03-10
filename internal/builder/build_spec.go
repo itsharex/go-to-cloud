@@ -8,6 +8,7 @@ import (
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
+	"net/url"
 	"strconv"
 )
 
@@ -32,9 +33,17 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		BuildId:      buildId,
 		Namespace:    node.K8sWorkerSpace,
 		TaskName:     plan.Name + "-" + padLeftBuildIdStr,
-		SourceCode:   plan.SourceCode.GitUrl,
-		Branch:       plan.Branch,
-		Sdk:          lang.Sdk(plan.Env),
+		SourceCode: func() string {
+			if len(plan.SourceCode.CodeRepo.AccessToken) > 0 {
+				host, _ := url.Parse(plan.SourceCode.GitUrl)
+				host.User = url.UserPassword("oauth2", plan.SourceCode.CodeRepo.AccessToken)
+				return host.String()
+			} else {
+				return plan.SourceCode.GitUrl
+			}
+		}(),
+		Branch: plan.Branch,
+		Sdk:    lang.Sdk(plan.Env),
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
 			steps := make([]kube.Step, len(kvp))
