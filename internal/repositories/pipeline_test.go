@@ -24,6 +24,9 @@ func TestNewPlan(t *testing.T) {
 		Remark:          "remark",
 		SourceCodeID:    1,
 		Env:             "3.1",
-		Branch:          "branch",
+		Branch: pipeline.BranchRef{
+			Name: "m",
+			Sha:  "sha1",
+		},
 	}))
 }
