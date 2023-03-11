@@ -23,7 +23,7 @@ func QueryDeploymentHistory(projectId, deploymentId uint) ([]DeploymentHistory, 
 	tx := db.Model(&DeploymentHistory{})
 
 	tx = tx.Preload(clause.Associations)
-	tx = tx.Where("project_id = ? AND deployment_id = ?", projectId, deploymentId)
+	tx = tx.Where("project_id = ? AND deployment_id = ?", projectId, deploymentId).Order("last_deploy_at DESC")
 	err := tx.Find(&history).Error
 
 	return returnWithError(history, err)

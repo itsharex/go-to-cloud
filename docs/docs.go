@@ -1229,6 +1229,21 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/projects/{projectId}/deploy/{id}/rollback/{historyId}": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "回滚部署",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "回滚部署",
+                "responses": {}
+            }
+        },
         "/api/projects/{projectId}/deploy/{k8sRepoId}/namespaces": {
             "get": {
                 "security": [

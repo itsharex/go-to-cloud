@@ -120,7 +120,33 @@ func Deployed(projectId, deploymentId uint) error {
 
 		var rlt2 DeploymentHistory
 		rlt2.Deployment = rlt
+		rlt2.DeploymentId = rlt.ID
 
 		return tx.Model(&DeploymentHistory{}).Omit("id").Create(&rlt2).Error
 	})
+}
+
+func UpdateDeploymentByHistory(projectId, deploymentId, historyId uint) (*Deployment, error) {
+
+	db := conf.GetDbClient()
+
+	var deployment Deployment
+	err := db.Transaction(func(tx *gorm.DB) (e error) {
+		tx.Model(&DeploymentHistory{})
+		var history DeploymentHistory
+		e = tx.First(&history, historyId).Where("project_id = ?", projectId).Error
+		if e != nil {
+			return
+		}
+
+		e = tx.First(&deployment, deploymentId).Omit("id", "created_at").Updates(history.Deployment).Error
+		if e != nil {
+			return
+		}
+
+		e = tx.Model(&Deployment{}).Preload(clause.Associations).First(&deployment, deploymentId).Update("last_deploy_at", time.Now()).Error
+
+		return e
+	})
+	return &deployment, err
 }
