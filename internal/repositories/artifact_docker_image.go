@@ -37,6 +37,23 @@ func QueryImages(artifactId uint) ([]ArtifactDockerImages, error) {
 	return images, err
 }
 
+func QueryImagesByProject(projectId, artifactId uint) ([]ArtifactDockerImages, error) {
+	sql := `select docker.*
+from artifact_docker_images docker
+         inner join pipeline p on docker.pipeline_id = p.id
+         inner join artifact_repo ar on docker.artifact_repo_id = ar.id
+where p.project_id = ?
+  and ar.id = ?
+order by docker.created_at desc`
+	db := conf.GetDbClient()
+
+	var images []ArtifactDockerImages
+
+	tx := db.Raw(sql, projectId, artifactId).Find(&images)
+
+	return images, tx.Error
+}
+
 func CreateArtifact(image *ArtifactDockerImages) {
 	db := conf.GetDbClient()
 

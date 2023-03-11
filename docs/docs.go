@@ -1056,6 +1056,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/artifact": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "按项目获取仓库里的制品",
+                "tags": [
+                    "Projects"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/artifact.Artifact"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/projects/{projectId}/artifact/{artifactId}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取项目中的制品镜像",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取项目中的制品镜像",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Artifact Repo ID",
+                        "name": "artifactId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/docker_image.Image"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/artifact/{artifactId}/tags": {
             "get": {
                 "security": [
@@ -2001,6 +2075,57 @@ const docTemplate = `{
                 },
                 "num": {
                     "type": "integer"
+                }
+            }
+        },
+        "docker_image.Image": {
+            "type": "object",
+            "properties": {
+                "fullName": {
+                    "description": "完整路径，包含项目名称，e.g. library/mysql:latest",
+                    "type": "string"
+                },
+                "hashId": {
+                    "type": "string"
+                },
+                "latestVersion": {
+                    "type": "string"
+                },
+                "name": {
+                    "description": "镜像名",
+                    "type": "string"
+                },
+                "publishedAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "tags": {
+                    "description": "Tag",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/docker_image.Tag"
+                    }
+                }
+            }
+        },
+        "docker_image.Tag": {
+            "type": "object",
+            "properties": {
+                "fullName": {
+                    "type": "string"
+                },
+                "imageID": {
+                    "type": "integer"
+                },
+                "isLatest": {
+                    "type": "boolean"
+                },
+                "publishedAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
                 }
             }
         },
