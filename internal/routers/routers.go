@@ -44,6 +44,8 @@ func buildRouters(router *gin.Engine) {
 		confArtifact.GET("/", artifact.QueryArtifactRepo)
 		confArtifact.DELETE("/:id", artifact.RemoveArtifactRepo)
 		confArtifact.GET("/:id", artifact.QueryArtifactItems)
+		confArtifact.DELETE("/image/:imageId", artifact.DeleteImage)
+		confArtifact.DELETE("/images/hashId/:hashId", artifact.DeleteImageByHashId)
 
 		confK8s := api.Group("/configure/deploy/k8s")
 		confK8s.POST("/testing", k8s.Testing)

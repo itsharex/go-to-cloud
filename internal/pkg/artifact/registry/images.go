@@ -39,13 +39,18 @@ func QueryImages(artifactID uint) ([]*docker_image.Image, error) {
 			}
 			extractLatestVer(aggImage[hashedCode], &image)
 			aggImage[hashedCode].Tags = append(aggImage[hashedCode].Tags, docker_image.Tag{
+				ImageID:     image.ID,
 				Tag:         image.Tag,
+				FullName:    image.FullAddress,
 				PublishedAt: utils.JsonTime(image.CreatedAt),
 			})
 		}
 		rlt = make([]*docker_image.Image, len(aggImage))
 		i := 0
 		for _, image := range aggImage {
+			for idx, t := range image.Tags {
+				image.Tags[idx].IsLatest = t.PublishedAt == image.PublishedAt
+			}
 			rlt[i] = image
 			i++
 		}

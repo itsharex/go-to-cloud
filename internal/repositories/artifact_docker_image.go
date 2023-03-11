@@ -32,7 +32,7 @@ func QueryImages(artifactId uint) ([]ArtifactDockerImages, error) {
 	var images []ArtifactDockerImages
 
 	tx := db.Where(ArtifactDockerImages{ArtifactRepoID: artifactId})
-	err := tx.Find(&images).Error
+	err := tx.Order("created_at DESC").Find(&images).Error
 
 	return images, err
 }
@@ -41,6 +41,29 @@ func CreateArtifact(image *ArtifactDockerImages) {
 	db := conf.GetDbClient()
 
 	_ = db.Model(&ArtifactDockerImages{}).Create(image)
+}
+
+func DeleteImages(userId, pipelineId, artifactRepoId uint) error {
+	// TODO: 校验当前userId是否拥有数据删除权限
+
+	tx := conf.GetDbClient()
+
+	return tx.Where("pipeline_id = ? AND artifact_repo_id = ?", pipelineId, artifactRepoId).Delete(&ArtifactDockerImages{}).Error
+}
+
+func DeleteImage(userId, imageId uint) error {
+
+	tx := conf.GetDbClient()
+
+	// TODO: 校验当前userId是否拥有数据删除权限
+
+	err := tx.Delete(&ArtifactDockerImages{
+		Model: Model{
+			ID: imageId,
+		},
+	}).Error
+
+	return err
 }
 
 func QueryLatestImagesByProjectId(projectId uint) ([]artifact.FullName, error) {

@@ -16,6 +16,9 @@ type Image struct {
 }
 
 type Tag struct {
+	ImageID     uint           `json:"imageID"`
 	Tag         string         `json:"tags"`
 	PublishedAt utils.JsonTime `json:"publishedAt"`
+	IsLatest    bool           `json:"isLatest"`
+	FullName    string         `json:"fullName"`
 }

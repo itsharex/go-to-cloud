@@ -96,6 +96,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/configure/artifact/image/{imageId}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除镜像制品",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ImageID",
+                        "name": "imageId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/configure/artifact/images/hashId/{hashId}": {
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "删除镜像制品",
+                "tags": [
+                    "Configure"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "hashId",
+                        "name": "hashId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/configure/artifact/testing": {
             "post": {
                 "security": [
@@ -145,7 +199,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ArtifactRepoId.ID",
+                        "description": "ImageID.ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -176,7 +230,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ArtifactRepoId.ID",
+                        "description": "ImageID.ID",
                         "name": "id",
                         "in": "path",
                         "required": true
