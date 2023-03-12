@@ -26,6 +26,7 @@ func buildRouters(router *gin.Engine) {
 		user := api.Group("/user")
 		user.GET("/info", users.Info)
 		user.GET("/logout", users.Logout)
+		user.GET("/org/list", users.OrgList)
 
 		api.GET("/configure/build/env", buildEnv.BuildEnv)
 		api.GET("/configure/build/cmd", buildEnv.BuildCmd)
