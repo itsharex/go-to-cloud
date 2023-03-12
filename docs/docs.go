@@ -1512,6 +1512,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/projects/{projectId}/pipeline/{pipelineId}/history": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "获取构建计划",
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "获取构建计划",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/pipeline.PlanModel"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/projects/{projectId}/sourcecode/{id}": {
             "delete": {
                 "security": [

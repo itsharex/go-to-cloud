@@ -109,6 +109,20 @@ func QueryPipelinesByProjectId(projectId uint) ([]Pipeline, error) {
 	return returnWithError(plans, err)
 }
 
+func QueryPipelineHistoryByProjectId(projectId, pipelineId uint) ([]PipelineHistory, error) {
+	db := conf.GetDbClient()
+
+	var plans []PipelineHistory
+
+	tx := db.Model(&PipelineHistory{})
+
+	tx = tx.Preload(clause.Associations)
+	tx = tx.Where("project_id = ? AND pipeline_id = ?", projectId, pipelineId)
+	err := tx.Find(&plans).Error
+
+	return returnWithError(plans, err)
+}
+
 func DeletePlan(projectId, planId uint) error {
 	db := conf.GetDbClient()
 
@@ -142,21 +156,26 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 		now := time.Now()
 		state := pipeline.UnderBuilding
 		history := &PipelineHistory{
-			PipelineID:   planId,
-			ProjectID:    projectId,
-			Name:         plan.Name,
-			Env:          plan.Env,
-			SourceCodeID: plan.SourceCodeID,
-			Branch:       plan.Branch,
+			PipelineID: planId,
 			Params: func() datatypes.JSON {
 				j, _ := json.Marshal(plan.PipelineSteps)
 				return j
 			}(),
-			CreatedBy:   userId,
-			Remark:      plan.Remark,
-			BuildAt:     now,
-			BuildResult: state,
+			Pipeline: Pipeline{
+				ProjectID:    projectId,
+				Name:         plan.Name,
+				Env:          plan.Env,
+				SourceCodeID: plan.SourceCodeID,
+				Branch:       plan.Branch,
+
+				CreatedBy:     userId,
+				Remark:        plan.Remark,
+				LastRunAt:     &now,
+				LastRunResult: state,
+			},
+			BuildLog: "",
 		}
+
 		if err := tx.Omit("updated_at").Create(history).Error; err != nil {
 			return err
 		}

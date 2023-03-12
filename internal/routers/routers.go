@@ -73,6 +73,7 @@ func buildRouters(router *gin.Engine) {
 		project.GET("/:projectId/src/:sourceCodeId", projects.ListBranches)
 		project.POST("/:projectId/pipeline", projects.NewBuildPlan)
 		project.GET("/:projectId/pipeline", projects.QueryBuildPlan)
+		project.GET("/:projectId/pipeline/:pipelineId/history", projects.QueryBuildPlanHistory)
 		project.GET("/:projectId/pipeline/state", projects.QueryBuildPlanState)
 		project.DELETE("/:projectId/pipeline/:id", projects.DeleteBuildPlan)
 		project.POST("/:projectId/pipeline/:id/build", projects.StartBuildPlan)
