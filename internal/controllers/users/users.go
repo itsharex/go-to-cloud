@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/pkg/response"
+	"go-to-cloud/internal/services/users"
 	"net/http"
 )
 
@@ -42,4 +43,25 @@ func Logout(ctx *gin.Context) {
 			"avatar": "https://i.jd.com/defaultImgs/9.jpg",
 		},
 	})
+}
+
+// List
+// @Tags User
+// @Description 列出所有用户
+// @Success 200
+// @Router /api/user/list [get]
+// @Security JWT
+func List(ctx *gin.Context) {
+	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	if !exists {
+		response.Fail(ctx, http.StatusUnauthorized, nil)
+		return
+	}
+
+	if u, err := users.GetUserList(); err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+	} else {
+		response.Success(ctx, u)
+	}
 }

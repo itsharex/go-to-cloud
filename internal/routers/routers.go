@@ -30,6 +30,7 @@ func buildRouters(router *gin.Engine) {
 		user.POST("/org", users.UpsertOrg)
 		user.PUT("/org", users.UpsertOrg)
 		user.DELETE("/org/:orgId", users.DeleteOrg)
+		user.GET("/list", users.List)
 
 		api.GET("/configure/build/env", buildEnv.BuildEnv)
 		api.GET("/configure/build/cmd", buildEnv.BuildCmd)

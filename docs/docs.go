@@ -1623,6 +1623,24 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/list": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出所有用户",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/logout": {
             "get": {
                 "security": [

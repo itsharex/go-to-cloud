@@ -54,7 +54,7 @@ func UpdateOrg(id uint, name, remark *string) error {
 		Name:   *name,
 		Remark: *remark,
 	}
-	err := db.Model(&Org{}).Where("id = ?", id).Updates(org).Error
+	err := db.Model(&Org{}).Where("id = ?", id).Select("name", "remark").Updates(org).Error
 
 	return err
 }
@@ -70,6 +70,15 @@ func DeleteOrg(id uint) error {
 
 	if len(org.Users) > 0 {
 		return errors.New("组织中存在用户，请先移除所有用户后再删除组织")
+	}
+
+	var total int64
+	err = db.Model(&Org{}).Where("id != ?", id).Count(&total).Error
+	if err != nil {
+		return err
+	}
+	if total == 0 {
+		return errors.New("至少需要保留一个组织")
 	}
 
 	err = db.Delete(&org).Error

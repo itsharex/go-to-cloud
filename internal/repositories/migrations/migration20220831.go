@@ -28,8 +28,10 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Create(org)
 
 		user := &repo.User{
-			Account: "root",
-			Orgs:    []*repo.Org{org},
+			Account:  "root",
+			RealName: "系统管理员",
+			Shortcut: "xtgly",
+			Orgs:     []*repo.Org{org},
 		}
 		initRootPassword := "root"
 		user.SetPassword(&initRootPassword)

@@ -13,11 +13,13 @@ import (
 // User 登录账户
 type User struct {
 	Model
-	Account        string         `json:"account" gorm:"column:account;not null;"`   // 账号
-	HashedPassword string         `json:"-" gorm:"column:password;not null;"`        // 登录密码
-	Email          string         `json:"email" gorm:"column:email"`                 // 邮箱
-	Mobile         string         `json:"mobile" gorm:"column:mobile"`               // 联系电话
-	LastLoginAt    *time.Time     `json:"last_login_at" gorm:"column:last_login_at"` // 上次登录时间
+	RealName       string         `json:"realName" gorm:"column:real_name;type:nvarchar(16);not null;default('')"`
+	Shortcut       string         `json:"shortcut" gorm:"column:shortcut;type:nvarchar(10);not null;default('')"` // 快捷词，通常是RealName的拼音首字母
+	Account        string         `json:"account" gorm:"column:account;not null;"`                                // 账号
+	HashedPassword string         `json:"-" gorm:"column:password;not null;"`                                     // 登录密码
+	Email          string         `json:"email" gorm:"column:email"`                                              // 邮箱
+	Mobile         string         `json:"mobile" gorm:"column:mobile"`                                            // 联系电话
+	LastLoginAt    *time.Time     `json:"last_login_at" gorm:"column:last_login_at"`                              // 上次登录时间
 	Kind           datatypes.JSON `json:"kind" gorm:"column:kind;"`
 	Orgs           []*Org         `gorm:"many2many:orgs_users_rel"`
 }
@@ -59,4 +61,15 @@ func GetUser(account, password *string) *User {
 func (m *User) comparePassword(password *string) bool {
 	lowerPassword := strings.ToLower(*password)
 	return nil == bcrypt.CompareHashAndPassword([]byte(m.HashedPassword), []byte(lowerPassword))
+}
+
+// GetAllUser 获取所有用户
+func GetAllUser() ([]User, error) {
+	tx := conf.GetDbClient()
+
+	var users []User
+
+	err := tx.Preload(clause.Associations).Find(&users).Error
+
+	return users, err
 }
