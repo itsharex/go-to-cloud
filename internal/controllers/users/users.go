@@ -6,6 +6,7 @@ import (
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/services/users"
 	"net/http"
+	"strconv"
 )
 
 // Info
@@ -63,5 +64,37 @@ func List(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {
 		response.Success(ctx, u)
+	}
+}
+
+// Joined
+// @Tags User
+// @Description 列出加入指定组织的用户
+// @Success 200
+// @Router /api/user/joined/{orgId} [get]
+// @Security JWT
+func Joined(ctx *gin.Context) {
+	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	if !exists {
+		response.Fail(ctx, http.StatusUnauthorized, nil)
+		return
+	}
+
+	orgIdStr := ctx.Param("orgId")
+	orgId, err := strconv.ParseUint(orgIdStr, 10, 64)
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusBadRequest, &msg)
+	}
+
+	if u, err := users.GetUsersByOrg(uint(orgId)); err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+	} else {
+		id := make([]uint, len(u))
+		for i, user := range u {
+			id[i] = user.Key
+		}
+		response.Success(ctx, id)
 	}
 }

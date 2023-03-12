@@ -11,11 +11,11 @@ func TestMany2ManyRel(t *testing.T) {
 		t.Skip("skipped due to ci is seperated from DB")
 	}
 
-	users, err := FetchUsersByOrg(1)
+	users, err := GetUsersByOrg(1)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(users))
 
-	users2, err := FetchUsersByOrg(2)
+	users2, err := GetUsersByOrg(2)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(users2))
 }

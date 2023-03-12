@@ -31,6 +31,7 @@ func buildRouters(router *gin.Engine) {
 		user.PUT("/org", users.UpsertOrg)
 		user.DELETE("/org/:orgId", users.DeleteOrg)
 		user.GET("/list", users.List)
+		user.GET("/joined/:orgId", users.Joined)
 
 		api.GET("/configure/build/env", buildEnv.BuildEnv)
 		api.GET("/configure/build/cmd", buildEnv.BuildCmd)

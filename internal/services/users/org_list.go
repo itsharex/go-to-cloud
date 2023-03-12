@@ -23,3 +23,21 @@ func GetOrgList() ([]user.Org, error) {
 		return rlt, nil
 	}
 }
+
+func GetUsersByOrg(orgId uint) ([]user.User, error) {
+	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
+		return nil, err
+	} else {
+		rlt := make([]user.User, len(us))
+		for i, u := range us {
+			rlt[i] = user.User{
+				Id:        u.ID,
+				Key:       u.ID,
+				CreatedAt: utils.JsonTime(u.CreatedAt),
+				Name:      u.RealName,
+				Account:   u.Account,
+			}
+		}
+		return rlt, nil
+	}
+}

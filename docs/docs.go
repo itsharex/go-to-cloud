@@ -1623,6 +1623,24 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/joined/{orgId}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "列出加入指定组织的用户",
+                "tags": [
+                    "User"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/list": {
             "get": {
                 "security": [
