@@ -32,7 +32,7 @@ func Info(ctx *gin.Context) {
 // @Tags User
 // @Description 注销登录
 // @Success 200
-// @Router /api/user/logout [post]
+// @Router /api/user/logout [get]
 // @Security JWT
 func Logout(ctx *gin.Context) {
 	response.Success(ctx, gin.H{

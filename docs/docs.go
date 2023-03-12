@@ -1624,7 +1624,7 @@ const docTemplate = `{
             }
         },
         "/api/user/logout": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "JWT": []
