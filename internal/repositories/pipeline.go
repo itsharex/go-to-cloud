@@ -81,6 +81,20 @@ func QueryPipeline(id uint) (*Pipeline, error) {
 	return returnWithError(&p, tx.Error)
 }
 
+// QueryIncompletePipeline 查找所有进行中的任务
+func QueryIncompletePipeline() ([]Pipeline, error) {
+	db := conf.GetDbClient()
+
+	var p []Pipeline
+
+	tx := db.Model(&Pipeline{})
+
+	tx = tx.Preload(clause.Associations)
+	tx = tx.Where("last_run_result = ?", pipeline.UnderBuilding).Find(&p)
+
+	return returnWithError(p, tx.Error)
+}
+
 func QueryPipelinesByProjectId(projectId uint) ([]Pipeline, error) {
 	db := conf.GetDbClient()
 

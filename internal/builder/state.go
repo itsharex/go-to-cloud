@@ -2,6 +2,7 @@ package builder
 
 import (
 	"context"
+	"fmt"
 	"go-to-cloud/internal/models/pipeline"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
@@ -48,6 +49,9 @@ func PipelinesWatcher() {
 func getAndSetK8sNodesState() {
 	var lock sync.Mutex
 	ctx := context.TODO()
+
+	currentExistsPipeline := make(map[uint]bool) // 当前存在于pod中的流水线ID
+
 	if nodes, err := repositories.GetBuildNodesOnK8sByOrgId(nil, "", nil); err == nil {
 		for _, node := range nodes {
 			if client, err := kube.NewClient(node.DecryptKubeConfig()); err == nil {
@@ -57,6 +61,7 @@ func getAndSetK8sNodesState() {
 					for i, pod := range pods {
 						lock.Lock()
 						allK8sPipelines[pod.BuildId] = &pods[i].PodDescription
+						currentExistsPipeline[pod.BuildId] = true
 						lock.Unlock()
 
 						rlt := func() pipeline.BuildingResult {
@@ -73,21 +78,37 @@ func getAndSetK8sNodesState() {
 							}
 						}()
 
-						log := ""
-						// 构建Pod只有一个容器，所以取第一个容器的日志即构建日志
-						logBytes, err := client.GetPodLogs(ctx, node.K8sWorkerSpace, pod.Name, pod.Containers[0].Name, nil, false)
-						if err == nil {
-							log = string(logBytes)
-						}
+						if pipeline.IsComplete(rlt) {
+							log := ""
+							// 构建Pod只有一个容器，所以取第一个容器的日志即构建日志
+							logBytes, err := client.GetPodLogs(ctx, node.K8sWorkerSpace, pod.Name, pod.Containers[0].Name, nil, false)
+							if err == nil {
+								log = string(logBytes)
+							}
 
-						if err := repositories.UpdatePipeline(pod.BuildId, rlt, &log); err == nil && pipeline.IsComplete(rlt) {
-							// 清理Pod
-							client.DeletePod(context.TODO(), node.K8sWorkerSpace, pod.Name)
+							if err := repositories.UpdatePipeline(pod.BuildId, rlt, &log); err == nil && pipeline.IsComplete(rlt) {
+								// 清理Pod
+								client.DeletePod(context.TODO(), node.K8sWorkerSpace, pod.Name)
+								delete(allK8sPipelines, pod.BuildId)
 
-							// 通知制品监视器流水线构建完成
-							artifactWatcher <- pod.BuildId
+								// 通知制品监视器流水线构建完成
+								artifactWatcher <- pod.BuildId
+							}
 						}
 					}
+				}
+			}
+		}
+	}
+
+	// 查找当前构建机节点中没有找到的构建任务，标记为Interrupt
+	// 1. 查找所有未完成的流水线
+	if pipelines, err := repositories.QueryIncompletePipeline(); err == nil {
+		// 2. 如果这些流水线在pod中存在，则忽略，如果不存在，则标记为interrupt
+		for _, p := range pipelines {
+			if _, ok := currentExistsPipeline[p.LastRunId]; !ok {
+				if err := repositories.UpdatePipeline(p.LastRunId, pipeline.BuildingInterrupt, nil); err != nil {
+					fmt.Println(err.Error())
 				}
 			}
 		}

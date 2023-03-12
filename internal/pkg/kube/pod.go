@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// podsCache 同一个名字空间中用于构建的pod的缓存
 var podsCache *cache.Cache
 
 func init() {
@@ -33,7 +34,7 @@ const (
 type PodDescription struct {
 	Name        string                `json:"name"`
 	Status      string                `json:"status"`
-	BuildId     uint                  `json:"buildId"` // 构建时使用的Pod，对应pipeline id
+	BuildId     uint                  `json:"buildId"` // 构建时使用的Pod，对应pipeline.last_run_id，即pipeline_history.id
 	GetArtifact func(*string) *string `json:"-"`       // 获取产物
 }
 
@@ -107,6 +108,7 @@ func (client *Client) GetPods(ctx context.Context, ns, labelPipeline string, lab
 		pods, err := client.clientSet.CoreV1().Pods(ns).List(ctx, metaV1.ListOptions{
 			LabelSelector: selector,
 		})
+
 		rlt := make([]PodDetailDescription, len(pods.Items))
 		for i, pod := range pods.Items {
 			rlt[i] = PodDetailDescription{
@@ -159,7 +161,6 @@ func (client *Client) GetPods(ctx context.Context, ns, labelPipeline string, lab
 				Qos: string(pod.Status.QOSClass),
 			}
 		}
-
 		podsCache.Set(key, rlt, 0)
 		return rlt, err
 	} else {

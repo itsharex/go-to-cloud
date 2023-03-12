@@ -2201,7 +2201,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "buildId": {
-                    "description": "构建时使用的Pod，对应pipeline id",
+                    "description": "构建时使用的Pod，对应pipeline.last_run_id，即pipeline_history.id",
                     "type": "integer"
                 },
                 "containers": {

@@ -41,6 +41,7 @@ func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, buildLog *strin
 	db := conf.GetDbClient()
 
 	return db.Transaction(func(tx *gorm.DB) (err error) {
+
 		var history PipelineHistory
 		err = tx.Model(&PipelineHistory{}).First(&history, historyId).Error
 		if err != nil {
@@ -58,7 +59,15 @@ func UpdatePipeline(historyId uint, rlt pipeline.BuildingResult, buildLog *strin
 
 		if len(history.BuildLog) == 0 {
 			if pipeline.IsComplete(rlt) {
-				err = tx.Model(&PipelineHistory{}).Where("id = ?", historyId).Update("log", *buildLog).Error
+				log := func() *string {
+					if buildLog == nil {
+						empty := ""
+						return &empty
+					} else {
+						return buildLog
+					}
+				}()
+				err = tx.Model(&PipelineHistory{}).Where("id = ?", history.ID).Update("log", *log).Error
 			}
 			if err != nil {
 				return
