@@ -1,28 +1,31 @@
 package utils
 
 import (
-	"sort"
 	"sync"
 )
 
-type MyMap[KEY int | string] map[KEY]bool
+type TSet interface {
+	int | uint | int64 | uint64 | float64 | float32 | string
+}
 
-type Set[T int | string] struct {
+type CollectionMap[T TSet] map[T]bool
+
+type Set[T TSet] struct {
 	sync.RWMutex
-	m MyMap[T]
+	m CollectionMap[T]
 }
 
 // New 新建集合对象
-func New(items ...int) *Set {
-	s := &Set{
-		m: make(map[int]bool, len(items)),
+func New[T TSet](items ...T) *Set[T] {
+	s := &Set[T]{
+		m: make(CollectionMap[T], len(items)),
 	}
-	s.Add(items...)
+	Add(s, items...)
 	return s
 }
 
 // Add 添加元素
-func Add[T int | uint](s *Set, items ...T) {
+func Add[T TSet](s *Set[T], items ...T) {
 	s.Lock()
 	defer s.Unlock()
 	for _, v := range items {
@@ -31,7 +34,7 @@ func Add[T int | uint](s *Set, items ...T) {
 }
 
 // Remove 删除元素
-func (s *Set) Remove(items ...int) {
+func Remove[T TSet](s *Set[T], items ...T) {
 	s.Lock()
 	defer s.Unlock()
 	for _, v := range items {
@@ -39,8 +42,8 @@ func (s *Set) Remove(items ...int) {
 	}
 }
 
-// 判断元素是否存在
-func (s *Set) Has(items ...int) bool {
+// Has 判断元素是否存在
+func Has[T TSet](s *Set[T], items ...T) bool {
 	s.RLock()
 	defer s.RUnlock()
 	for _, v := range items {
@@ -51,49 +54,65 @@ func (s *Set) Has(items ...int) bool {
 	return true
 }
 
-// 元素个数
-func (s *Set) Count() int {
+// Count 元素个数
+func Count[T TSet](s *Set[T]) int {
 	return len(s.m)
 }
 
-// 清空集合
-func (s *Set) Clear() {
+// Clear 清空集合
+func Clear[T TSet](s *Set[T]) {
 	s.Lock()
 	defer s.Unlock()
-	s.m = map[int]bool{}
+	s.m = map[T]bool{}
 }
 
-// 空集合判断
-func (s *Set) Empty() bool {
+// Empty 空集合判断
+func Empty[T TSet](s *Set[T]) bool {
 	return len(s.m) == 0
 }
 
-// 无序列表
-func (s *Set) List() []int {
+// List 无序列表
+func List[T TSet](s *Set[T]) []T {
 	s.RLock()
 	defer s.RUnlock()
-	list := make([]int, 0, len(s.m))
+	list := make([]T, 0, len(s.m))
 	for item := range s.m {
 		list = append(list, item)
 	}
 	return list
 }
 
+func bubbleSort[T TSet](x []T) {
+	n := len(x)
+	for {
+		swapped := false
+		for i := 1; i < n; i++ {
+			if x[i] < x[i-1] {
+				x[i-1], x[i] = x[i], x[i-1]
+				swapped = true
+			}
+		}
+		if !swapped {
+			return
+		}
+	}
+}
+
 // SortList 排序列表
-func (s *Set) SortList() []int {
+func SortList[T TSet](s *Set[T]) []T {
 	s.RLock()
 	defer s.RUnlock()
-	list := make([]int, 0, len(s.m))
+	list := make([]T, 0, len(s.m))
 	for item := range s.m {
 		list = append(list, item)
 	}
-	sort.Ints(list)
+	bubbleSort(list)
 	return list
 }
 
 // Union 并集
-func (s *Set) Union(sets ...*Set) *Set {
-	r := New(s.List()...)
+func Union[T TSet](s *Set[T], sets ...*Set[T]) *Set[T] {
+	r := New(List(s)...)
 	for _, set := range sets {
 		for e := range set.m {
 			r.m[e] = true
@@ -103,8 +122,8 @@ func (s *Set) Union(sets ...*Set) *Set {
 }
 
 // Minus 差集
-func (s *Set) Minus(sets ...*Set) *Set {
-	r := New(s.List()...)
+func Minus[T TSet](s *Set[T], sets ...*Set[T]) *Set[T] {
+	r := New(List(s)...)
 	for _, set := range sets {
 		for e := range set.m {
 			if _, ok := s.m[e]; ok {
@@ -115,9 +134,9 @@ func (s *Set) Minus(sets ...*Set) *Set {
 	return r
 }
 
-// Intersect 交集
-func (s *Set) Intersect(sets ...*Set) *Set {
-	r := New(s.List()...)
+// IntersectGeneric 泛型交集
+func IntersectGeneric[T TSet](s *Set[T], sets ...*Set[T]) *Set[T] {
+	r := New(List(s)...)
 	for _, set := range sets {
 		for e := range s.m {
 			if _, ok := set.m[e]; !ok {
@@ -129,11 +148,11 @@ func (s *Set) Intersect(sets ...*Set) *Set {
 }
 
 // Complement 补集
-func (s *Set) Complement(full *Set) *Set {
-	r := New()
+func Complement[T TSet](s *Set[T], full *Set[T]) *Set[T] {
+	r := New[T]()
 	for e := range full.m {
 		if _, ok := s.m[e]; !ok {
-			r.Add(e)
+			Add(r, e)
 		}
 	}
 	return r
