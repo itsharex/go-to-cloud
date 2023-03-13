@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"go-to-cloud/conf"
+	"gorm.io/gorm"
 )
 
 // GetUsersByOrg 获取指定组织下的用户
@@ -15,13 +16,22 @@ func GetUsersByOrg(orgId uint) ([]*User, error) {
 	return org.Users, err
 }
 
-func AddMembersToOrg(orgId uint, memebers []uint) error {
+func UpdateMembersToOrg(orgId uint, add, del []uint) error {
 	db := conf.GetDbClient()
 
-	var org Org
-	if err := db.Preload("Users").Where([]uint{orgId}).First(&org).Error; err != nil {
-		return err
-	} else {
+	return db.Transaction(func(tx *gorm.DB) (err error) {
+		org := Org{Model: Model{ID: orgId}}
+		for _, u := range add {
+			if err = tx.Model(&org).Association("Users").Append(&User{Model: Model{ID: u}}); err != nil {
+				return err
+			}
+		}
+		for _, u := range del {
+			if err = tx.Model(&org).Association("Users").Delete(&User{Model: Model{ID: u}}); err != nil {
+				return err
+			}
+		}
 
-	}
+		return tx.Error
+	})
 }

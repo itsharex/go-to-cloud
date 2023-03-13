@@ -1,9 +1,34 @@
 package utils
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
+
+// TestComSet 补集，无交集
+func TestComSet1(t *testing.T) {
+	oldSet := New[int](3, 4, 5)
+	newSet := New[int](1, 0)
+
+	sub := Minus(oldSet, newSet) // expected: 4, 5
+	assert.True(t, reflect.DeepEqual(SortList(sub), []int{3, 4, 5}))
+
+	com := Complement(oldSet, newSet)
+	assert.True(t, reflect.DeepEqual(SortList(com), []int{0, 1}))
+}
+
+// TestComSet 补集，有交集
+func TestComSet2(t *testing.T) {
+	oldSet := New[int](3, 4, 5)
+	newSet := New[int](1, 3)
+
+	sub := Minus(oldSet, newSet) // expected: 4, 5
+	assert.True(t, reflect.DeepEqual(SortList(sub), []int{4, 5}))
+
+	com := Complement(oldSet, newSet)
+	assert.True(t, reflect.DeepEqual(SortList(com), []int{1}))
+}
 
 // TestSets 集合测试
 func TestSets(t *testing.T) {

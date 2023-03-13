@@ -41,3 +41,22 @@ func GetUsersByOrg(orgId uint) ([]user.User, error) {
 		return rlt, nil
 	}
 }
+
+func JoinOrg(orgId uint, users []uint) error {
+	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
+		return err
+	} else {
+		old := make([]uint, len(us))
+		for i, u := range us {
+			old[i] = u.ID
+		}
+
+		oldSet := utils.New(old...)
+		newSet := utils.New(users...)
+
+		delSet := utils.Minus(oldSet, newSet)      // 差集：移除
+		comSet := utils.Complement(oldSet, newSet) // 补集：追加
+
+		return repositories.UpdateMembersToOrg(orgId, utils.List(comSet), utils.List(delSet))
+	}
+}

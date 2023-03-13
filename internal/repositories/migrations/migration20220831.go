@@ -35,9 +35,19 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		}
 		initRootPassword := "root"
 		user.SetPassword(&initRootPassword)
-
 		db.Debug().Create(user)
 		db.Debug().Save(user)
+
+		guest := &repo.User{
+			Account:  "guest",
+			RealName: "游客",
+			Shortcut: "yk",
+			Orgs:     []*repo.Org{org},
+		}
+		initRootPassword2 := "guest"
+		guest.SetPassword(&initRootPassword2)
+		db.Debug().Create(guest)
+		db.Debug().Save(guest)
 	}
 }
 
