@@ -51,7 +51,7 @@ func TestSets(t *testing.T) {
 		t.Errorf("Expected 2, got %d", Count(s))
 	}
 
-	if !reflect.DeepEqual(List(s), []int{1, 3}) {
+	if !reflect.DeepEqual(SortList(s), []int{1, 3}) {
 		t.Errorf("Expected [1, 3], got %v", List(s))
 	}
 
