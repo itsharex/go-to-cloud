@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/gorilla/websocket v1.5.0
 	github.com/heroku/docker-registry-client v0.0.0-20211012143308-9463674c8930
+	github.com/mozillazg/go-pinyin v0.19.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.0

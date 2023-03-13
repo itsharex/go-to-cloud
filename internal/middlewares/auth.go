@@ -132,5 +132,8 @@ m = g(r.sub, p.sub) && keyMatch2(r.obj,p.obj) && (r.sub == p.sub || p.sub == "*"
 		return nil, err
 	}
 
+	// TODO: 加入所有策略
+	// enforcer.AddPolicies(fmt.Sprintf("p,%s,%s,%s", userId/roleId, url, http_method))
+
 	return enforcer, nil
 }

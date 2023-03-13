@@ -3,8 +3,11 @@ package repositories
 import (
 	"errors"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/models/user"
+	"go-to-cloud/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"strings"
 	"time"
@@ -14,12 +17,13 @@ import (
 type User struct {
 	Model
 	RealName       string         `json:"realName" gorm:"column:real_name;type:nvarchar(16);not null;default('')"`
-	Shortcut       string         `json:"shortcut" gorm:"column:shortcut;type:nvarchar(10);not null;default('')"` // 快捷词，通常是RealName的拼音首字母
-	Account        string         `json:"account" gorm:"column:account;not null;"`                                // 账号
-	HashedPassword string         `json:"-" gorm:"column:password;not null;"`                                     // 登录密码
-	Email          string         `json:"email" gorm:"column:email"`                                              // 邮箱
-	Mobile         string         `json:"mobile" gorm:"column:mobile"`                                            // 联系电话
-	LastLoginAt    *time.Time     `json:"last_login_at" gorm:"column:last_login_at"`                              // 上次登录时间
+	Pinyin         string         `json:"pinyin" gorm:"column:pinyin;type:nvarchar(100);not null;default('')"`           // RealName的拼音
+	PinyinInit     string         `json:"pinyin_init" gorm:"column:pinyin_init;type:nvarchar(100);not null;default('')"` // RealName的拼音首字母
+	Account        string         `json:"account" gorm:"column:account;not null;"`                                       // 账号
+	HashedPassword string         `json:"-" gorm:"column:password;not null;"`                                            // 登录密码
+	Email          string         `json:"email" gorm:"column:email"`                                                     // 邮箱
+	Mobile         string         `json:"mobile" gorm:"column:mobile"`                                                   // 联系电话
+	LastLoginAt    *time.Time     `json:"last_login_at" gorm:"column:last_login_at"`                                     // 上次登录时间
 	Kind           datatypes.JSON `json:"kind" gorm:"column:kind;"`
 	Orgs           []*Org         `gorm:"many2many:orgs_users_rel"`
 }
@@ -46,13 +50,13 @@ func (m *User) SetPassword(origPassword *string) error {
 func GetUser(account, password *string) *User {
 	tx := conf.GetDbClient()
 
-	var user User
+	var u User
 
-	if tx.Preload(clause.Associations).Where(&User{Account: *account}).First(&user).Error != nil {
+	if tx.Preload(clause.Associations).Where(&User{Account: *account}).First(&u).Error != nil {
 		return nil
 	}
-	if user.comparePassword(password) {
-		return &user
+	if u.comparePassword(password) {
+		return &u
 	}
 	return nil
 }
@@ -72,4 +76,108 @@ func GetAllUser() ([]User, error) {
 	err := tx.Preload(clause.Associations).Find(&users).Error
 
 	return users, err
+}
+
+func valid(id uint, user *user.User) error {
+	if len(user.Account) == 0 {
+		return errors.New("账号名称不能为空")
+	}
+
+	if len(user.Email) > 0 {
+		if !utils.IsValidEmail(user.Email) {
+			return errors.New("邮箱格式不正确")
+		}
+	}
+
+	if len(user.Mobile) > 0 {
+		if !utils.IsValidMobile(user.Mobile) {
+			return errors.New("手机号码格式不正确")
+		}
+	}
+
+	db := conf.GetDbClient()
+	var tar User
+	tx := db.Model(&User{}).Where("account = ?", user.Account)
+	if id > 0 {
+		tx.Where("id != ?", id)
+	}
+	err := tx.First(&tar).Error
+
+	if err == nil {
+		return errors.New("账号已经存在")
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
+
+	return nil
+}
+
+func mapper(user *user.User) *User {
+	user.TransPinyin()
+	u := &User{
+		RealName:   user.RealName,
+		Pinyin:     user.Pinyin,
+		PinyinInit: user.PinyinInit,
+		Account:    user.Account,
+		Email:      user.Email,
+		Mobile:     user.Mobile,
+	}
+	u.SetPassword(&user.OriginPassword)
+
+	return u
+}
+
+func CreateUser(user *user.User) error {
+	if err := valid(0, user); err != nil {
+		return err
+	}
+
+	db := conf.GetDbClient()
+
+	err := db.Model(&User{}).Create(mapper(user)).Error
+
+	return err
+}
+
+func UpdateUser(id uint, user *user.User) error {
+	if id == 0 {
+		return errors.New("找不到用户")
+	}
+
+	if err := valid(id, user); err != nil {
+		return err
+	}
+
+	db := conf.GetDbClient()
+
+	err := db.Model(&User{}).Where("id = ?", id).Omit("account", "password").Updates(mapper(user)).Error
+
+	return err
+}
+
+func DeleteUser(id uint) error {
+	db := conf.GetDbClient()
+
+	var org Org
+	err := db.Model(&Org{}).Preload(clause.Associations).First(&org, id).Error
+	if err != nil {
+		return err
+	}
+
+	if len(org.Users) > 0 {
+		return errors.New("组织中存在用户，请先移除所有用户后再删除组织")
+	}
+
+	var total int64
+	err = db.Model(&Org{}).Where("id != ?", id).Count(&total).Error
+	if err != nil {
+		return err
+	}
+	if total == 0 {
+		return errors.New("至少需要保留一个组织")
+	}
+
+	err = db.Delete(&org).Error
+	return err
 }

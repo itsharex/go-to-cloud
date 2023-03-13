@@ -34,7 +34,7 @@ func GetUsersByOrg(orgId uint) ([]user.User, error) {
 				Id:        u.ID,
 				Key:       u.ID,
 				CreatedAt: utils.JsonTime(u.CreatedAt),
-				Name:      u.RealName,
+				RealName:  u.RealName,
 				Account:   u.Account,
 			}
 		}

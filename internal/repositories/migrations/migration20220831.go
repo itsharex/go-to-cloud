@@ -28,10 +28,11 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Create(org)
 
 		user := &repo.User{
-			Account:  "root",
-			RealName: "系统管理员",
-			Shortcut: "xtgly",
-			Orgs:     []*repo.Org{org},
+			Account:    "root",
+			RealName:   "系统管理员",
+			Pinyin:     "xitongguanliyuan",
+			PinyinInit: "xtgly",
+			Orgs:       []*repo.Org{org},
 		}
 		initRootPassword := "root"
 		user.SetPassword(&initRootPassword)
@@ -39,10 +40,11 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Save(user)
 
 		guest := &repo.User{
-			Account:  "guest",
-			RealName: "游客",
-			Shortcut: "yk",
-			Orgs:     []*repo.Org{org},
+			Account:    "guest",
+			RealName:   "游客",
+			Pinyin:     "youke",
+			PinyinInit: "yk",
+			Orgs:       []*repo.Org{org},
 		}
 		initRootPassword2 := "guest"
 		guest.SetPassword(&initRootPassword2)
