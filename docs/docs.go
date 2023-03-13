@@ -1623,6 +1623,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/join/{orgId}": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "将成员加入/移除组织",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/api/user/joined/{orgId}": {
             "get": {
                 "security": [
