@@ -20,12 +20,12 @@ func buildRouters(router *gin.Engine) {
 	api := router.Group("/api")
 
 	api.POST("/login", auth.Login)
+	api.GET("/user/logout", users.Logout)
 
 	api.Use(middlewares.AuthHandler())
 	{
 		user := api.Group("/user")
 		user.GET("/info", users.Info)
-		user.GET("/logout", users.Logout)
 		user.GET("/org/list", users.OrgList)
 		user.POST("/org", users.UpsertOrg)
 		user.PUT("/org", users.UpsertOrg)
