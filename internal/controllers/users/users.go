@@ -130,14 +130,12 @@ func Join(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusBadRequest, &msg)
 	}
 
-	if u, err := users.GetUsersByOrg(uint(orgId)); err != nil {
+	if err := users.JoinOrg(uint(orgId), tmpUser.Users); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {
-		id := make([]uint, len(u))
-		for i, user := range u {
-			id[i] = user.Key
-		}
-		response.Success(ctx, id)
+		response.Success(ctx, gin.H{
+			"success": true,
+		})
 	}
 }

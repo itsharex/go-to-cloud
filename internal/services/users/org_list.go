@@ -42,6 +42,7 @@ func GetUsersByOrg(orgId uint) ([]user.User, error) {
 	}
 }
 
+// JoinOrg 加入组织，如果当前成员在users中不存在，则移除
 func JoinOrg(orgId uint, users []uint) error {
 	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
 		return err
