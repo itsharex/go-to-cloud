@@ -93,7 +93,7 @@ func Joined(ctx *gin.Context) {
 	} else {
 		id := make([]uint, len(u))
 		for i, user := range u {
-			id[i] = user.Key
+			id[i] = user.Id
 		}
 		response.Success(ctx, id)
 	}
