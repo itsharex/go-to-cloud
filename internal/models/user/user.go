@@ -13,6 +13,7 @@ type User struct {
 	Email          string         `json:"email"`          // 邮箱
 	Mobile         string         `json:"mobile"`         // 电话，可用于接收验证码、钉钉被艾特
 	Kind           string         `json:"kind"`           // 角色
+	BelongsTo      []string       `json:"belongsTo"`      // 所属组织
 }
 
 func (m *User) TransPinyin() (full, short string) {

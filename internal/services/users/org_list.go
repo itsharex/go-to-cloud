@@ -1,6 +1,7 @@
 package users
 
 import (
+	"errors"
 	"go-to-cloud/internal/models/user"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
@@ -14,7 +15,7 @@ func GetOrgList() ([]user.Org, error) {
 		for i, org := range orgs {
 			rlt[i] = user.Org{
 				Id:          org.ID,
-				CreatedAt:   utils.JsonTime(org.CreatedAt),
+				CreatedAt:   org.CreatedAt.Format("2006-01-02 15:04:05"),
 				Name:        org.Name,
 				MemberCount: uint(len(org.Users)),
 				Remark:      org.Remark,
@@ -62,4 +63,8 @@ func JoinOrgs(orgId []uint, userId uint) error {
 
 		return repositories.UpdateOrgsToMember(userId, utils.List(comSet), utils.List(delSet))
 	}
+}
+
+func ResetPassword(userId uint, oldPassword, newPassword *string, force bool) error {
+	return errors.New("not implemented")
 }

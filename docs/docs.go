@@ -2823,6 +2823,9 @@ const docTemplate = `{
         "user.Org": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

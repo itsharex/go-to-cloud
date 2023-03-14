@@ -119,7 +119,7 @@ func valid(id uint, user *user.User) error {
 	return nil
 }
 
-func mapper(user *user.User) *User {
+func mapper(user *user.User, ignorePwd bool) (*User, error) {
 	user.TransPinyin()
 	u := &User{
 		RealName:   user.RealName,
@@ -130,9 +130,11 @@ func mapper(user *user.User) *User {
 		Mobile:     user.Mobile,
 		Kind:       datatypes.JSON(user.Kind),
 	}
-	u.SetPassword(&user.OriginPassword)
-
-	return u
+	var err error
+	if !ignorePwd {
+		err = u.SetPassword(&user.OriginPassword)
+	}
+	return u, err
 }
 
 func CreateUser(user *user.User) error {
@@ -142,9 +144,11 @@ func CreateUser(user *user.User) error {
 
 	db := conf.GetDbClient()
 
-	err := db.Model(&User{}).Create(mapper(user)).Error
-
-	return err
+	if u, err := mapper(user, false); err != nil {
+		return err
+	} else {
+		return db.Model(&User{}).Create(u).Error
+	}
 }
 
 func UpdateUser(id uint, user *user.User) error {
@@ -158,9 +162,11 @@ func UpdateUser(id uint, user *user.User) error {
 
 	db := conf.GetDbClient()
 
-	err := db.Model(&User{}).Where("id = ?", id).Omit("account", "password").Updates(mapper(user)).Error
-
-	return err
+	if u, err := mapper(user, true); err != nil {
+		return err
+	} else {
+		return db.Model(&User{}).Where("id = ?", id).Omit("account", "password").Updates(u).Error
+	}
 }
 
 func DeleteUser(id uint) error {

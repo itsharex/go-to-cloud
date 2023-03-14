@@ -18,5 +18,5 @@ func IsValidEmail(email string) bool {
 }
 
 func IsValidMobile(mobile string) bool {
-	return isMatch(`^1[3-9]\d{9}$`, mobile)
+	return isMatch(`^1[3-9]\d{1,10}$`, mobile)
 }

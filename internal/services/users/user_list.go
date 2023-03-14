@@ -19,6 +19,15 @@ func GetUserList() ([]user.User, error) {
 				Account:    u.Account,
 				Pinyin:     u.Pinyin,
 				PinyinInit: u.PinyinInit,
+				Email:      u.Email,
+				Mobile:     u.Mobile,
+				BelongsTo: func() []string {
+					orgs := make([]string, len(u.Orgs))
+					for i2, o := range u.Orgs {
+						orgs[i2] = o.Name
+					}
+					return orgs
+				}(),
 			}
 		}
 		return rlt, nil
@@ -50,7 +59,7 @@ func GetUserBelongs(userId uint) ([]user.Org, error) {
 		for i, o := range us {
 			rlt[i] = user.Org{
 				Id:        o.ID,
-				CreatedAt: utils.JsonTime(o.CreatedAt),
+				CreatedAt: o.CreatedAt.Format("2006-01-02 15:04:05"),
 				Name:      o.Name,
 			}
 		}

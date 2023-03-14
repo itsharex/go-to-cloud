@@ -51,12 +51,12 @@ func UpdateOrgsToMember(userId uint, add, del []uint) error {
 	return db.Transaction(func(tx *gorm.DB) (err error) {
 		user := User{Model: Model{ID: userId}}
 		for _, o := range add {
-			if err = tx.Model(&user).Association("Orgs").Append(&User{Model: Model{ID: o}}); err != nil {
+			if err = tx.Model(&user).Association("Orgs").Append(&Org{Model: Model{ID: o}}); err != nil {
 				return err
 			}
 		}
 		for _, o := range del {
-			if err = tx.Model(&user).Association("Orgs").Delete(&User{Model: Model{ID: o}}); err != nil {
+			if err = tx.Model(&user).Association("Orgs").Delete(&Org{Model: Model{ID: o}}); err != nil {
 				return err
 			}
 		}

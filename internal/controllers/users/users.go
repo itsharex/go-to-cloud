@@ -3,10 +3,12 @@ package users
 import (
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/internal/controllers/utils"
+	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/services/users"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Info
@@ -132,6 +134,48 @@ func Join(ctx *gin.Context) {
 	}
 
 	if err := users.JoinOrg(uint(orgId), tmpUser.Users); err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusInternalServerError, &msg)
+	} else {
+		response.Success(ctx, gin.H{
+			"success": true,
+		})
+	}
+}
+
+// ResetPassword
+// @Tags User
+// @Description 重置用户密码
+// @Success 200
+// @Router /api/user/{userId}/password/reset [put]
+// @Param   ContentBody     body     string     true  "Request"     example(string)
+// @Security JWT
+func ResetPassword(ctx *gin.Context) {
+	exists, _, user, _, _ := utils.CurrentUser(ctx)
+	if !exists {
+		response.Fail(ctx, http.StatusUnauthorized, nil)
+		return
+	}
+	if !strings.EqualFold(models.RootUserName, *user) {
+		msg := "只允许root用户重置密码"
+		response.Fail(ctx, http.StatusForbidden, &msg)
+		return
+	}
+
+	userIdStr := ctx.Param("userId")
+	userId, err := strconv.ParseUint(userIdStr, 10, 64)
+	if err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusBadRequest, &msg)
+	}
+
+	var newPassword string
+	if err := ctx.ShouldBind(&newPassword); err != nil {
+		msg := err.Error()
+		response.Fail(ctx, http.StatusBadRequest, &msg)
+	}
+
+	if err := users.ResetPassword(uint(userId), nil, &newPassword, true); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {
