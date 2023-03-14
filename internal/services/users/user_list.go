@@ -13,7 +13,6 @@ func GetUserList() ([]user.User, error) {
 		rlt := make([]user.User, len(users))
 		for i, u := range users {
 			rlt[i] = user.User{
-				Key:       u.ID,
 				Id:        u.ID,
 				CreatedAt: utils.JsonTime(u.CreatedAt),
 				Name:      u.RealName,

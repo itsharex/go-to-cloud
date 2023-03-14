@@ -32,7 +32,6 @@ func GetUsersByOrg(orgId uint) ([]user.User, error) {
 		for i, u := range us {
 			rlt[i] = user.User{
 				Id:        u.ID,
-				Key:       u.ID,
 				CreatedAt: utils.JsonTime(u.CreatedAt),
 				Name:      u.RealName,
 				Account:   u.Account,
