@@ -31,7 +31,7 @@ type User struct {
 func (m *User) TableName() string {
 	return "users"
 }
-func (m *User) BeforeDelete(tx *gorm.DB) (err error) {
+func (m *User) BeforeDelete(_ *gorm.DB) (err error) {
 	if strings.EqualFold("root", m.Account) {
 		return errors.New("root用户无法被删除")
 	}
@@ -128,6 +128,7 @@ func mapper(user *user.User) *User {
 		Account:    user.Account,
 		Email:      user.Email,
 		Mobile:     user.Mobile,
+		Kind:       datatypes.JSON(user.Kind),
 	}
 	u.SetPassword(&user.OriginPassword)
 
