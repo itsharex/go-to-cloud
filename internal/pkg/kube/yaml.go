@@ -295,10 +295,10 @@ const YamlTplService = `
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{.RealName}}-service
+  name: {{.Name}}-service
 spec:
   selector:
-    app: {{.RealName}}
+    app: {{.Name}}
   ports:
 {{- range .Ports}}
   - protocol: TCP
@@ -318,9 +318,9 @@ const YamlTplDeployment = `
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{.RealName}}-deployment
+  name: {{.Name}}-deployment
   labels:
-    app: {{.RealName}}
+    app: {{.Name}}
     deployed: {{.LabelSelector}}
     appId: {{.LabelSelector}}-{{.AppId}}
 spec:
@@ -336,18 +336,18 @@ spec:
 {{- end}}
   selector:
     matchLabels:
-      app: {{.RealName}}
+      app: {{.Name}}
   template:
     metadata:
       labels:
-        app: {{.RealName}}
+        app: {{.Name}}
     spec:
 {{- if .ConfigMaps}}
       volumes:
 {{- range .ConfigMaps}}
       - configMap:
           defaultMode: 420
-          name: {{.RealName}}
+          name: {{.Name}}
         name: {{.ConfigMapName}}
 {{- end}}
 {{- end}}
@@ -360,7 +360,7 @@ spec:
 {{- end}}
 {{- end}}
       containers:
-      - name: {{.RealName}}
+      - name: {{.Name}}
         image: {{.Image}}
 {{- if .ContainerExtracts}}
 {{- range .ContainerExtracts}}
@@ -374,7 +374,7 @@ spec:
         env:
 {{- range .Env}}
 {{- if .Value}}
-        - name: {{.RealName}}
+        - name: {{.Name}}
           value: "{{.Value}}"
 {{- end}}
 {{- end}}
@@ -440,7 +440,7 @@ spec:
 {{- if .Dependencies }}
     initContainers:
 {{- range .Dependencies}}
-      - name: init-service-{{$.RealName}}
+      - name: init-service-{{$.Name}}
         image: busybox:1.28
         command: ['sh', '-c', "until nslookup {{.ContainerName}}.{{.Namespace}}.svc.cluster.local; do echo waiting for {{.ContainerName}}; sleep 2; done"]
 {{- end}}
