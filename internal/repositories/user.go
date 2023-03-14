@@ -31,6 +31,12 @@ type User struct {
 func (m *User) TableName() string {
 	return "users"
 }
+func (m *User) BeforeDelete(tx *gorm.DB) (err error) {
+	if strings.EqualFold("root", m.Account) {
+		return errors.New("root用户无法被删除")
+	}
+	return
+}
 
 // SetPassword 加密密码
 func (m *User) SetPassword(origPassword *string) error {
@@ -159,25 +165,15 @@ func UpdateUser(id uint, user *user.User) error {
 func DeleteUser(id uint) error {
 	db := conf.GetDbClient()
 
-	var org Org
-	err := db.Model(&Org{}).Preload(clause.Associations).First(&org, id).Error
-	if err != nil {
-		return err
-	}
-
-	if len(org.Users) > 0 {
-		return errors.New("组织中存在用户，请先移除所有用户后再删除组织")
-	}
-
 	var total int64
-	err = db.Model(&Org{}).Where("id != ?", id).Count(&total).Error
+	err := db.Model(&User{}).Where("id != ?", id).Count(&total).Error
 	if err != nil {
 		return err
 	}
 	if total == 0 {
-		return errors.New("至少需要保留一个组织")
+		return errors.New("至少需要保留一个用户")
 	}
 
-	err = db.Delete(&org).Error
+	err = db.Delete(&User{}, id).Error
 	return err
 }
