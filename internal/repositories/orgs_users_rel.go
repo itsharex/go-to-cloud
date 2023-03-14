@@ -20,7 +20,7 @@ func GetOrgsByUser(userId uint) ([]*Org, error) {
 	db := conf.GetDbClient()
 
 	var user User
-	err := db.Preload("Org").Where([]uint{userId}).First(&user).Error
+	err := db.Preload("Orgs").Where([]uint{userId}).First(&user).Error
 
 	return user.Orgs, err
 }
@@ -51,12 +51,12 @@ func UpdateOrgsToMember(userId uint, add, del []uint) error {
 	return db.Transaction(func(tx *gorm.DB) (err error) {
 		user := User{Model: Model{ID: userId}}
 		for _, o := range add {
-			if err = tx.Model(&user).Association("Org").Append(&User{Model: Model{ID: o}}); err != nil {
+			if err = tx.Model(&user).Association("Orgs").Append(&User{Model: Model{ID: o}}); err != nil {
 				return err
 			}
 		}
 		for _, o := range del {
-			if err = tx.Model(&user).Association("Org").Delete(&User{Model: Model{ID: o}}); err != nil {
+			if err = tx.Model(&user).Association("Orgs").Delete(&User{Model: Model{ID: o}}); err != nil {
 				return err
 			}
 		}

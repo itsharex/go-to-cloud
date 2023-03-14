@@ -64,14 +64,14 @@ func Belonged(ctx *gin.Context) {
 	}
 }
 
-// Belongs
+// Belong
 // @Tags User
 // @Description 将组织添加/移除用户（用户维度操作）
 // @Success 200
 // @Router /api/user/{userId}/join [put]
 // @Param   ContentBody     body     []uint     true  "Request"     example([]uint，orgId)
 // @Security JWT
-func Belongs(ctx *gin.Context) {
+func Belong(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
