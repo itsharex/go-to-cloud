@@ -25,7 +25,7 @@ func UpsertOrg(ctx *gin.Context) {
 
 	var err error
 	var req user.Org
-	if err = ctx.ShouldBindJSON(&req); err != nil {
+	if err = ctx.ShouldBind(&req); err != nil {
 		response.BadRequest(ctx, err)
 		return
 	}

@@ -35,6 +35,7 @@ func buildRouters(router *gin.Engine) {
 		user.GET("/list", users.List)
 		user.GET("/joined/:orgId", users.Joined)
 		user.PUT("/join/:orgId", users.Join)
+		user.GET("/:userId/belongs", users.Belonged)
 
 		api.GET("/configure/build/env", buildEnv.BuildEnv)
 		api.GET("/configure/build/cmd", buildEnv.BuildCmd)

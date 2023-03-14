@@ -16,6 +16,14 @@ func GetUsersByOrg(orgId uint) ([]*User, error) {
 	return org.Users, err
 }
 
+func GetOrgsByUser(userId uint) ([]*Org, error) {
+	db := conf.GetDbClient()
+
+	var user User
+	err := db.Preload("Org").Where([]uint{userId}).First(&user).Error
+
+	return user.Orgs, err
+}
 func UpdateMembersToOrg(orgId uint, add, del []uint) error {
 	db := conf.GetDbClient()
 
