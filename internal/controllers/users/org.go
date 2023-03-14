@@ -66,10 +66,10 @@ func Belonged(ctx *gin.Context) {
 
 // Belongs
 // @Tags User
-// @Description
+// @Description 将组织添加/移除用户（用户维度操作）
 // @Success 200
-// @Router /api/user/join/{orgId} [put]
-// @Param   ContentBody     body     []uint     true  "Request"     example([]uint)
+// @Router /api/user/{userId}/join [put]
+// @Param   ContentBody     body     []uint     true  "Request"     example([]uint，orgId)
 // @Security JWT
 func Belongs(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
@@ -78,20 +78,20 @@ func Belongs(ctx *gin.Context) {
 		return
 	}
 
-	orgIdStr := ctx.Param("orgId")
-	orgId, err := strconv.ParseUint(orgIdStr, 10, 64)
+	userIdStr := ctx.Param("userId")
+	userId, err := strconv.ParseUint(userIdStr, 10, 64)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusBadRequest, &msg)
 	}
 
-	var tmpUser tmp
-	if err := ctx.ShouldBindJSON(&tmpUser); err != nil {
+	var tmpOrgs tmp
+	if err := ctx.ShouldBindJSON(&tmpOrgs); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusBadRequest, &msg)
 	}
 
-	if err := users.JoinOrg(uint(orgId), tmpUser.Users); err != nil {
+	if err := users.JoinOrgs(tmpOrgs.Orgs, uint(userId)); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {

@@ -101,6 +101,7 @@ func Joined(ctx *gin.Context) {
 
 type tmp struct {
 	Users []uint `json:"users"`
+	Orgs  []uint `json:"orgs"`
 }
 
 // Join
@@ -108,7 +109,7 @@ type tmp struct {
 // @Description 将成员加入/移除组织
 // @Success 200
 // @Router /api/user/join/{orgId} [put]
-// @Param   ContentBody     body     []uint     true  "Request"     example([]uint)
+// @Param   ContentBody     body     []uint     true  "Request"     example([]uint, userId)
 // @Security JWT
 func Join(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)

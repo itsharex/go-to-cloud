@@ -24,3 +24,36 @@ func GetUserList() ([]user.User, error) {
 		return rlt, nil
 	}
 }
+
+func GetUsersByOrg(orgId uint) ([]user.User, error) {
+	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
+		return nil, err
+	} else {
+		rlt := make([]user.User, len(us))
+		for i, u := range us {
+			rlt[i] = user.User{
+				Id:        u.ID,
+				CreatedAt: utils.JsonTime(u.CreatedAt),
+				RealName:  u.RealName,
+				Account:   u.Account,
+			}
+		}
+		return rlt, nil
+	}
+}
+
+func GetUserBelongs(userId uint) ([]user.Org, error) {
+	if us, err := repositories.GetOrgsByUser(userId); err != nil {
+		return nil, err
+	} else {
+		rlt := make([]user.Org, len(us))
+		for i, o := range us {
+			rlt[i] = user.Org{
+				Id:        o.ID,
+				CreatedAt: utils.JsonTime(o.CreatedAt),
+				Name:      o.Name,
+			}
+		}
+		return rlt, nil
+	}
+}

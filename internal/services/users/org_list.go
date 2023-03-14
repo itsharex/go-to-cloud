@@ -24,23 +24,6 @@ func GetOrgList() ([]user.Org, error) {
 	}
 }
 
-func GetUsersByOrg(orgId uint) ([]user.User, error) {
-	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
-		return nil, err
-	} else {
-		rlt := make([]user.User, len(us))
-		for i, u := range us {
-			rlt[i] = user.User{
-				Id:        u.ID,
-				CreatedAt: utils.JsonTime(u.CreatedAt),
-				RealName:  u.RealName,
-				Account:   u.Account,
-			}
-		}
-		return rlt, nil
-	}
-}
-
 // JoinOrg 加入组织，如果当前成员在users中不存在，则移除
 func JoinOrg(orgId uint, users []uint) error {
 	if us, err := repositories.GetUsersByOrg(orgId); err != nil {
@@ -61,18 +44,22 @@ func JoinOrg(orgId uint, users []uint) error {
 	}
 }
 
-func GetUserBelongs(userId uint) ([]user.Org, error) {
-	if us, err := repositories.GetOrgsByUser(userId); err != nil {
-		return nil, err
+// JoinOrgs 加入组织，如果当前成员在users中不存在，则移除
+func JoinOrgs(orgId []uint, userId uint) error {
+	if orgs, err := repositories.GetOrgsByUser(userId); err != nil {
+		return err
 	} else {
-		rlt := make([]user.Org, len(us))
-		for i, o := range us {
-			rlt[i] = user.Org{
-				Id:        o.ID,
-				CreatedAt: utils.JsonTime(o.CreatedAt),
-				Name:      o.Name,
-			}
+		old := make([]uint, len(orgs))
+		for i, u := range orgs {
+			old[i] = u.ID
 		}
-		return rlt, nil
+
+		oldSet := utils.New(old...)
+		newSet := utils.New(orgId...)
+
+		delSet := utils.Minus(oldSet, newSet)      // 差集：移除
+		comSet := utils.Complement(oldSet, newSet) // 补集：追加
+
+		return repositories.UpdateOrgsToMember(userId, utils.List(comSet), utils.List(delSet))
 	}
 }
