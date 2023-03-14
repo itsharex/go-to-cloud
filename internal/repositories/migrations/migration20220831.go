@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"go-to-cloud/internal/models"
 	repo "go-to-cloud/internal/repositories"
 	"gorm.io/gorm"
 )
@@ -28,7 +29,7 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Create(org)
 
 		user := &repo.User{
-			Account:    "root",
+			Account:    models.RootUserName,
 			RealName:   "系统管理员",
 			Pinyin:     "xitongguanliyuan",
 			PinyinInit: "xtgly",

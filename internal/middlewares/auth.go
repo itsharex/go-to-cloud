@@ -1,12 +1,14 @@
 package middlewares
 
 import (
+	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
 	casbinAdapter "github.com/casbin/gorm-adapter/v3"
 	"github.com/gin-gonic/gin"
 	"go-to-cloud/conf"
+	"go-to-cloud/internal/models"
 	repo "go-to-cloud/internal/repositories"
 	"log"
 	"time"
@@ -109,7 +111,7 @@ func getCasbinEnforcer() (*casbin.Enforcer, error) {
 		return nil, err
 	}
 
-	rbacModel, err := model.NewModelFromString(`
+	rbacModel, err := model.NewModelFromString(fmt.Sprintf(`
 [request_definition]
 r = sub, obj, act
 
@@ -123,8 +125,8 @@ g = _, _
 e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = g(r.sub, p.sub) && keyMatch2(r.obj,p.obj) && (r.sub == p.sub || p.sub == "*") && (r.act == p.act) || r.sub == "root"
-`)
+m = g(r.sub, p.sub) && keyMatch2(r.obj,p.obj) && (r.sub == p.sub || p.sub == "*") && (r.act == p.act) || r.sub == "%s"
+`, models.RootUserName))
 
 	enforcer, err := casbin.NewEnforcer(rbacModel, adapter)
 
@@ -132,8 +134,9 @@ m = g(r.sub, p.sub) && keyMatch2(r.obj,p.obj) && (r.sub == p.sub || p.sub == "*"
 		return nil, err
 	}
 
-	// TODO: 加入所有策略
-	// enforcer.AddPolicies(fmt.Sprintf("p,%s,%s,%s", userId/roleId, url, http_method))
+	for _, rule := range rules {
+		enforcer.AddPolicies([][]string{{rule.Kind, rule.Resource, rule.Act}})
+	}
 
 	return enforcer, nil
 }
