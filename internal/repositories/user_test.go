@@ -4,6 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go-to-cloud/internal/models/user"
 	"testing"
+	"time"
 )
 
 func TestPasswordGenAndCompare(t *testing.T) {
@@ -59,4 +60,34 @@ func TestCreateUser(t *testing.T) {
 	})
 
 	assert.NoError(t, err)
+}
+
+func TestChangePassword(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipped due to ci is seperated from DB")
+	}
+
+	account := "test-" + time.Now().Format("20060102150405")
+	pwd := "123456"
+	u := &user.User{
+		Account:        account,
+		RealName:       "肉哦",
+		OriginPassword: pwd,
+		Email:          "123@email.com",
+		Mobile:         "1333333",
+	}
+	err := CreateUser(u)
+	assert.NoError(t, err)
+	u3 := GetUser(&account, &pwd)
+
+	pwd = "34567"
+	err = ResetPassword(u3.ID, &pwd)
+	assert.NoError(t, err)
+	u2 := GetUser(&account, &pwd)
+	assert.True(t, u2.ID == u3.ID)
+
+	pwd2 := "7777"
+	err = ResetPasswordWithCheckOldPassword(u3.ID, &pwd, &pwd2)
+	u4 := GetUser(&account, &pwd2)
+	assert.True(t, u4.ID == u3.ID)
 }

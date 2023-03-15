@@ -65,5 +65,11 @@ func JoinOrgs(orgId []uint, userId uint) error {
 }
 
 func ResetPassword(userId uint, oldPassword, newPassword *string, force bool) (*string, error) {
-	return utils.StrongPasswordGen(12), nil
+
+	if force {
+		pwd := utils.StrongPasswordGen(12)
+		return pwd, repositories.ResetPassword(userId, pwd)
+	} else {
+		return newPassword, repositories.ResetPasswordWithCheckOldPassword(userId, oldPassword, newPassword)
+	}
 }
