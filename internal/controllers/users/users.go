@@ -2,6 +2,7 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/controllers/utils"
 	"go-to-cloud/internal/models"
 	"go-to-cloud/internal/pkg/response"
@@ -178,4 +179,16 @@ func ResetPassword(ctx *gin.Context) {
 			"newPassword": *pwd,
 		})
 	}
+}
+
+// AllKinds
+// @Tags User
+// @Description 所有Kind
+// @Accept json
+// @Product json
+// @Router /api/user/kinds [get]
+// @Success 200 {array} string
+func AllKinds(ctx *gin.Context) {
+	response.Success(ctx, conf.Kinds)
+	return
 }
