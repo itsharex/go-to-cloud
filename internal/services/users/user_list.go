@@ -1,6 +1,7 @@
 package users
 
 import (
+	"encoding/json"
 	"go-to-cloud/internal/models/user"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
@@ -27,6 +28,11 @@ func GetUserList() ([]user.User, error) {
 						orgs[i2] = o.Name
 					}
 					return orgs
+				}(),
+				Kind: func() []string {
+					var m []string
+					json.Unmarshal(u.Kind, &m)
+					return m
 				}(),
 			}
 		}
