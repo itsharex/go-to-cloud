@@ -152,7 +152,7 @@ func Join(ctx *gin.Context) {
 // @Param   ContentBody     body     string     true  "Request"     example(string)
 // @Security JWT
 func ResetPassword(ctx *gin.Context) {
-	exists, _, user, _, _ := utils.CurrentUser(ctx)
+	exists, currentUserId, user, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
@@ -168,9 +168,38 @@ func ResetPassword(ctx *gin.Context) {
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusBadRequest, &msg)
+		return
 	}
 
-	if pwd, err := users.ResetPassword(uint(userId), nil, nil, true); err != nil {
+	var oldPassword, newPassword string
+	var force bool
+	if userId == 0 {
+		force = false
+		userId = uint64(currentUserId)
+		m := struct {
+			OldPassword string `json:"oldPassword"`
+			NewPassword string `json:"newPassword"`
+		}{}
+
+		if err := ctx.ShouldBindJSON(&m); err != nil {
+			msg := err.Error()
+			response.Fail(ctx, http.StatusBadRequest, &msg)
+			return
+		} else {
+			oldPassword = m.OldPassword
+			newPassword = m.NewPassword
+
+			if len(strings.TrimSpace(newPassword)) < 6 {
+				msg := "密码长度不足"
+				response.Fail(ctx, http.StatusBadRequest, &msg)
+				return
+			}
+		}
+	} else {
+		force = true
+	}
+
+	if pwd, err := users.ResetPassword(uint(userId), &oldPassword, &newPassword, force); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {

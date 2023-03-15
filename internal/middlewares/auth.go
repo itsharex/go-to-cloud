@@ -77,6 +77,9 @@ func AuthHandler() gin.HandlerFunc {
 				return true
 			}
 
+			if claims["kind"] == nil {
+				return false
+			}
 			kind := claims["kind"].([]interface{})
 			for _, s := range kind {
 				ok, ex = enforcer.Enforce(s, c.Request.URL.Path, c.Request.Method)
