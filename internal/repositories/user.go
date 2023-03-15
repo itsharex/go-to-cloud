@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"encoding/json"
 	"errors"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/user"
@@ -128,7 +129,10 @@ func mapper(user *user.User, ignorePwd bool) (*User, error) {
 		Account:    user.Account,
 		Email:      user.Email,
 		Mobile:     user.Mobile,
-		Kind:       datatypes.JSON(user.Kind),
+		Kind: func() datatypes.JSON {
+			k, _ := json.Marshal(user.Kind)
+			return k
+		}(),
 	}
 	var err error
 	if !ignorePwd {

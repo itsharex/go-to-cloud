@@ -12,7 +12,7 @@ type User struct {
 	OriginPassword string         `json:"originPassword"` // 原始密码（只能由前端传至后端，后端会忽略这个字段）
 	Email          string         `json:"email"`          // 邮箱
 	Mobile         string         `json:"mobile"`         // 电话，可用于接收验证码、钉钉被艾特
-	Kind           string         `json:"kind"`           // 角色
+	Kind           []string       `json:"kind"`           // 角色
 	BelongsTo      []string       `json:"belongsTo"`      // 所属组织
 }
 

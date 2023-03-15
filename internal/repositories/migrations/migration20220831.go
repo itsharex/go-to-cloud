@@ -1,8 +1,11 @@
 package migrations
 
 import (
+	"encoding/json"
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/models"
 	repo "go-to-cloud/internal/repositories"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -29,8 +32,12 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Create(org)
 
 		user := &repo.User{
-			Account:    models.RootUserName,
-			RealName:   "系统管理员",
+			Account:  models.RootUserName,
+			RealName: "系统管理员",
+			Kind: func() datatypes.JSON {
+				s, _ := json.Marshal([]string{conf.KindRoot})
+				return s
+			}(),
 			Pinyin:     "xitongguanliyuan",
 			PinyinInit: "xtgly",
 			Orgs:       []*repo.Org{org},
@@ -41,8 +48,11 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		db.Debug().Save(user)
 
 		guest := &repo.User{
-			Account:    "guest",
-			RealName:   "游客",
+			Account:  "guest",
+			RealName: "游客", Kind: func() datatypes.JSON {
+				s, _ := json.Marshal([]string{conf.KindGuest})
+				return s
+			}(),
 			Pinyin:     "youke",
 			PinyinInit: "yk",
 			Orgs:       []*repo.Org{org},
