@@ -1,7 +1,6 @@
 package users
 
 import (
-	"errors"
 	"go-to-cloud/internal/models/user"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
@@ -65,6 +64,6 @@ func JoinOrgs(orgId []uint, userId uint) error {
 	}
 }
 
-func ResetPassword(userId uint, oldPassword, newPassword *string, force bool) error {
-	return errors.New("not implemented")
+func ResetPassword(userId uint, oldPassword, newPassword *string, force bool) (*string, error) {
+	return utils.StrongPasswordGen(12), nil
 }

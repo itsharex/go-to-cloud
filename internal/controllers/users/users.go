@@ -169,18 +169,13 @@ func ResetPassword(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusBadRequest, &msg)
 	}
 
-	var newPassword string
-	if err := ctx.ShouldBind(&newPassword); err != nil {
-		msg := err.Error()
-		response.Fail(ctx, http.StatusBadRequest, &msg)
-	}
-
-	if err := users.ResetPassword(uint(userId), nil, &newPassword, true); err != nil {
+	if pwd, err := users.ResetPassword(uint(userId), nil, nil, true); err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)
 	} else {
 		response.Success(ctx, gin.H{
-			"success": true,
+			"success":     true,
+			"newPassword": *pwd,
 		})
 	}
 }

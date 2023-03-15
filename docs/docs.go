@@ -1892,6 +1892,36 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/user/{userId}/password/reset": {
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "重置用户密码",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "example": "string",
+                        "description": "Request",
+                        "name": "ContentBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     },
     "definitions": {
