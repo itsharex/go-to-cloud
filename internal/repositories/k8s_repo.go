@@ -12,12 +12,12 @@ import (
 // K8sRepo K8s部署环境
 type K8sRepo struct {
 	Model
-	Name          string         `json:"name" gorm:"column:name"`
-	KubeConfig    string         `json:"kubeconfig" gorm:"column:kube_config"`
-	ServerVersion string         `json:"serverVersion" gorm:"column:server_ver"`
+	Name          string         `json:"name" gorm:"column:name;type:nvarchar(20)"`
+	KubeConfig    string         `json:"kubeconfig" gorm:"column:kube_config;type:text"`
+	ServerVersion string         `json:"serverVersion" gorm:"column:server_ver;type:varchar(10)"`
 	CreatedBy     uint           `json:"createdBy" gorm:"column:created_by"`  // 仓库创建人
 	BelongsTo     datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"` // 所属组织
-	Remark        string         `json:"remark" gorm:"column:remark"`
+	Remark        string         `json:"remark" gorm:"column:remark;type:nvarchar(500)"`
 }
 
 func (m *K8sRepo) TableName() string {

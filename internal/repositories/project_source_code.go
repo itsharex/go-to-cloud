@@ -13,7 +13,7 @@ type ProjectSourceCode struct {
 	ProjectID   uint     `json:"project_id" gorm:"column:project_id"` // 所属项目
 	CodeRepo    CodeRepo `json:"-" gorm:"foreignKey:code_repo_id"`
 	CodeRepoID  uint     `json:"code_repo_id" gorm:"column:code_repo_id"`
-	GitUrl      string   `json:"git_url" gorm:"column:git_url"` // git地址
+	GitUrl      string   `json:"git_url" gorm:"column:git_url;type:varchar(1024)"` // git地址
 	CreatedUser User     `json:"-" gorm:"foreignKey:created_by"`
 	CreatedBy   uint     `json:"created_by" gorm:"column:created_by"`
 }

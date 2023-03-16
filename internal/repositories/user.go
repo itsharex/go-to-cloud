@@ -20,10 +20,10 @@ type User struct {
 	RealName       string         `json:"realName" gorm:"column:real_name;type:nvarchar(16);not null;default('')"`
 	Pinyin         string         `json:"pinyin" gorm:"column:pinyin;type:nvarchar(100);not null;default('')"`           // RealName的拼音
 	PinyinInit     string         `json:"pinyin_init" gorm:"column:pinyin_init;type:nvarchar(100);not null;default('')"` // RealName的拼音首字母
-	Account        string         `json:"account" gorm:"column:account;not null;"`                                       // 账号
-	HashedPassword string         `json:"-" gorm:"column:password;not null;"`                                            // 登录密码
-	Email          string         `json:"email" gorm:"column:email"`                                                     // 邮箱
-	Mobile         string         `json:"mobile" gorm:"column:mobile"`                                                   // 联系电话
+	Account        string         `json:"account" gorm:"column:account;not null;type:nvarchar(200)"`                     // 账号
+	HashedPassword string         `json:"-" gorm:"column:password;not null;type:nvarchar(200)"`                          // 登录密码
+	Email          string         `json:"email" gorm:"column:email;type:nvarchar(200)"`                                  // 邮箱
+	Mobile         string         `json:"mobile" gorm:"column:mobile;type:nvarchar(200)"`                                // 联系电话
 	LastLoginAt    *time.Time     `json:"last_login_at" gorm:"column:last_login_at"`                                     // 上次登录时间
 	Kind           datatypes.JSON `json:"kind" gorm:"column:kind;"`
 	Orgs           []*Org         `gorm:"many2many:orgs_users_rel"`

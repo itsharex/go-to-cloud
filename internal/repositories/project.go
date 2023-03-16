@@ -14,8 +14,8 @@ type Project struct {
 	CreatedBy uint   `json:"createdBy" gorm:"column:created_by"` // 仓库创建人
 	Org       Org    `gorm:"foreignKey:org_id"`
 	OrgId     uint   `json:"orgId" gorm:"column:org_id;"` // 所属组织
-	Name      string `json:"name" gorm:"column:name"`
-	Remark    string `json:"remark" gorm:"column:remark"`
+	Name      string `json:"name" gorm:"column:name;type:nvarchar(200)"`
+	Remark    string `json:"remark" gorm:"column:remark;type:nvarchar(500)"`
 }
 
 func (m *Project) TableName() string {

@@ -11,11 +11,11 @@ import (
 // Deployment k8s环境部署方案
 type Deployment struct {
 	Model
-	ProjectId               uint                 `json:"projectId" gorm:"project_id;type:bigint unsigned"`
+	ProjectId               uint                 `json:"projectId" gorm:"project_id;type:bigint unsigned;index:deployment_project_id"`
 	K8sNamespace            string               `json:"k8sNamespace" gorm:"column:k8s_namespace;type:varchar(20)"`
-	K8sRepoId               uint                 `json:"k8sRepoId" gorm:"column:k8s_repo_id"`
+	K8sRepoId               uint                 `json:"k8sRepoId" gorm:"column:k8s_repo_id;index:deployment_k8s_repo_id"`
 	K8sRepo                 K8sRepo              `json:"-" gorm:"foreignKey:k8s_repo_id"`
-	ArtifactDockerImageId   uint                 `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned"`
+	ArtifactDockerImageId   uint                 `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned;index:deployment_artifact_docker_image_id"`
 	ArtifactDockerImageRepo ArtifactDockerImages `json:"-" gorm:"foreignKey:artifact_docker_image_id"`
 	ArtifactTag             string               `json:"artifactTag" gorm:"column:artifact_tag;type:varchar(50);default:'latest';not null"` // 镜像版本
 	Ports                   datatypes.JSON       `json:"ports" gorm:"column:ports"`                                                         // 端口{containerPort: 80, servicePort: 80, nodePort: 30080, portName: 'http'}

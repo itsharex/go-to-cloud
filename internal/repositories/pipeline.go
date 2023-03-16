@@ -13,16 +13,16 @@ import (
 type Pipeline struct {
 	Model
 	PipelineSteps  []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
-	ProjectID      uint                    `json:"project_id" gorm:"column:project_id;type:bigint unsigned;"`
-	ArtifactRepoId *uint                   `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned"`
+	ProjectID      uint                    `json:"project_id" gorm:"column:project_id;type:bigint unsigned;index:pipeline_project_id"`
+	ArtifactRepoId *uint                   `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned;index:pipeline_artifact_repo_id"`
 	Name           string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
-	Env            string                  `json:"env" gorm:"column:env"`                     // 运行环境(模板), e.g. dotnet:6; go:1.17
-	SourceCodeID   uint                    `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned"`
+	Env            string                  `json:"env" gorm:"column:env;type:nvarchar(64)"`   // 运行环境(模板), e.g. dotnet:6; go:1.17
+	SourceCodeID   uint                    `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned;index:pipeline_source_code_id"`
 	SourceCode     ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
-	Branch         string                  `json:"branch" gorm:"column:branch"` // 分支名称
-	BranchCommitId string                  `json:"branch_commit_id"  gorm:"column:branch_commit_id;type:nvarchar(100)"`
+	Branch         string                  `json:"branch" gorm:"column:branch;type:nvarchar(128)"` // 分支名称
+	BranchCommitId string                  `json:"branch_commit_id"  gorm:"column:branch_commit_id;type:nvarchar(200)"`
 	CreatedBy      uint                    `json:"created_by" gorm:"column:created_by;type:bigint unsigned"`
-	Remark         string                  `json:"remark" gorm:"column:remark"`
+	Remark         string                  `json:"remark" gorm:"column:remark;type:nvarchar(200)"`
 	LastRunId      uint                    `json:"last_run_id" gorm:"column:last_run_id;type:bigint unsigned"`   // 最近一次构建记录ID，即pipeline_history.id
 	LastRunAt      *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
 	LastRunResult  pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
