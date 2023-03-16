@@ -26,7 +26,7 @@ func GinJwtMiddleware() *jwt.GinJWTMiddleware {
 }
 
 func AuthHandler() gin.HandlerFunc {
-	enforcer, err := getCasbinEnforcer()
+	enforcer, err := GetCasbinEnforcer()
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +108,7 @@ func AuthHandler() gin.HandlerFunc {
 	return m.MiddlewareFunc()
 }
 
-func getCasbinEnforcer() (*casbin.Enforcer, error) {
+func GetCasbinEnforcer() (*casbin.Enforcer, error) {
 	adapter, err := casbinAdapter.NewAdapterByDBWithCustomTable(conf.GetDbClient(), nil, "casbin_rules")
 	if err != nil {
 		return nil, err
@@ -128,18 +128,8 @@ g = _, _
 e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = g(r.sub, p.sub) && keyMatch2(r.obj,p.obj) && (r.sub == p.sub || p.sub == "*") && (r.act == p.act) || r.sub == "%s"
+m = (g(r.sub, p.sub) && (keyMatch4(r.obj,p.obj) || keyMatch5(r.obj,p.obj)) && (r.sub == p.sub || p.sub == "*") && (r.act == p.act)) || r.sub == "%s"
 `, models.RootUserName))
 
-	enforcer, err := casbin.NewEnforcer(rbacModel, adapter)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, rule := range rules {
-		enforcer.AddPolicies([][]string{{rule.Kind, rule.Resource, rule.Act}})
-	}
-
-	return enforcer, nil
+	return casbin.NewEnforcer(rbacModel, adapter)
 }

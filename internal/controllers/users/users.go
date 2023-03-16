@@ -75,6 +75,7 @@ func List(ctx *gin.Context) {
 // @Description 列出加入指定组织的用户
 // @Success 200
 // @Router /api/user/joined/{orgId} [get]
+// @Param   orgId     path     string     true  "OrgId"     example(OrgId)
 // @Security JWT
 func Joined(ctx *gin.Context) {
 	exists, _, _, _, _ := utils.CurrentUser(ctx)
@@ -112,6 +113,7 @@ type tmp struct {
 // @Description 将成员加入/移除组织
 // @Success 200
 // @Router /api/user/join/{orgId} [put]
+// @Param   orgId     path     string     true  "OrgId"     example(OrgId)
 // @Param   ContentBody     body     []uint     true  "Request"     example([]uint, userId)
 // @Security JWT
 func Join(ctx *gin.Context) {

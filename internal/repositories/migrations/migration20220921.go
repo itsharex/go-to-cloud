@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"go-to-cloud/internal/middlewares"
 	repo "go-to-cloud/internal/repositories"
 	"gorm.io/gorm"
 )
@@ -14,37 +15,15 @@ func (m *migration20220921) Up(db *gorm.DB) {
 		err := db.AutoMigrate(&repo.CasbinRule{})
 		if err != nil {
 			panic(err)
+		} else {
+			if enforce, err := middlewares.GetCasbinEnforcer(); err == nil {
+				enforce.AddGroupingPolicy("root", "*")
+				enforce.AddGroupingPolicy("root", "guest")
+				enforce.AddPolicies([][]string{{"guest", "/api/monitor/{k8s}/apps/query", "GET"}})
+				enforce.AddPolicies([][]string{{"guest", "/api/user/info", "GET"}})
+				enforce.AddPolicies([][]string{{"guest", "/org/list", "GET"}})
+			}
 		}
-	}
-
-	var cnt int64
-	if err := db.Find(&repo.CasbinRule{}, 1).Count(&cnt).Error; cnt == 0 && err == nil {
-		r := &repo.CasbinRule{
-			Id:    1,
-			PType: "g",
-			V0:    "root",
-			V1:    "*",
-		}
-		db.Debug().Create(r)
-	}
-	if err := db.Find(&repo.CasbinRule{}, 2).Count(&cnt).Error; cnt == 0 && err == nil {
-		r := &repo.CasbinRule{
-			Id:    2,
-			PType: "g",
-			V0:    "root",
-			V1:    "guest",
-		}
-		db.Debug().Create(r)
-	}
-	if err := db.Find(&repo.CasbinRule{}, 3).Count(&cnt).Error; cnt == 0 && err == nil {
-		r := &repo.CasbinRule{
-			Id:    3,
-			PType: "p",
-			V0:    "guest",
-			V1:    "/api/user/info",
-			V2:    "GET",
-		}
-		db.Debug().Create(r)
 	}
 }
 
