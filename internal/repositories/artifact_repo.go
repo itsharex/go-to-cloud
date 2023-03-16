@@ -10,15 +10,15 @@ import (
 
 type ArtifactRepo struct {
 	Model
-	Name           string         `json:"name" gorm:"column:name"`
-	ArtifactOrigin int            `json:"artifactOrigin" gorm:"column:artifact_origin"` // 制品仓库来源；Docker(1);
-	IsSecurity     bool           `json:"isSecurity" gorm:"column:is_security"`         // 是否使用https
-	Account        string         `json:"account" gorm:"column:account"`                // 用户名
-	Password       string         `json:"password" gorm:"column:password"`              // 密码
-	Url            string         `json:"url" gorm:"column:url"`                        // 制品仓库平台地址
-	CreatedBy      uint           `json:"createdBy" gorm:"column:created_by"`           // 仓库创建人
-	BelongsTo      datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"`          // SCM所属组织
-	Remark         string         `json:"remark" gorm:"column:remark"`
+	Name           string         `json:"name" gorm:"column:name;type:nvarchar(50)"`
+	ArtifactOrigin int            `json:"artifactOrigin" gorm:"column:artifact_origin;type:bigint unsigned"` // 制品仓库来源；Docker(1);
+	IsSecurity     bool           `json:"isSecurity" gorm:"column:is_security"`                              // 是否使用https
+	Account        string         `json:"account" gorm:"column:account;type:nvarchar(50)"`                   // 用户名
+	Password       string         `json:"password" gorm:"column:password;type:nvarchar(50)"`                 // 密码
+	Url            string         `json:"url" gorm:"column:url;type:nvarchar(200)"`                          // 制品仓库平台地址
+	CreatedBy      uint           `json:"createdBy" gorm:"column:created_by"`                                // 仓库创建人
+	BelongsTo      datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;type:text"`                      // SCM所属组织
+	Remark         string         `json:"remark" gorm:"column:remark;type:nvarchar(1024)"`
 }
 
 func (m *ArtifactRepo) TableName() string {

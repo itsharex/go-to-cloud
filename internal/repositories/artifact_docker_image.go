@@ -8,7 +8,7 @@ import (
 
 type ArtifactDockerImages struct {
 	Model
-	PipelineId     uint   `json:"pipelineId" gorm:"column:pipeline_id;type:bigint unsigned"`
+	PipelineId     uint   `json:"pipelineId" gorm:"column:pipeline_id;index:artifact_docker_images_pipeline_id_index;type:bigint unsigned"`
 	BuildId        uint   `json:"buildId" gorm:"column:build_id;type:bigint unsigned"`
 	Name           string `json:"name" gorm:"column:name;type:varchar(200)"`
 	ArtifactRepoID uint   `json:"artifactRepoId" gorm:"column:artifact_repo_id;index:artifact_docker_images_artifact_repo_id_index"`

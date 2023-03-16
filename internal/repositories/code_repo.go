@@ -11,14 +11,14 @@ import (
 
 type CodeRepo struct {
 	Model
-	Name        string         `json:"name" gorm:"column:name"`
-	ScmOrigin   int            `json:"scmOrigin" gorm:"column:scm_origin"`     // 代码仓库来源；gitlab(0);github(1);gitee(2);gitea(3)
-	IsPublic    int8           `json:"isPublic" gorm:"column:is_public"`       // 是否公开仓库
-	AccessToken string         `json:"accessToken" gorm:"column:access_token"` // 访问令牌 PAT
-	Url         string         `json:"url" gorm:"column:url"`                  // SCM平台地址（非项目仓库地址）
-	CreatedBy   uint           `json:"createdBy" gorm:"column:created_by"`     // 仓库创建人
-	BelongsTo   datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;"`    // SCM所属组织
-	Remark      string         `json:"remark" gorm:"column:remark"`
+	Name        string         `json:"name" gorm:"column:name;type:varchar(200)"`
+	ScmOrigin   int            `json:"scmOrigin" gorm:"column:scm_origin"`                       // 代码仓库来源；gitlab(0);github(1);gitee(2);gitea(3)
+	IsPublic    int8           `json:"isPublic" gorm:"column:is_public"`                         // 是否公开仓库
+	AccessToken string         `json:"accessToken" gorm:"column:access_token;type:varchar(200)"` // 访问令牌 PAT
+	Url         string         `json:"url" gorm:"column:url;type:varchar(500)"`                  // SCM平台地址（非项目仓库地址）
+	CreatedBy   uint           `json:"createdBy" gorm:"column:created_by"`                       // 仓库创建人
+	BelongsTo   datatypes.JSON `json:"belongsTo" gorm:"column:belongs_to;type:text"`             // SCM所属组织
+	Remark      string         `json:"remark" gorm:"column:remark;type:varchar(200)"`
 }
 
 func (m *CodeRepo) TableName() string {
