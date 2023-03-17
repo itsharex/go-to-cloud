@@ -25,6 +25,7 @@ func buildRouters(router *gin.Engine) {
 	api.Use(middlewares.AuthHandler())
 	{
 		user := api.Group("/user")
+		user.GET("/auths", auth.GetAuthCodes)
 		user.GET("/kinds", users.AllKinds)
 		user.PUT("/", users.UpsertUser)
 		user.POST("/", users.UpsertUser)
