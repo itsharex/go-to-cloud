@@ -35,7 +35,7 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 			Account:  models.RootUserName,
 			RealName: "系统管理员",
 			Kind: func() datatypes.JSON {
-				s, _ := json.Marshal([]string{conf.KindRoot})
+				s, _ := json.Marshal([]string{string(conf.Root)})
 				return s
 			}(),
 			Pinyin:     "xitongguanliyuan",
@@ -50,7 +50,7 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 		guest := &repo.User{
 			Account:  "guest",
 			RealName: "游客", Kind: func() datatypes.JSON {
-				s, _ := json.Marshal([]string{conf.KindGuest})
+				s, _ := json.Marshal([]string{string(conf.Guest)})
 				return s
 			}(),
 			Pinyin:     "youke",

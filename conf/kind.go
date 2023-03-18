@@ -1,26 +1,28 @@
 package conf
 
 type KindPair struct {
-	Key     string `json:"key"`
+	Key     Kind   `json:"key"`
 	ValueCN string `json:"valueCN"`
 	ValueEN string `json:"valueEN"`
 }
 
 var Kinds []KindPair
 
+type Kind string
+
 const (
-	KindRoot  = "root"
-	KindDev   = "dev"
-	KindOps   = "ops"
-	KindQa    = "qa"
-	KindGuest = "guest"
+	Root  Kind = "root"
+	Dev   Kind = "dev"
+	Ops   Kind = "ops"
+	Qa    Kind = "qa"
+	Guest Kind = "guest"
 )
 
 func init() {
 	Kinds = []KindPair{
-		{KindDev, "研发", "Dev"},
-		{KindOps, "运维", "Ops"},
-		{KindQa, "质量", "QA"},
-		{KindGuest, "游客", "Guest"},
+		{Dev, "研发", "Dev"},
+		{Ops, "运维", "Ops"},
+		{Qa, "质量", "QA"},
+		{Guest, "游客", "Guest"},
 	}
 }
