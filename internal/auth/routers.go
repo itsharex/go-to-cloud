@@ -76,13 +76,13 @@ func init() {
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s", []RestfulMethod{GET}, k8s.QueryK8sRepos, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s/:id", []RestfulMethod{DELETE}, k8s.RemoveK8sRepo, []models.Kind{models.Ops}})
 
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/install/k8s", []RestfulMethod{POST}, builder.K8sInstall, []models.Kind{models.Guest}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/install/k8s", []RestfulMethod{POST}, builder.K8sInstall, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/nodes/k8s", []RestfulMethod{GET}, builder.QueryNodesOnK8s, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/nodes/k8s/available", []RestfulMethod{GET}, builder.QueryAvailableNodesOnK8s, []models.Kind{models.Guest}})
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/node/:id", []RestfulMethod{DELETE}, builder.Uninstall, []models.Kind{models.Guest}})
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/node", []RestfulMethod{PUT}, builder.UpdateBuilderNode, []models.Kind{models.Guest}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/node/:id", []RestfulMethod{DELETE}, builder.Uninstall, []models.Kind{models.Ops}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/node", []RestfulMethod{PUT}, builder.UpdateBuilderNode, []models.Kind{models.Ops}})
 
-	RouterMaps = append(RouterMaps, RouterMap{"/api/projects", []RestfulMethod{POST}, projects.Create, []models.Kind{models.Guest}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/projects", []RestfulMethod{POST}, projects.Create, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/projects/:projectId", []RestfulMethod{DELETE}, projects.DeleteProject, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/projects/list", []RestfulMethod{GET}, projects.List, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/projects/coderepo", []RestfulMethod{GET}, projects.CodeRepo, []models.Kind{models.Guest}})

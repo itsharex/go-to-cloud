@@ -8,6 +8,8 @@ import (
 func GroupPolicies() [][]string {
 	return [][]string{
 		{string(models.Root), "*"},
+		{string(models.Ops), string(models.Dev)},
+		{string(models.Dev), string(models.Guest)},
 	}
 }
 
