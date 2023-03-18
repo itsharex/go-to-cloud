@@ -1,21 +1,22 @@
 package auth
 
 import (
-	"go-to-cloud/conf"
 	"go-to-cloud/internal/models"
 	"strconv"
 )
 
 func GroupPolicies() [][]string {
 	return [][]string{
-		{string(conf.Root), "*"},
+		{string(models.Root), "*"},
 	}
 }
 
 func ResourcePolicies() [][][]string {
 	return [][][]string{
-		{{string(conf.Ops), strconv.Itoa(int(models.PodDelete)), "RESOURCE"}},
-		{{string(conf.Ops), strconv.Itoa(int(models.PodShell)), "RESOURCE"}},
-		{{string(conf.Ops), strconv.Itoa(int(models.PodViewLog)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.PodDelete)), "RESOURCE"}},
+
+		{{string(models.Ops), strconv.Itoa(int(models.PodDelete)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.PodShell)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.PodViewLog)), "RESOURCE"}},
 	}
 }
