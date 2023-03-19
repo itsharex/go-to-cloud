@@ -2,10 +2,19 @@ package auth
 
 import (
 	"go-to-cloud/internal/models"
+	"strconv"
 )
 
 var groupPolicies [][]string
 var resourcePolicies [][][]string
+
+func GroupPolicies() [][]string {
+	return groupPolicies
+}
+
+func ResourcePolicies() [][][]string {
+	return resourcePolicies
+}
 
 func init() {
 	groupPolicies = [][]string{
@@ -15,17 +24,56 @@ func init() {
 	}
 
 	resourcePolicies = [][][]string{
-		//{{string(models.Ops), strconv.Itoa(int(models.PodDelete)), "RESOURCE"}},
-		//
-		//{{string(models.Ops), strconv.Itoa(int(models.PodDelete)), "RESOURCE"}},
-		//{{string(models.Ops), strconv.Itoa(int(models.PodShell)), "RESOURCE"}},
-		//{{string(models.Ops), strconv.Itoa(int(models.PodViewLog)), "RESOURCE"}},
-	}
-}
-func GroupPolicies() [][]string {
-	return groupPolicies
-}
+		{{string(models.Guest), strconv.Itoa(int(models.MainMenuProject)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectNew)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectDelete)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectUpdate)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectSourceCode)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectSourceCodeImport)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectSourceDelete)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCI)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCINew)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCIStart)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCIHistory)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResProjectCIDelete)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCD)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDNew)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDStart)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDHistory)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDRollback)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDDelete)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDMonitor)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResProjectArtifacts)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResProjectArtifactDelete)), "RESOURCE"}},
 
-func ResourcePolicies() [][][]string {
-	return resourcePolicies
+		{{string(models.Dev), strconv.Itoa(int(models.MainMenuConfigure)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.SubMenuConfigureCodeRepo)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResConfigureCodeRepoBind)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResConfigureCodeRepoUpdate)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResConfigureCodeRepoRemove)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.SubMenuConfigureBuildNode)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResConfigureBuildNodeBind)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResConfigureBuildNodeUpdate)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResConfigureBuildNodeRemove)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.SubMenuConfigureArtifactRepo)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResArtifactRepoBind)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResArtifactRepoUpdate)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResArtifactRepoRemove)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResArtifactDeleteHistory)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.SubMenuConfigureDeployRepo)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResDeployBind)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResDeployUpdate)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResDeployRemove)), "RESOURCE"}},
+
+		{{string(models.Dev), strconv.Itoa(int(models.MainMenuMonitor)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResourceMonitorScale)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResourceMonitorRestart)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResourceMonitorDelete)), "RESOURCE"}},
+		{{string(models.Dev), strconv.Itoa(int(models.ResourceMonitorShell)), "RESOURCE"}},
+		{{string(models.Ops), strconv.Itoa(int(models.ResourceMonitorDeletePod)), "RESOURCE"}},
+
+		{{string(models.Root), strconv.Itoa(int(models.MainMenuUsers)), "RESOURCE"}},
+		{{string(models.Root), strconv.Itoa(int(models.SubMenuUser)), "RESOURCE"}},
+		{{string(models.Root), strconv.Itoa(int(models.SubMenuOrgs)), "RESOURCE"}},
+	}
 }

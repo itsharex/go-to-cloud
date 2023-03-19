@@ -15,14 +15,18 @@ type migration20220921 struct {
 // addGroupPolicy 添加角色继承关系
 func addGroupPolicy(enforce *casbin.Enforcer) {
 	for _, strings := range auth.GroupPolicies() {
-		enforce.AddGroupingPolicy(strings[0], strings[1])
+		if _, err := enforce.AddGroupingPolicy(strings[0], strings[1]); err != nil {
+			panic(err)
+		}
 	}
 }
 
 // addResourcePolicy 添加权限点
 func addResourcePolicy(enforce *casbin.Enforcer) {
 	for _, p := range auth.ResourcePolicies() {
-		enforce.AddPolicies(p)
+		if _, err := enforce.AddPolicies(p); err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -33,7 +37,9 @@ func addRouterPolicy(enforce *casbin.Enforcer) {
 		for _, kind := range routerMap.Kinds {
 			for _, method := range routerMap.Methods {
 				// 需要将路由参数 :params 替换为 {params}来适配keyMatch4匹配算法
-				enforce.AddPolicies([][]string{{string(kind), reg.ReplaceAllString(routerMap.Url, "{$1}"), string(method)}})
+				if _, err := enforce.AddPolicies([][]string{{string(kind), reg.ReplaceAllString(routerMap.Url, "{$1}"), string(method)}}); err != nil {
+					panic(err)
+				}
 			}
 		}
 	}
