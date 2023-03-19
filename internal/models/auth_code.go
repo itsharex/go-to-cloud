@@ -3,7 +3,6 @@ package models
 type AuthCode int
 
 const (
-
 	// MainMenuProject 主菜单->项目
 	MainMenuProject            AuthCode = 10000
 	ResProjectNew              AuthCode = 10100 // 新建项目

@@ -52,7 +52,7 @@ func init() {
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/:userId", []RestfulMethod{DELETE}, users.DeleteUser, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/:userId/password/reset", []RestfulMethod{PUT}, users.ResetPassword, []models.Kind{models.Dev}})
 
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/build/env", []RestfulMethod{GET}, buildEnv.BuildEnv, []models.Kind{models.Ops}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/build/env", []RestfulMethod{GET}, buildEnv.BuildEnv, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/build/cmd", []RestfulMethod{GET}, buildEnv.BuildCmd, []models.Kind{models.Ops}})
 
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/coderepo", []RestfulMethod{GET}, scm.QueryCodeRepos, []models.Kind{models.Dev}})
@@ -64,7 +64,7 @@ func init() {
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact/testing", []RestfulMethod{POST}, artifact.Testing, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact/bind", []RestfulMethod{POST}, artifact.BindArtifactRepo, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact", []RestfulMethod{PUT}, artifact.UpdateArtifactRepo, []models.Kind{models.Ops}})
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact", []RestfulMethod{GET}, artifact.QueryArtifactRepo, []models.Kind{models.Ops}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact", []RestfulMethod{GET}, artifact.QueryArtifactRepo, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact/:id", []RestfulMethod{DELETE}, artifact.RemoveArtifactRepo, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact/:id", []RestfulMethod{GET}, artifact.QueryArtifactItems, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/artifact/image/:imageId", []RestfulMethod{DELETE}, artifact.DeleteImage, []models.Kind{models.Ops}})
