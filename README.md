@@ -1,6 +1,6 @@
 # GO-TO-CLOUD
 
-![LOGO](https://github.com/go-to-cloud/go-to-cloud-frontend/blob/main/src/assets/imgs/logo.png "LOGO")
+<img alt="GOTOCLOUD LOGO" height="120" src="https://github.com/go-to-cloud/go-to-cloud-frontend/blob/main/src/assets/imgs/logo.png" title="GOTOCLOUD" width="120"/>
 
 [![Build Status](https://github.com/go-to-cloud/go-to-cloud/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/go-to-cloud/go-to-cloud/actions?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/go-to-cloud/go-to-cloud/branch/main/graph/badge.svg?token=9Y81AN6KUA)](https://codecov.io/gh/go-to-cloud/go-to-cloud)
