@@ -51,6 +51,12 @@ docker-compose up -f ...TODO
 
 - go `1.19+`
 - mysql `8.0`
+- 制品仓库 
+
+```shell
+# 试用可以在本地docker中拉取并运行镜像registry:v2
+docker run
+```
 
 ### 准备工作
 
