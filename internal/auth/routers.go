@@ -73,7 +73,7 @@ func init() {
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s/testing", []RestfulMethod{POST}, k8s.Testing, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s/bind", []RestfulMethod{POST}, k8s.BindK8sRepo, []models.Kind{models.Ops}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s", []RestfulMethod{PUT}, k8s.UpdateK8sRepo, []models.Kind{models.Ops}})
-	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s", []RestfulMethod{GET}, k8s.QueryK8sRepos, []models.Kind{models.Ops}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s", []RestfulMethod{GET}, k8s.QueryK8sRepos, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/deploy/k8s/:id", []RestfulMethod{DELETE}, k8s.RemoveK8sRepo, []models.Kind{models.Ops}})
 
 	RouterMaps = append(RouterMaps, RouterMap{"/api/configure/builder/install/k8s", []RestfulMethod{POST}, builder.K8sInstall, []models.Kind{models.Ops}})

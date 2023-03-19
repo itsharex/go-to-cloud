@@ -128,7 +128,7 @@ g = _, _
 e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 [matchers]
-m = (g(r.sub, p.sub) && (keyMatch4(r.obj,p.obj) || keyMatch5(r.obj,p.obj)) && (r.sub == p.sub || p.sub == "*") && (r.act == p.act)) || r.sub == "%s"
+m = (g(r.sub, p.sub) && (keyMatch4(r.obj,p.obj) || keyMatch5(r.obj,p.obj)) && (r.act == p.act)) || r.sub == "%s"
 `, models.RootUserName))
 
 	return casbin.NewEnforcer(rbacModel, adapter)
