@@ -24,7 +24,6 @@ const (
 	ResProjectCDDelete         AuthCode = 10334 // 管理模块：删除部署方案
 	ResProjectCDMonitor        AuthCode = 10335 // 管理模块：转到应用监控
 	ResProjectArtifacts        AuthCode = 10340 // 管理模块：制品仓库
-	ResProjectArtifactDelete   AuthCode = 10341 // 管理模块：删除制品
 
 	// MainMenuConfigure 主菜单->配置
 	MainMenuConfigure                 AuthCode = 20000

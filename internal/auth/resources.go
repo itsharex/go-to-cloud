@@ -44,7 +44,6 @@ func init() {
 		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDDelete)), "RESOURCE"}},
 		{{string(models.Dev), strconv.Itoa(int(models.ResProjectCDMonitor)), "RESOURCE"}},
 		{{string(models.Dev), strconv.Itoa(int(models.ResProjectArtifacts)), "RESOURCE"}},
-		{{string(models.Ops), strconv.Itoa(int(models.ResProjectArtifactDelete)), "RESOURCE"}},
 
 		{{string(models.Dev), strconv.Itoa(int(models.MainMenuConfigure)), "RESOURCE"}},
 		{{string(models.Dev), strconv.Itoa(int(models.SubMenuConfigureCodeRepo)), "RESOURCE"}},
