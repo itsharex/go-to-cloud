@@ -15,7 +15,7 @@ import (
 // @Router /api/projects/coderepo [get]
 // @Security JWT
 func CodeRepo(ctx *gin.Context) {
-	exists, _, _, orgId, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgId, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

@@ -23,7 +23,7 @@ func UpdateBuilderNode(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, userId, _, orgs, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

@@ -17,7 +17,7 @@ import (
 // @Router /api/monitor/{k8s}/apps/restart [put]
 // @Security JWT
 func Restart(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

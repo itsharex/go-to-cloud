@@ -16,7 +16,7 @@ import (
 // @Router /api/user/org/{orgId} [delete]
 // @Security JWT
 func DeleteOrg(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

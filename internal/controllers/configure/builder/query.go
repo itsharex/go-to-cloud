@@ -16,7 +16,7 @@ import (
 // @Router /api/configure/builder/nodes/k8s [get]
 // @Security JWT
 func QueryNodesOnK8s(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgsId, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -47,7 +47,7 @@ func QueryNodesOnK8s(ctx *gin.Context) {
 // @Router /api/configure/builder/nodes/k8s/available [get]
 // @Security JWT
 func QueryAvailableNodesOnK8s(ctx *gin.Context) {
-	exists, _, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgs, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

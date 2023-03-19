@@ -17,7 +17,7 @@ import (
 // @Router /api/configure/artifact [get]
 // @Security JWT
 func QueryArtifactRepo(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgsId, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -52,7 +52,7 @@ func QueryArtifactRepo(ctx *gin.Context) {
 // @Param   id     path     int     true	"ImageID.ID"
 // @Security JWT
 func QueryArtifactItems(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

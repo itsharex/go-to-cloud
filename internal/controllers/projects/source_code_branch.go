@@ -18,7 +18,7 @@ import (
 // @Router /api/projects/{projectId}/src/{sourceCodeId} [get]
 // @Security JWT
 func ListBranches(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

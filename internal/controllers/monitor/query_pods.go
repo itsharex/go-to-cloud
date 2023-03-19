@@ -18,7 +18,7 @@ import (
 // @Param        k8s    path     string  true  "k8s repo id"
 // @Security JWT
 func QueryPods(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

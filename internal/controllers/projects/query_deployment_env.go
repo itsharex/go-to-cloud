@@ -16,7 +16,7 @@ import (
 // @Router /api/projects/{projectId}/deploy/env [get]
 // @Security JWT
 func QueryDeploymentEnv(ctx *gin.Context) {
-	exists, _, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgs, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

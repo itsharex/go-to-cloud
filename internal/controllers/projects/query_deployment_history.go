@@ -17,7 +17,7 @@ import (
 // @Router /api/projects/{projectId}/deploy/app/{deploymentId}/history [get]
 // @Security JWT
 func QueryDeploymentHistory(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

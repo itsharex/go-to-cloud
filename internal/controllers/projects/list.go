@@ -15,7 +15,7 @@ import (
 // @Router /api/projects/list [get]
 // @Security JWT
 func List(ctx *gin.Context) {
-	exists, _, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgs, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

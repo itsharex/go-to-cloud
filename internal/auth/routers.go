@@ -40,7 +40,7 @@ func init() {
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/auths", []RestfulMethod{GET}, auth.GetAuthCodes, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/kinds", []RestfulMethod{GET}, users.AllKinds, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user", []RestfulMethod{PUT, POST}, users.UpsertUser, []models.Kind{models.Dev}})
-	RouterMaps = append(RouterMaps, RouterMap{"/api/user/info", []RestfulMethod{GET}, users.Info, []models.Kind{models.Dev}})
+	RouterMaps = append(RouterMaps, RouterMap{"/api/user/info", []RestfulMethod{GET}, users.Info, []models.Kind{models.Guest}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/org/list", []RestfulMethod{GET}, users.OrgList, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/org", []RestfulMethod{PUT, POST}, users.UpsertOrg, []models.Kind{models.Dev}})
 	RouterMaps = append(RouterMaps, RouterMap{"/api/user/org/:orgId", []RestfulMethod{DELETE}, users.DeleteOrg, []models.Kind{models.Dev}})

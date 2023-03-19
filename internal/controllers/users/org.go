@@ -16,7 +16,7 @@ import (
 // @Router /api/user/org/list [get]
 // @Security JWT
 func OrgList(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -38,7 +38,7 @@ func OrgList(ctx *gin.Context) {
 // @Router /api/user/{userId}/belongs [get]
 // @Security JWT
 func Belonged(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -72,7 +72,7 @@ func Belonged(ctx *gin.Context) {
 // @Param   ContentBody     body     []uint     true  "Request"     example([]uint，orgId)
 // @Security JWT
 func Belong(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

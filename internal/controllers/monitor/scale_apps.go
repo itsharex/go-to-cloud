@@ -17,7 +17,7 @@ import (
 // @Router /api/monitor/{k8s}/apps/scale [put]
 // @Security JWT
 func Scale(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

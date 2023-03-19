@@ -29,7 +29,7 @@ func K8sInstall(ctx *gin.Context) {
 		req.Workspace = "gotocloud-agent"
 	}
 
-	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, userId, _, orgs, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return

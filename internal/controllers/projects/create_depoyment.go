@@ -6,6 +6,7 @@ import (
 	"go-to-cloud/internal/models/deploy"
 	"go-to-cloud/internal/pkg/response"
 	"go-to-cloud/internal/services/project"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,7 +20,7 @@ import (
 // @Router /api/projects/{projectId}/deploy/app [post]
 // @Security JWT
 func CreateDeployment(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -46,7 +47,12 @@ func CreateDeployment(ctx *gin.Context) {
 		return
 	} else {
 		if launch {
-			go project.StartDeploy(uint(projectId), newId)
+			go func() {
+				err := project.StartDeploy(uint(projectId), newId)
+				if err != nil {
+					log.Println(err.Error())
+				}
+			}()
 		}
 		response.Success(ctx, gin.H{
 			"id":      newId,

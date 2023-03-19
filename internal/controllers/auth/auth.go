@@ -16,14 +16,14 @@ import (
 // @Router /api/user/auths [get]
 // @Success 200
 func GetAuthCodes(ctx *gin.Context) {
-	exists, userId, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, kinds := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
 
-	codes := users.GetAuthCodes(userId)
+	codes := users.GetAuthCodes(kinds)
 
 	response.Success(ctx, codes)
 }

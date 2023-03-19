@@ -20,7 +20,7 @@ import (
 // @Param   artifactId     path     int     true	"Artifact Repo ID"
 // @Security JWT
 func QueryArtifactItemsByProjectId(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -65,7 +65,7 @@ func QueryArtifactItemsByProjectId(ctx *gin.Context) {
 // @Param   projectId     path     int     true	"Project ID"
 // @Security JWT
 func QueryArtifactsByProjectId(ctx *gin.Context) {
-	exists, _, _, orgsId, _ := utils.CurrentUser(ctx)
+	exists, _, _, orgsId, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

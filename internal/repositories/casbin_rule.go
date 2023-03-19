@@ -1,5 +1,11 @@
 package repositories
 
+import (
+	"go-to-cloud/conf"
+	"go-to-cloud/internal/models"
+	"strconv"
+)
+
 type CasbinRule struct {
 	Id    int64  `json:"id" gorm:"column:id;not null"`
 	PType string `json:"ptype" gorm:"column:ptype;type:varchar(5)"`
@@ -13,4 +19,35 @@ type CasbinRule struct {
 
 func (m *CasbinRule) TableName() string {
 	return "casbin_rules"
+}
+
+func GetResourceRules() []struct {
+	AuthCode models.AuthCode
+	Kind     models.Kind
+} {
+	tx := conf.GetDbClient()
+
+	var rules []CasbinRule
+	err := tx.Model(&CasbinRule{}).Where("ptype = 'p' AND v2 = ?", "RESOURCE").Find(&rules).Error
+	if err != nil {
+		return []struct {
+			AuthCode models.AuthCode
+			Kind     models.Kind
+		}{{models.MainMenuProject, models.Guest}} // 默认返回guest拥有的权限
+	}
+
+	m := make([]struct {
+		AuthCode models.AuthCode
+		Kind     models.Kind
+	}, len(rules))
+
+	for i, rule := range rules {
+		r, _ := strconv.Atoi(rule.V1)
+		m[i] = struct {
+			AuthCode models.AuthCode
+			Kind     models.Kind
+		}{models.AuthCode(r), models.Kind(rule.V0)}
+	}
+
+	return m
 }

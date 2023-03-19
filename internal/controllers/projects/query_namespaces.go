@@ -17,7 +17,7 @@ import (
 // @Router /api/projects/{projectId}/deploy/{k8sRepoId}/namespaces [get]
 // @Security JWT
 func QueryNamespaces(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

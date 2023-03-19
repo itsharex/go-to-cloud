@@ -25,7 +25,7 @@ func DeleteProject(ctx *gin.Context) {
 		return
 	}
 
-	exists, userId, _, _, _ := utils.CurrentUser(ctx)
+	exists, userId, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

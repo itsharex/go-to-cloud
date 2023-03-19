@@ -3,10 +3,11 @@ package utils
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"go-to-cloud/internal/models"
 	"strconv"
 )
 
-func CurrentUser(ctx *gin.Context) (exists bool, userId uint, user *string, orgIds []uint, orgs map[uint]string) {
+func CurrentUser(ctx *gin.Context) (exists bool, userId uint, user *string, orgIds []uint, orgs map[uint]string, kinds []models.Kind) {
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -18,8 +19,8 @@ func CurrentUser(ctx *gin.Context) (exists bool, userId uint, user *string, orgI
 
 	jti := mapping["jti"].(float64)
 	sub := mapping["sub"].(string)
-	orgsMaps := mapping["orgs"]
 
+	orgsMaps := mapping["orgs"]
 	if orgsMaps != nil {
 		maps := orgsMaps.(map[string]interface{})
 		if sz := len(maps); sz > 0 {
@@ -32,8 +33,14 @@ func CurrentUser(ctx *gin.Context) (exists bool, userId uint, user *string, orgI
 			}
 		}
 	}
+
 	userId = uint(jti)
 	user = &sub
+
+	kindsStr := mapping["kind"].([]interface{})
+	for _, i2 := range kindsStr {
+		kinds = append(kinds, models.Kind(i2.(string)))
+	}
 
 	exists = true
 

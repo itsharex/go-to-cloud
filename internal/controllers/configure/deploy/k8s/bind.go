@@ -35,7 +35,7 @@ func BindK8sRepo(ctx *gin.Context) {
 		req.ServerVersion = ver
 	}
 
-	exists, userId, _, orgs, _ := utils.CurrentUser(ctx)
+	exists, userId, _, orgs, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)

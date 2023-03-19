@@ -18,7 +18,7 @@ import (
 // @Router /api/user/info [get]
 // @Security JWT
 func Info(ctx *gin.Context) {
-	exists, userId, userName, _, orgs := utils.CurrentUser(ctx)
+	exists, userId, userName, _, orgs, _ := utils.CurrentUser(ctx)
 
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
@@ -55,7 +55,7 @@ func Logout(ctx *gin.Context) {
 // @Router /api/user/list [get]
 // @Security JWT
 func List(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
@@ -77,7 +77,7 @@ func List(ctx *gin.Context) {
 // @Param   orgId     path     string     true  "OrgId"     example(OrgId)
 // @Security JWT
 func Joined(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
@@ -116,7 +116,7 @@ type tmp struct {
 // @Param   ContentBody     body     []uint     true  "Request"     example([]uint, userId)
 // @Security JWT
 func Join(ctx *gin.Context) {
-	exists, _, _, _, _ := utils.CurrentUser(ctx)
+	exists, _, _, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
@@ -153,7 +153,7 @@ func Join(ctx *gin.Context) {
 // @Param   ContentBody     body     string     true  "Request"     example(string)
 // @Security JWT
 func ResetPassword(ctx *gin.Context) {
-	exists, currentUserId, user, _, _ := utils.CurrentUser(ctx)
+	exists, currentUserId, user, _, _, _ := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
