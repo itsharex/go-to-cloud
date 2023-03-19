@@ -27,24 +27,24 @@ const (
 	ResProjectArtifactDelete   AuthCode = 10341 // 管理模块：删除制品
 
 	// MainMenuConfigure 主菜单->配置
-	MainMenuConfigure            AuthCode = 20000
-	SubMenuConfigureCodeRepo     AuthCode = 20010 // 代码仓库
-	ResConfigureCodeRepoBind     AuthCode = 20011 // 绑定代码仓库
-	ResConfigureCodeRepoUpdate   AuthCode = 20012 // 编辑代码仓库
-	ResConfigureCodeRepoRemove   AuthCode = 20013 // 移除代码仓库
-	SubMenuConfigureBuildNode    AuthCode = 20020 // 构建节点
-	ResConfigureBuildNodeBind    AuthCode = 20021 // 安装构建节点
-	ResConfigureBuildNodeUpdate  AuthCode = 20022 // 更新构建节点
-	ResConfigureBuildNodeRemove  AuthCode = 20023 // 卸载构建节点
-	SubMenuConfigureArtifactRepo AuthCode = 20030 // 制品仓库
-	ResArtifactRepoBind          AuthCode = 20031 // 绑定制品仓库
-	ResArtifactRepoUpdate        AuthCode = 20032 // 更新制品仓库
-	ResArtifactRepoRemove        AuthCode = 20033 // 移除制品仓库
-	ResArtifactDeleteHistory     AuthCode = 20034 // 删除历史制品
-	SubMenuConfigureDeployRepo   AuthCode = 20040 // 部署环境
-	ResDeployBind                AuthCode = 20041 // 绑定部署环境
-	ResDeployUpdate              AuthCode = 20042 // 更新部署环境
-	ResDeployRemove              AuthCode = 20043 // 移除部署环境
+	MainMenuConfigure                 AuthCode = 20000
+	SubMenuConfigureCodeRepo          AuthCode = 20010 // 代码仓库
+	ResConfigureCodeRepoBind          AuthCode = 20011 // 绑定代码仓库
+	ResConfigureCodeRepoUpdate        AuthCode = 20012 // 编辑代码仓库
+	ResConfigureCodeRepoRemove        AuthCode = 20013 // 移除代码仓库
+	SubMenuConfigureBuildNode         AuthCode = 20020 // 构建节点
+	ResConfigureBuildNodeBind         AuthCode = 20021 // 安装构建节点
+	ResConfigureBuildNodeUpdate       AuthCode = 20022 // 更新构建节点
+	ResConfigureBuildNodeRemove       AuthCode = 20023 // 卸载构建节点
+	SubMenuConfigureArtifactRepo      AuthCode = 20030 // 制品仓库
+	ResConfigureArtifactRepoBind      AuthCode = 20031 // 绑定制品仓库
+	ResConfigureArtifactRepoUpdate    AuthCode = 20032 // 更新制品仓库
+	ResConfigureArtifactRepoRemove    AuthCode = 20033 // 移除制品仓库
+	ResConfigureArtifactDeleteHistory AuthCode = 20034 // 删除历史制品
+	SubMenuConfigureDeployRepo        AuthCode = 20040 // 部署环境
+	ResConfigureDeployBind            AuthCode = 20041 // 绑定部署环境
+	ResConfigureDeployUpdate          AuthCode = 20042 // 更新部署环境
+	ResConfigureDeployRemove          AuthCode = 20043 // 移除部署环境
 
 	// MainMenuMonitor 主菜单->应用监控
 	MainMenuMonitor          AuthCode = 30000
