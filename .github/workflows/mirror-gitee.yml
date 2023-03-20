@@ -1,0 +1,19 @@
+name: GiteeMirror
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Mirror To Gitee
+      uses: Yikun/hub-mirror-action@master
+      with:
+        src: github/fanhousanbu
+        dst: gitee/fanhousanbu
+        dst_key: ${{ secrets.MIRROR_GITEE_PRIVATE_KEY }}
+        dst_token: ${{ secrets.MIRROR_GITEE_ACCESSTOKEN }}
+        account_type: org
