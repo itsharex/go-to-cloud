@@ -50,13 +50,35 @@ docker-compose up -f ...TODO
 ### 开发环境
 
 - go `1.19+`
-- mysql `8.0`
-- 制品仓库 
+- mysql `8.0+`
 
+### 运行环境
+- 制品仓库
+
+  如果没有，可以利用`docker`在本地搭建一个
 ```shell
-# 试用可以在本地docker中拉取并运行镜像registry:v2
-docker run
+# 本地搭建registry:v2
+docker run -d -p 5000:5000 --restart always --name registry registry:2
 ```
+
+注意需要在docker中配置允许非加密地址
+```yaml
+"insecure-registries": [
+  "127.0.0.1:5000",
+  .... 其他地址
+]
+```
+
+- 代码仓库
+
+  目前支持 `gitlab` `gitea` `github`
+
+- 构建节点
+  k8s
+
+- 部署环境(非必需)
+
+  如果仅构建镜像，则不需要配置`部署环境`，部署环境目前仅支持k8s，试用时可以与构建节点用同一个k8s集群
 
 ### 准备工作
 

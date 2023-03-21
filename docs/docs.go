@@ -2883,6 +2883,10 @@ const docTemplate = `{
                 },
                 "url": {
                     "type": "string"
+                },
+                "user": {
+                    "description": "github专用",
+                    "type": "string"
                 }
             }
         },
@@ -2902,6 +2906,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "url": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "github专用",
                     "type": "string"
                 }
             }
