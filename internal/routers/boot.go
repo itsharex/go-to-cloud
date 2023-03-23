@@ -40,8 +40,8 @@ func SetRouters() (routers *gin.Engine) {
 	routers.Use(handlers...)
 
 	// 构建路由
+	buildWebSocket(routers) // websocket
 	buildRouters(routers)   // 构建http路由
-	buildWebSocket(routers) // 构建websocket路由
 
 	routers.NoRoute(func(ctx *gin.Context) {
 		response.GetResponse().SetHttpCode(http.StatusNotFound).FailCode(ctx, http.StatusNotFound)
