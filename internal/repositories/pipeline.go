@@ -145,7 +145,7 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 
 	var plan Pipeline
 	var historyId uint // 本次构建记录ID
-	db.Transaction(func(tx *gorm.DB) error {
+	err := db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Preload(clause.Associations).First(&plan, planId).Error; err != nil {
 			return err
 		}
@@ -193,5 +193,5 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 		return nil
 	})
 
-	return &plan, historyId, db.Error
+	return &plan, historyId, err
 }

@@ -1,9 +1,12 @@
 package repositories
 
 import (
+	"errors"
 	"fmt"
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/artifact"
+	"go-to-cloud/internal/pkg/kube"
+	"gorm.io/gorm"
 )
 
 type ArtifactDockerImages struct {
@@ -54,10 +57,28 @@ order by docker.created_at desc`
 	return images, tx.Error
 }
 
-func CreateArtifact(image *ArtifactDockerImages) {
+func UpsertLatestArtifact(image *ArtifactDockerImages) error {
 	db := conf.GetDbClient()
 
-	_ = db.Model(&ArtifactDockerImages{}).Create(image)
+	return db.Transaction(func(tx *gorm.DB) error {
+		var latest ArtifactDockerImages
+		err := tx.Model(&ArtifactDockerImages{}).Where("pipeline_id = ? AND tag = ?", image.PipelineId, kube.LatestTag).First(&latest).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// 新增
+			return tx.Omit("id").Create(&image).Error
+		} else if err == nil {
+			// 更新
+			return tx.Model(&ArtifactDockerImages{}).Where("id=?", latest.ID).Update("build_id", image.BuildId).Update("full_address", image.FullAddress).Error
+		} else {
+			return err
+		}
+	})
+}
+
+func CreateArtifact(image *ArtifactDockerImages) error {
+	db := conf.GetDbClient()
+
+	return db.Model(&ArtifactDockerImages{}).Create(image).Error
 }
 
 func DeleteImages(userId, pipelineId, artifactRepoId uint) error {

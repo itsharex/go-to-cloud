@@ -18,23 +18,21 @@ var onceDb sync.Once
 
 // GetDbClient 获取数据库连接对象
 func GetDbClient() *gorm.DB {
-	if db == nil {
-		onceDb.Do(func() {
-			if db == nil {
-				dsn := getDbConnectionString(getConf())
-				_db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{
-					DisableForeignKeyConstraintWhenMigrating: true,
-				})
-				if err != nil {
-					panic(err)
-				}
-
-				if Environment.IsDevelopment() {
-					_db = _db.Debug()
-				}
-				db = _db
+	onceDb.Do(func() {
+		if db == nil {
+			dsn := getDbConnectionString(getConf())
+			_db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{
+				DisableForeignKeyConstraintWhenMigrating: true,
+			})
+			if err != nil {
+				panic(err)
 			}
-		})
-	}
+
+			if Environment.IsDevelopment() {
+				_db = _db.Debug()
+			}
+			db = _db
+		}
+	})
 	return db
 }

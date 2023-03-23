@@ -25,14 +25,12 @@ type Conf struct {
 var conf *Conf
 
 func getConf() *Conf {
-	if conf == nil {
-		once.Do(func() {
-			if conf == nil {
-				filePath := getConfFilePath()
-				conf = getConfiguration(filePath)
-			}
-		})
-	}
+	once.Do(func() {
+		if conf == nil {
+			filePath := getConfFilePath()
+			conf = getConfiguration(filePath)
+		}
+	})
 	return conf
 }
 

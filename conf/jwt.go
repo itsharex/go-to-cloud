@@ -13,17 +13,15 @@ var onceJwt sync.Once
 
 // GetJwtKey 获取JWT私钥
 func GetJwtKey() *JWT {
-	if jwt == nil {
-		onceJwt.Do(func() {
-			if jwt == nil {
-				j := getConf().Jwt
-				jwt = &JWT{
-					Security: j.Security,
-					Realm:    j.Realm,
-				}
+	onceJwt.Do(func() {
+		if jwt == nil {
+			j := getConf().Jwt
+			jwt = &JWT{
+				Security: j.Security,
+				Realm:    j.Realm,
 			}
-		})
-	}
+		}
+	})
 
 	return jwt
 }

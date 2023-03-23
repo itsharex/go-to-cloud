@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	pipeline2 "go-to-cloud/internal/models/pipeline"
+	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
 )
@@ -18,9 +19,9 @@ func SaveDockImage(buildId uint) {
 					var script pipeline2.ArtifactScript
 					json.Unmarshal([]byte(step.Script), &script)
 					tag := utils.DockerImageTagBuild(buildId)
-					imageAddr := fmt.Sprintf("%s/%s:%s", script.Registry, pipeline.ArtifactName, tag)
+					imageAddr := fmt.Sprintf("%s/%s-%s:%s", script.Registry, pipeline.ArtifactName, history.Branch, tag)
 
-					repositories.CreateArtifact(&repositories.ArtifactDockerImages{
+					image := &repositories.ArtifactDockerImages{
 						PipelineId: pipelineId,
 						BuildId:    buildId,
 						Name:       pipeline.ArtifactName,
@@ -33,7 +34,13 @@ func SaveDockImage(buildId uint) {
 						}(),
 						Tag:         tag,
 						FullAddress: imageAddr,
-					})
+					}
+					_ = repositories.CreateArtifact(image)
+
+					latestImage := *image
+					latestImage.Tag = kube.LatestTag
+					latestImage.FullAddress = fmt.Sprintf("%s/%s-%s:%s", script.Registry, pipeline.ArtifactName, history.Branch, latestImage.Tag)
+					_ = repositories.UpsertLatestArtifact(&latestImage)
 					break
 				}
 			}
