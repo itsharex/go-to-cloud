@@ -5,6 +5,7 @@ import "sync"
 type JWT struct {
 	Security string
 	Realm    string
+	IdKey    string
 }
 
 var jwt *JWT
