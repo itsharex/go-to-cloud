@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go-to-cloud/internal/pkg/kube"
 	"go-to-cloud/internal/repositories"
+	"log"
 	"strconv"
 )
 
@@ -38,7 +39,15 @@ func StartDeploy(projectId, deployId uint) error {
 				return rlt
 			}
 		}(),
-		Image: deployment.ArtifactDockerImageRepo.FullAddress,
+		Image: func() string {
+			if u, err := repositories.GetDeploymentImageByTag(deployment.ArtifactDockerImageId, deployment.ArtifactTag); err != nil {
+				log.Println(err.Error())
+				return ""
+			} else {
+				return u
+			}
+
+		}(),
 		Env: func() []kube.EnvVar {
 			var env []struct {
 				Name  string `json:"text"`
@@ -47,11 +56,13 @@ func StartDeploy(projectId, deployId uint) error {
 			if json.Unmarshal([]byte(deployment.Env.String()), &env) != nil {
 				return nil
 			} else {
-				rlt := make([]kube.EnvVar, len(env))
-				for i, e := range env {
-					rlt[i] = kube.EnvVar{
-						Name:  e.Name,
-						Value: e.Value,
+				rlt := make([]kube.EnvVar, 0)
+				for _, e := range env {
+					if len(e.Name) > 0 {
+						rlt = append(rlt, kube.EnvVar{
+							Name:  e.Name,
+							Value: e.Value,
+						})
 					}
 				}
 				return rlt

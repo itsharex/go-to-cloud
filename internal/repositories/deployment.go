@@ -150,3 +150,17 @@ func UpdateDeploymentByHistory(projectId, deploymentId, historyId uint) (*Deploy
 	})
 	return &deployment, err
 }
+
+func GetDeploymentImageByTag(imageId uint, tag string) (string, error) {
+	db := conf.GetDbClient()
+
+	var url string
+	err := db.Raw(`
+select a.full_address
+from artifact_docker_images a
+         inner join artifact_docker_images b on a.pipeline_id = b.pipeline_id
+where b.id = ?
+  and a.tag = ?`, imageId, tag).First(&url).Error
+
+	return url, err
+}
