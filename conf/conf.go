@@ -23,6 +23,9 @@ type Conf struct {
 
 var conf *Conf
 
+// getConf 读取配置
+// 默认从配置文件取，如果配置文件中的db节点内容为空，则从环境变量取
+// 如果配置文件不存在，则db从环境变量取，其他值使用默认值
 func getConf() *Conf {
 	once.Do(func() {
 		if conf == nil {
@@ -31,6 +34,10 @@ func getConf() *Conf {
 		}
 	})
 	return conf
+}
+
+func isDbEmpty(conf *Conf) bool {
+	return len(conf.Db.Host) == 0 || len(conf.Db.User) == 0 || len(conf.Db.Schema) == 0 || len(conf.Db.Password) == 0
 }
 
 // getConfiguration 读取配置
@@ -42,9 +49,17 @@ func getConfiguration(filePath *string) *Conf {
 		c := Conf{}
 		err := yaml.Unmarshal(file, &c)
 		if err != nil {
-			panic(err)
+			return getConfFromEnv()
 		}
 
+		// 检查db节点是否为空
+		if isDbEmpty(&c) {
+			db := getConfFromEnv()
+			c.Db.Host = db.Db.Host
+			c.Db.User = db.Db.User
+			c.Db.Schema = db.Db.Schema
+			c.Db.Password = db.Db.Password
+		}
 		return &c
 	}
 }

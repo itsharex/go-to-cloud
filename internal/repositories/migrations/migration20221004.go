@@ -100,13 +100,6 @@ func (m *migration20221004) Up(db *gorm.DB) {
 			panic(err)
 		}
 	}
-
-	if !db.Migrator().HasTable(&repo.Configuration{}) {
-		err := db.AutoMigrate(&repo.Configuration{})
-		if err != nil {
-			panic(err)
-		}
-	}
 }
 
 func (m *migration20221004) Down(db *gorm.DB) {
@@ -124,7 +117,6 @@ func (m *migration20221004) Down(db *gorm.DB) {
 		&repo.PipelineHistory{},
 		&repo.Deployment{},
 		&repo.DeploymentHistory{},
-		&repo.Configuration{},
 	)
 	if err != nil {
 		panic(err)
