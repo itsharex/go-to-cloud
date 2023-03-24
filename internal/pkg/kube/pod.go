@@ -183,7 +183,7 @@ func (client *Client) Shell(ctx context.Context, ns, podName, containerName stri
 
 	req.VersionedParams(&coreV1.PodExecOptions{
 		Container: containerName,
-		Command:   []string{"/bin/bash"},
+		Command:   []string{"/bin/sh"},
 		Stdin:     true,
 		Stdout:    true,
 		Stderr:    true,
