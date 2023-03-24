@@ -16,6 +16,12 @@ const (
 	Go118 = "go-1.18"
 	Go119 = "go-1.19"
 	Go120 = "go-1.20"
+
+	NodeJs14 = "nodejs-14"
+	NodeJs16 = "nodejs-16"
+	NodeJs18 = "nodejs-18"
+
+	MavenJDK8 = "maven-jdk-8"
 )
 
 type Tpl interface {

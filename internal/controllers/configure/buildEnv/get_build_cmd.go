@@ -55,4 +55,10 @@ func init() {
 	envCmd[lang.Go118] = golangCmd
 	envCmd[lang.Go119] = golangCmd
 	envCmd[lang.Go120] = golangCmd
+
+	envCmd[lang.NodeJs14] = &cmd{}
+	envCmd[lang.NodeJs16] = &cmd{}
+	envCmd[lang.NodeJs18] = &cmd{}
+
+	envCmd[lang.MavenJDK8] = &cmd{}
 }

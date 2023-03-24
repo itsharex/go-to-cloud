@@ -25,6 +25,10 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		lang = &lang2.DotNet{}
 	case lang2.Go120, lang2.Go116, lang2.Go119, lang2.Go118, lang2.Go117:
 		lang = &lang2.Golang{}
+	case lang2.NodeJs16, lang2.NodeJs18, lang2.NodeJs14:
+		lang = &lang2.NodeJS{}
+	case lang2.MavenJDK8:
+		lang = &lang2.Maven{}
 	}
 	padLeftBuildIdStr := utils.DockerImageTagBuild(buildId)
 	return &kube.PodSpecConfig{

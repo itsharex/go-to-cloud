@@ -67,5 +67,35 @@ func BuildEnv(ctx *gin.Context) {
 				},
 			},
 		},
+		{
+			Label: "NodeJS",
+			Options: []struct {
+				Value string `json:"value"`
+				Label string `json:"label"`
+			}{
+				{
+					Value: lang.NodeJs16,
+					Label: "NodeJS 16",
+				}, {
+					Value: lang.NodeJs14,
+					Label: "NodeJS 14",
+				}, {
+					Value: lang.NodeJs18,
+					Label: "NodeJS 18",
+				},
+			},
+		},
+		{
+			Label: "Java",
+			Options: []struct {
+				Value string `json:"value"`
+				Label string `json:"label"`
+			}{
+				{
+					Value: lang.MavenJDK8,
+					Label: "Maven JDK8",
+				},
+			},
+		},
 	})
 }
