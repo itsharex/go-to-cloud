@@ -29,6 +29,8 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		lang = &lang2.NodeJS{}
 	case lang2.MavenJDK8:
 		lang = &lang2.Maven{}
+	default:
+		lang = &lang2.Maven{}
 	}
 	padLeftBuildIdStr := utils.DockerImageTagBuild(buildId)
 	return &kube.PodSpecConfig{
@@ -47,7 +49,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 			}
 		}(),
 		Branch: plan.Branch,
-		Sdk:    lang.Sdk(plan.Env),
+		Sdk:    plan.Env,
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
 			steps := make([]kube.Step, len(kvp))

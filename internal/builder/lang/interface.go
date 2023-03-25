@@ -32,10 +32,10 @@ type Tpl interface {
 type TplCommon struct {
 }
 
-func (m *TplCommon) Steps(env string, steps []repositories.PipelineSteps) map[pipeline.PlanStepType]string {
+func (m *TplCommon) Steps(_ string, steps []repositories.PipelineSteps) map[pipeline.PlanStepType]string {
 	rlt := make(map[pipeline.PlanStepType]string)
 	for _, step := range steps {
-		rlt[pipeline.PlanStepType(step.Type)] = step.Script
+		rlt[step.Type] = step.Script
 	}
 	return rlt
 }

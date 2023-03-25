@@ -37,10 +37,11 @@ func (m *Pipeline) TableName() string {
 func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err error) {
 	steps := make(steps, 0)
 	sort := 0
-	err = steps.qaStep(model, &sort)
-	if err != nil {
-		return err
-	}
+	// TODO: 质量检查逻辑（暂时移除）
+	//err = steps.qaStep(model, &sort)
+	//if err != nil {
+	//	return err
+	//}
 	err = steps.artifactStep(model, &sort)
 	if err != nil {
 		return err
