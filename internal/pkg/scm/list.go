@@ -50,10 +50,16 @@ func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 					Url:      m.Url,
 					Token:    &merged[i].AccessToken,
 				},
-				Name:      m.Name,
-				OrgLites:  orgLites,
-				Remark:    m.Remark,
-				UpdatedAt: m.UpdatedAt.Format("2006-01-02"),
+				Name:     m.Name,
+				OrgLites: orgLites,
+				Remark:   m.Remark,
+				UpdatedAt: func() string {
+					if m.UpdatedAt.Before(m.CreatedAt) {
+						return m.CreatedAt.Format("2006-01-02")
+					} else {
+						return m.UpdatedAt.Format("2006-01-02")
+					}
+				}(),
 			}
 		}
 		return rlt, err

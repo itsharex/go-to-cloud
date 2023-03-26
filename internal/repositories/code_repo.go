@@ -126,7 +126,7 @@ func buildCodeRepo(model *scm.Scm, userId uint, orgs []uint, gormModel *Model) (
 		Name:        model.Name,
 		IsPublic:    isPublic,
 		AccessToken: *model.Token,
-		Url:         model.Owner + "/" + model.Url,
+		Url:         model.Url,
 		CreatedBy:   userId,
 		BelongsTo:   datatypes.JSON(belongs),
 		Remark:      model.Remark,

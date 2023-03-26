@@ -2,9 +2,11 @@ package scm
 
 import (
 	"context"
+	"fmt"
 	scm2 "github.com/drone/go-scm/scm"
 	"go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/repositories"
+	"net/url"
 	"strings"
 )
 
@@ -17,17 +19,23 @@ func ListBranches(projectId, sourceCodeId uint) ([]scm.Branch, error) {
 	if client, err := newClient(scm.Type(sourceCode.CodeRepo.ScmOrigin), false, &sourceCode.CodeRepo.Url, &sourceCode.CodeRepo.AccessToken); err != nil {
 		return nil, err
 	} else {
-		var repo string
+		var repo, prefix string
 		if sourceCode.CodeRepo.ScmOrigin == int(scm.Github) {
-			repo = sourceCode.CodeRepo.Url
+			if u, err := url.Parse(sourceCode.GitUrl); err != nil {
+				prefix = "https://github.com"
+			} else {
+				prefix = fmt.Sprintf("%s://%s/", u.Scheme, u.Host)
+			}
 		} else {
-			repo = strings.TrimPrefix(
-				strings.TrimPrefix(
-					strings.TrimSuffix(sourceCode.GitUrl, ".git"),
-					sourceCode.CodeRepo.Url,
-				),
-				"/")
+			prefix = "/"
 		}
+
+		repo = strings.TrimPrefix(
+			strings.TrimPrefix(
+				strings.TrimSuffix(sourceCode.GitUrl, ".git"),
+				sourceCode.CodeRepo.Url,
+			),
+			prefix)
 		branches, _, err := client.Git.ListBranches(
 			context.Background(),
 			repo,

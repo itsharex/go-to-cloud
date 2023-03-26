@@ -18,7 +18,6 @@ type Testing struct {
 	Id       uint    `json:"id"`
 	Origin   Type    `json:"origin"`
 	IsPublic bool    `json:"isPublic"`
-	Owner    string  `json:"user"` // github专用
 	Url      string  `json:"url"`
 	Token    *string `json:"token"`
 }

@@ -115,6 +115,15 @@ func (m PodSpecConfig) GetRegistryPassword() string {
 	return ""
 }
 
+func (m PodSpecConfig) IsExistsQaSteps() bool {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.LintCheck || step.CommandType == pipeline.UnitTest {
+			return true
+		}
+	}
+	return false
+}
+
 // Build 构建任务
 func (client *Client) Build(podSpecConfig *PodSpecConfig) error {
 	spec, err := makeTemplate(podSpecConfig)
@@ -213,6 +222,7 @@ spec:
       - name: kaniko-config
         mountPath: "/kaniko/.docker"
 {{- end}}
+{{- if .IsExistsQaSteps}}
     - name: compile
       image: {{.Sdk}}
       imagePullPolicy: IfNotPresent
@@ -241,6 +251,7 @@ spec:
       volumeMounts:
       - name: workdir
         mountPath: "/workdir"
+{{- end}}
     restartPolicy: OnFailure
     volumes:
     - name: workdir
