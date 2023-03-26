@@ -49,7 +49,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 			}
 		}(),
 		Branch: plan.Branch,
-		Sdk:    plan.Env,
+		Sdk:    lang.Sdk(plan.Env),
 		Steps: func() []kube.Step {
 			kvp := lang.Steps(plan.Env, plan.PipelineSteps)
 			steps := make([]kube.Step, len(kvp))
