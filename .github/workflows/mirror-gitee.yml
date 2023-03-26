@@ -3,7 +3,7 @@ name: GiteeMirror
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   sync:
     runs-on: ubuntu-latest
