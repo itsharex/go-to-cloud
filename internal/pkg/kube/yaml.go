@@ -12,8 +12,6 @@ import (
 	"text/template"
 )
 
-const REGISTRY_SECRET_NAME = "imgpullsecret"
-
 type ConfigValidation interface {
 	validate(args ...string) error
 }
@@ -351,8 +349,6 @@ spec:
         name: {{.ConfigMapName}}
 {{- end}}
 {{- end}}
-      imagePullSecrets:
-      - name: ` + REGISTRY_SECRET_NAME + `
 {{- if .NodeSelector}}
       nodeSelector:
 {{- range .NodeSelector}}
