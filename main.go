@@ -43,5 +43,5 @@ func main() {
 	// 启动流水线监测
 	builder.PipelinesWatcher()
 	// server模式运行
-	routers.SetRouters().Run(port)
+	_ = routers.SetRouters().Run(port)
 }
