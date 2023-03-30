@@ -8,4 +8,4 @@ jwt:
   realm: GOTOCLOUD
   idkey: id
 builder:
-  kaniko: go-to-cloud-docker.pkg.coding.net/devops/kaniko/executor:v1.9.1-debug
+  kaniko: go-to-cloud-docker.pkg.coding.net/devops/kaniko/executor:debug
