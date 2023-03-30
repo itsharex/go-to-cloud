@@ -6,7 +6,7 @@ ADD . /go/src/app
 WORKDIR /go/src/app
 
 RUN go env -w GO111MODULE=on \
-    go env -w GOPROXY=https://goproxy.cn,direct \
+    && go env -w GOPROXY=https://goproxy.cn,direct \
     && go mod tidy \
     && go build -o gtc
 
