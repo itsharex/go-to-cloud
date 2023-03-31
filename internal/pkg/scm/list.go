@@ -73,7 +73,7 @@ func ListCodeProjects(origin scm.Type, url, token *string) ([]scm.RepositoryMode
 	} else {
 		repo, _, err := client.Repositories.List(context.Background(), scm2.ListOptions{
 			Page: 0,
-			Size: 10000,
+			Size: 100,
 		})
 
 		if err != nil {
