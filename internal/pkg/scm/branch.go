@@ -20,7 +20,7 @@ func ListBranches(projectId, sourceCodeId uint) ([]scm.Branch, error) {
 		return nil, err
 	} else {
 		var repo, prefix string
-		if sourceCode.CodeRepo.ScmOrigin == int(scm.Github) {
+		if sourceCode.CodeRepo.ScmOrigin == int(scm.Github) || sourceCode.CodeRepo.ScmOrigin == int(scm.Gitee) {
 			if u, err := url.Parse(sourceCode.GitUrl); err != nil {
 				prefix = "https://github.com"
 			} else {
@@ -41,7 +41,7 @@ func ListBranches(projectId, sourceCodeId uint) ([]scm.Branch, error) {
 			repo,
 			scm2.ListOptions{
 				Page: 0,
-				Size: 10000,
+				Size: 100,
 			})
 
 		rlt := make([]scm.Branch, len(branches))

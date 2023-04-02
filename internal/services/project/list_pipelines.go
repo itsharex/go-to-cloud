@@ -35,14 +35,11 @@ func ListPipelines(projectId uint) ([]pipeline.PlanCardModel, error) {
 		}
 		models[i] = pipeline.PlanCardModel{
 			PlanModel: pipeline.PlanModel{
-				Id:           plan.ID,
-				Name:         plan.Name,
-				Env:          plan.Env,
-				SourceCodeID: plan.SourceCodeID,
-				Branch: pipeline.BranchRef{
-					Name: plan.Branch,
-					Sha:  plan.BranchCommitId,
-				},
+				Id:              plan.ID,
+				Name:            plan.Name,
+				Env:             plan.Env,
+				SourceCodeID:    plan.SourceCodeID,
+				Branch:          plan.Branch,
 				QaEnabled:       unitTestEnabled || lintEnabled,
 				UnitTest:        unitTest,
 				LintCheck:       lint,

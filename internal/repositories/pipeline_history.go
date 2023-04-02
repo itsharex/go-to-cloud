@@ -27,8 +27,8 @@ import (
 
 type PipelineHistory struct {
 	Pipeline
-	Params     datatypes.JSON `json:"params" gorm:"column:params"`     // 本次运行的参数(json格式）
-	BuildLog   string         `json:"log" gorm:"column:log;type:text"` // 构建日志
+	Params     datatypes.JSON `json:"params" gorm:"column:params"`           // 本次运行的参数(json格式）
+	BuildLog   string         `json:"log" gorm:"column:log;type:mediumtext"` // 构建日志
 	PipelineID uint           `json:"pipeline_id" gorm:"column:pipeline_id;index:pipeline_history_pipeline_id_index"`
 }
 

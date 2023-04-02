@@ -52,27 +52,22 @@ func IsComplete(rlt BuildingResult) bool {
 		rlt == BuildingInterrupt
 }
 
-type BranchRef struct {
-	Name string `json:"name"`
-	Sha  string `json:"sha"`
-}
-
 // PlanModel 构建计划模型
 type PlanModel struct {
-	Id              uint      `json:"id"`
-	Name            string    `json:"name"`
-	Env             string    `json:"buildEnv"`
-	SourceCodeID    uint      `json:"source_code_id"`
-	Branch          BranchRef `json:"branch"`
-	QaEnabled       bool      `json:"qa_enabled"`
-	UnitTest        *string   `json:"unit_test"`
-	LintCheck       *string   `json:"lint_check"`
-	ArtifactEnabled bool      `json:"artifact_enabled"`
-	Dockerfile      *string   `json:"dockerfile"`
-	ImageName       string    `json:"image_name"`
-	ArtifactRepoId  *uint     `json:"artifact_repo_id"`
-	DeployEnabled   bool      `json:"deploy_enabled"`
-	Remark          string    `json:"remark"`
+	Id              uint    `json:"id"`
+	Name            string  `json:"name"`
+	Env             string  `json:"buildEnv"`
+	SourceCodeID    uint    `json:"source_code_id"`
+	Branch          string  `json:"branch"`
+	QaEnabled       bool    `json:"qa_enabled"`
+	UnitTest        *string `json:"unit_test"`
+	LintCheck       *string `json:"lint_check"`
+	ArtifactEnabled bool    `json:"artifact_enabled"`
+	Dockerfile      *string `json:"dockerfile"`
+	ImageName       string  `json:"image_name"`
+	ArtifactRepoId  *uint   `json:"artifact_repo_id"`
+	DeployEnabled   bool    `json:"deploy_enabled"`
+	Remark          string  `json:"remark"`
 }
 
 type PlanCardModel struct {
@@ -88,7 +83,7 @@ func (m *PlanModel) Valid() error {
 	if len(strings.TrimSpace(m.Env)) == 0 {
 		return errors.New("build env is not selected")
 	}
-	if len(strings.TrimSpace(m.Branch.Sha)) == 0 {
+	if len(strings.TrimSpace(m.Branch)) == 0 {
 		return errors.New("branch is not selected")
 	}
 	if m.SourceCodeID == 0 {

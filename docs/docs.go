@@ -2602,17 +2602,6 @@ const docTemplate = `{
                 }
             }
         },
-        "pipeline.BranchRef": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "sha": {
-                    "type": "string"
-                }
-            }
-        },
         "pipeline.PlanCardModel": {
             "type": "object",
             "properties": {
@@ -2623,7 +2612,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "branch": {
-                    "$ref": "#/definitions/pipeline.BranchRef"
+                    "type": "string"
                 },
                 "buildEnv": {
                     "type": "string"
@@ -2677,7 +2666,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "branch": {
-                    "$ref": "#/definitions/pipeline.BranchRef"
+                    "type": "string"
                 },
                 "buildEnv": {
                     "type": "string"

@@ -20,7 +20,6 @@ type Pipeline struct {
 	SourceCodeID   uint                    `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned;index:pipeline_source_code_id"`
 	SourceCode     ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
 	Branch         string                  `json:"branch" gorm:"column:branch;type:nvarchar(128)"` // 分支名称
-	BranchCommitId string                  `json:"branch_commit_id"  gorm:"column:branch_commit_id;type:nvarchar(200)"`
 	CreatedBy      uint                    `json:"created_by" gorm:"column:created_by;type:bigint unsigned"`
 	Remark         string                  `json:"remark" gorm:"column:remark;type:nvarchar(200)"`
 	LastRunId      uint                    `json:"last_run_id" gorm:"column:last_run_id;type:bigint unsigned"`   // 最近一次构建记录ID，即pipeline_history.id
@@ -53,8 +52,7 @@ func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err
 		Name:           model.Name,
 		Env:            model.Env,
 		SourceCodeID:   model.SourceCodeID,
-		Branch:         model.Branch.Name,
-		BranchCommitId: model.Branch.Sha,
+		Branch:         model.Branch,
 		CreatedBy:      currentUserId,
 		Remark:         model.Remark,
 		ArtifactName:   model.ImageName,

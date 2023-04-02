@@ -38,7 +38,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 		LabelBuildId: BuildIdSelectorLabel,
 		BuildId:      buildId,
 		Namespace:    node.K8sWorkerSpace,
-		TaskName:     plan.Name + "-" + padLeftBuildIdStr,
+		TaskName:     plan.ArtifactName + "-" + plan.Branch + "-" + padLeftBuildIdStr,
 		SourceCode: func() string {
 			if len(plan.SourceCode.CodeRepo.AccessToken) > 0 {
 				host, _ := url.Parse(plan.SourceCode.GitUrl)
