@@ -48,7 +48,7 @@ const (
 	// MainMenuMonitor 主菜单->应用监控
 	MainMenuMonitor          AuthCode = 30000
 	ResourceMonitorScale     AuthCode = 30010 // 伸缩副本
-	ResourceMonitorRestart   AuthCode = 30011 // 重新应用
+	ResourceMonitorRestart   AuthCode = 30011 // 重新启动
 	ResourceMonitorDelete    AuthCode = 30012 // 删除应用
 	ResourceMonitorShell     AuthCode = 30013 // 容器Shell
 	ResourceMonitorDeletePod AuthCode = 30014 // 删除容器
