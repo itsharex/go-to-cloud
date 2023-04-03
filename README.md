@@ -1,5 +1,9 @@
 # GO-TO-CLOUD 面向小型团队的快速部署工具
 
+[![Build Status](https://github.com/go-to-cloud/go-to-cloud/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/go-to-cloud/go-to-cloud/actions?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/go-to-cloud/go-to-cloud/branch/main/graph/badge.svg?token=9Y81AN6KUA)](https://codecov.io/gh/go-to-cloud/go-to-cloud)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/go-to-cloud/go-to-cloud/blob/main/LICENSE)
+
 ## Intro 介绍
 
 **Go-To-Cloud**，简称`GTC`，是一款非常适合小型团队快速将代码通过构建后发布到K8S的部署工具。不需要学习专业的k8s、容器镜像知识也能轻松上手使用，工具的部署也做到了极简，抛开了大多数CI/CD工具依赖的平台，比如`jenkins`、`ArgoCD`等，仅需MySQL、镜像仓库，并指定用于构建和部署的K8S机器，即可搭建一套自己的CI/CD服务平台。
