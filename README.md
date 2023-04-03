@@ -1,6 +1,6 @@
 # GO-TO-CLOUD 面向小型团队的快速部署工具
 
-[![Build Status](https://github.com/go-to-cloud/go-to-cloud/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/go-to-cloud/go-to-cloud/actions?query=branch%3Amain)
+[![Build Status](https://github.com/go-to-cloud/go-to-cloud/actions/workflows/codecov.yml/badge.svg?branch=main)](https://github.com/go-to-cloud/go-to-cloud/actions?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/go-to-cloud/go-to-cloud/branch/main/graph/badge.svg?token=9Y81AN6KUA)](https://codecov.io/gh/go-to-cloud/go-to-cloud)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/go-to-cloud/go-to-cloud/blob/main/LICENSE)
 
