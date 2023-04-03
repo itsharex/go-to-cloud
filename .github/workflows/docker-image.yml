@@ -33,4 +33,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            go-to-cloud-docker.pkg.coding.net/devops/demo/gtc:${{github.ref_name}}
+            go-to-cloud-docker.pkg.coding.net/release/go-to-cloud/gtc:${{github.ref_name}}
