@@ -7,16 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Login Registry
       env:
-        REGISTRY_USERNAME: ${{secret.REGISTRY_USERNAME}}
-        REGISTRY_PASSWORD: ${{secret.REGISTRY_PASSWORD}}
+        REGISTRY_USERNAME: ${{secrets.REGISTRY_USERNAME}}
+        REGISTRY_PASSWORD: ${{secrets.REGISTRY_PASSWORD}}
       run: |
         echo "${REGISTRY_PASSWORD}" | docker login -u ${REGISTRY_USERNAME} go-to-cloud-docker.pkg.coding.net --password-stdin
     - uses: actions/checkout@v3
