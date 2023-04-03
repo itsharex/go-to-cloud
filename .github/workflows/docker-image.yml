@@ -2,8 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches:
-      - "main"
+    tags:
+      - "*"
 
 jobs:
   docker:
@@ -33,4 +33,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            go-to-cloud-docker.pkg.coding.net/devops/demo/gtc:latest
+            go-to-cloud-docker.pkg.coding.net/devops/demo/gtc:${{github.ref_name}}
