@@ -33,4 +33,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            go-to-cloud-docker.pkg.coding.net/devops/demo/gtc:latest)
+            go-to-cloud-docker.pkg.coding.net/devops/demo/gtc:latest
