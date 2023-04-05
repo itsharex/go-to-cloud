@@ -4,12 +4,10 @@ on:
   pull_request:
     branches:
       - "master"
-    branches-ignore:
-      - "gh-pages"
 
   push:
-    branches-ignore:
-      - "gh-pages"
+    branches:
+      - "master"
 
 jobs:
   build:
