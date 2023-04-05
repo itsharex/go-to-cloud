@@ -1,6 +1,15 @@
 name: Test and Coverage
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - "master"
+    branches-ignore:
+      - "gh-pages""
+
+  push:
+    branches-ignore:
+      - "gh-pages"
 
 jobs:
   build:
