@@ -153,12 +153,19 @@ func Join(ctx *gin.Context) {
 // @Param   ContentBody     body     string     true  "Request"     example(string)
 // @Security JWT
 func ResetPassword(ctx *gin.Context) {
-	exists, currentUserId, user, _, _, _ := utils.CurrentUser(ctx)
+	exists, currentUserId, _, _, _, kinds := utils.CurrentUser(ctx)
 	if !exists {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
-	if !strings.EqualFold(models.RootUserName, *user) {
+	if !func() bool {
+		for _, kind := range kinds {
+			if strings.EqualFold(string(kind), string(models.Root)) {
+				return true
+			}
+		}
+		return false
+	}() {
 		msg := "只允许root用户重置密码"
 		response.Fail(ctx, http.StatusForbidden, &msg)
 		return

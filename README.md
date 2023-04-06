@@ -8,6 +8,8 @@
 
 ### [官网](https://www.gotocloud.vip) | [在线体验](https://demo.gotocloud.vip)
 
+> 体验账号：gotocloud / gtcgct123!
+
 **Go-To-Cloud**，简称`GTC`，是一款快速将代码构建并发布到K8S的上云工具。不需要学习专业的k8s、容器镜像知识也能轻松上手使用，工具的部署也做到了极简，抛开了大多数CI/CD工具对第三方工具(`jenkins`、`ArgoCD`等)的依赖，仅需MySQL、镜像仓库，并指定用于构建和部署的K8S机器，即可搭建一套自己的CI/CD服务平台。
 
 > Go-To-Cloud正在奔跑中成长，非常渴望倾听你们的[**声音**](https://github.com/go-to-cloud/go-to-cloud/issues)
