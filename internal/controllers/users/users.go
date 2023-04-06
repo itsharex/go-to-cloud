@@ -158,18 +158,6 @@ func ResetPassword(ctx *gin.Context) {
 		response.Fail(ctx, http.StatusUnauthorized, nil)
 		return
 	}
-	if !func() bool {
-		for _, kind := range kinds {
-			if strings.EqualFold(string(kind), string(models.Root)) {
-				return true
-			}
-		}
-		return false
-	}() {
-		msg := "只允许root用户重置密码"
-		response.Fail(ctx, http.StatusForbidden, &msg)
-		return
-	}
 
 	userIdStr := ctx.Param("userId")
 	userId, err := strconv.ParseUint(userIdStr, 10, 64)
@@ -181,7 +169,20 @@ func ResetPassword(ctx *gin.Context) {
 
 	var oldPassword, newPassword string
 	var force bool
-	if userId == 0 {
+	if userId == 0 { // 修改自己的密码
+		if !func() bool {
+			for _, kind := range kinds {
+				if strings.EqualFold(string(kind), string(models.Guest)) {
+					return false
+				}
+			}
+			return true
+		}() {
+			msg := "游客身份不允许修改密码"
+			response.Fail(ctx, http.StatusForbidden, &msg)
+			return
+		}
+
 		force = false
 		userId = uint64(currentUserId)
 		m := struct {
@@ -203,7 +204,24 @@ func ResetPassword(ctx *gin.Context) {
 				return
 			}
 		}
-	} else {
+	} else { // 修改别人的密码（强制修改密码）
+		if !func() bool {
+			guest := false
+			root := false
+			for _, kind := range kinds {
+				if strings.EqualFold(string(kind), string(models.Guest)) {
+					guest = true
+				}
+				if strings.EqualFold(string(kind), string(models.Root)) {
+					root = true
+				}
+			}
+			return !guest && root
+		}() {
+			msg := "只允许root用户修改密码"
+			response.Fail(ctx, http.StatusForbidden, &msg)
+			return
+		}
 		force = true
 	}
 
