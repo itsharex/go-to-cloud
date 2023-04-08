@@ -48,6 +48,8 @@ from artifact_docker_images docker
          inner join artifact_repo ar on docker.artifact_repo_id = ar.id
 where p.project_id = ?
   and ar.id = ?
+  and docker.deleted_at is null
+  and ar.deleted_at is null
 order by docker.created_at desc`
 	db := conf.GetDbClient()
 
