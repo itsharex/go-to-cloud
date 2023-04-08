@@ -26,11 +26,13 @@ func List(orgs []uint, query *scm.Query) ([]scm.Scm, error) {
 
 	patternName := ""
 	pager := models.Pager{}
+	imported := false
 	if query != nil {
 		patternName = query.Name
 		pager = query.Pager
+		imported = query.Imported
 	}
-	if merged, err := repositories.QueryCodeRepo(orgId, patternName, &pager); err != nil {
+	if merged, err := repositories.QueryCodeRepo(orgId, patternName, &pager, imported); err != nil {
 		return nil, err
 	} else {
 		rlt := make([]scm.Scm, len(merged))

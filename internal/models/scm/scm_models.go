@@ -43,4 +43,5 @@ type Branch struct {
 type Query struct {
 	models.Pager
 	Scm
+	Imported bool `json:"-"` // 是否已被导入项目
 }

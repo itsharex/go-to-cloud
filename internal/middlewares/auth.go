@@ -11,6 +11,7 @@ import (
 	"go-to-cloud/internal/models"
 	repo "go-to-cloud/internal/repositories"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -82,6 +83,11 @@ func AuthHandler() gin.HandlerFunc {
 			}
 			kind := claims["kind"].([]interface{})
 			for _, s := range kind {
+
+				if models.Kind(s.(string)) == models.Guest && (c.Request.Method == http.MethodPut || c.Request.Method == http.MethodDelete) {
+					return false
+				}
+
 				ok, ex = enforcer.Enforce(s, c.Request.URL.Path, c.Request.Method)
 				if ex != nil {
 					log.Fatal(ex)
@@ -101,6 +107,9 @@ func AuthHandler() gin.HandlerFunc {
 		TokenLookup:   "header: Authorization, query: token",
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
+		HTTPStatusMessageFunc: func(e error, c *gin.Context) string {
+			return "请见谅，游客不允许此操作，如为误添加，请联系993921@qq.com协助"
+		},
 	})
 
 	jwtMiddleware = m

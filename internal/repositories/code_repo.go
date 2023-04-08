@@ -35,14 +35,16 @@ type MergedCodeRepoWithOrg struct {
 	Org []OrgLite
 }
 
-func QueryCodeRepo(orgs []uint, repoNamePattern string, pager *models.Pager) ([]MergedCodeRepoWithOrg, error) {
+func QueryCodeRepo(orgs []uint, repoNamePattern string, pager *models.Pager, imported bool) ([]MergedCodeRepoWithOrg, error) {
 	var repo []CodeRepoWithOrg
 
 	tx := conf.GetDbClient().Model(&CodeRepo{})
 
 	tx = tx.Select("code_repo.*, org.Id AS orgId, org.Name AS orgName")
 	tx = tx.Joins("INNER JOIN org ON JSON_CONTAINS(code_repo.belongs_to, cast(org.id as JSON), '$')")
-	tx = tx.Joins("INNER JOIN project_source_code psc on code_repo.id = psc.code_repo_id and psc.deleted_at is null")
+	if imported {
+		tx = tx.Joins("INNER JOIN project_source_code psc on code_repo.id = psc.code_repo_id and psc.deleted_at is null")
+	}
 	tx = tx.Where("org.ID IN ? AND org.deleted_at IS NULL", orgs)
 
 	if len(repoNamePattern) > 0 {
