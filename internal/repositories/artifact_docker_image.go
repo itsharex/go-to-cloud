@@ -7,6 +7,7 @@ import (
 	"go-to-cloud/internal/models/artifact"
 	"go-to-cloud/internal/pkg/kube"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type ArtifactDockerImages struct {
@@ -21,7 +22,7 @@ type ArtifactDockerImages struct {
 
 // GetHashedCode 获取镜像唯一名称
 func (m *ArtifactDockerImages) GetHashedCode() string {
-	return fmt.Sprintf("%d,%d,%s", m.ArtifactRepoID, m.PipelineId, m.Name)
+	return fmt.Sprintf("%d,%s", m.ArtifactRepoID, strings.TrimRight(m.Name, ":"+m.Tag))
 }
 
 func (m *ArtifactDockerImages) TableName() string {
@@ -81,12 +82,12 @@ func CreateArtifact(image *ArtifactDockerImages) error {
 	return db.Model(&ArtifactDockerImages{}).Create(image).Error
 }
 
-func DeleteImages(userId, pipelineId, artifactRepoId uint) error {
+func DeleteImages(userId, artifactRepoId uint, imageId []int) error {
 	// TODO: 校验当前userId是否拥有数据删除权限
 
 	tx := conf.GetDbClient()
 
-	return tx.Where("pipeline_id = ? AND artifact_repo_id = ?", pipelineId, artifactRepoId).Delete(&ArtifactDockerImages{}).Error
+	return tx.Where("id IN ? AND artifact_repo_id = ?", imageId, artifactRepoId).Delete(&ArtifactDockerImages{}).Error
 }
 
 func DeleteImage(userId, imageId uint) error {

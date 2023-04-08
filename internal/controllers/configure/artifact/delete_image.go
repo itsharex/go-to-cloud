@@ -17,30 +17,9 @@ import (
 // @Success 200
 // @Router /api/configure/artifact/images/hashId/{hashId} [delete]
 // @Param   hashId     path     int     true	"hashId"
+// @Param   content    body     []int   true    "imagesId"
 // @Security JWT
 func DeleteImageByHashId(ctx *gin.Context) {
-	val := ctx.Param("hashId")
-
-	repoId, pipelineId, err := func() (uint, uint, error) {
-		m := strings.Split(val, ",")
-		if len(m) != 3 {
-			return 0, 0, errors.New("incorrect hash")
-		}
-		m1, err := strconv.ParseUint(m[0], 10, 64)
-		if err != nil {
-			return 0, 0, errors.New("incorrect hash")
-		}
-		m2, err := strconv.ParseUint(m[1], 10, 64)
-		if err != nil {
-			return 0, 0, errors.New("incorrect hash")
-		}
-		return uint(m1), uint(m2), nil
-	}()
-	if err != nil {
-		response.BadRequest(ctx, err.Error())
-		return
-	}
-
 	exists, userId, _, _, _, _ := utils.CurrentUser(ctx)
 
 	if !exists {
@@ -48,7 +27,31 @@ func DeleteImageByHashId(ctx *gin.Context) {
 		return
 	}
 
-	err = artifact.DeleteImages(userId, pipelineId, repoId)
+	val := ctx.Param("hashId")
+	repoId, err := func() (uint, error) {
+		m := strings.Split(val, ",")
+		if len(m) != 2 {
+			return 0, errors.New("incorrect hash")
+		}
+		m1, err := strconv.ParseUint(m[0], 10, 64)
+		if err != nil {
+			return 0, errors.New("incorrect hash")
+		}
+		return uint(m1), nil
+	}()
+
+	if err != nil {
+		response.BadRequest(ctx, err.Error())
+		return
+	}
+
+	var imageId []int
+	if err := ctx.ShouldBind(&imageId); err != nil {
+		response.BadRequest(ctx, err.Error())
+		return
+	}
+
+	err = artifact.DeleteImages(userId, repoId, imageId)
 
 	var message string
 	if err != nil {

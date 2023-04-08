@@ -141,6 +141,18 @@ const docTemplate = `{
                         "name": "hashId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "imagesId",
+                        "name": "content",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
                     }
                 ],
                 "responses": {
