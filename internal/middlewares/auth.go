@@ -28,7 +28,7 @@ func GinJwtMiddleware() *jwt.GinJWTMiddleware {
 }
 
 func skip(ctx *gin.Context) bool {
-	return strings.EqualFold(ctx.FullPath(), "/api/projects/:projectId/deploy/:id") // 重新部署允许guest操作
+	return ctx.Request.Method == http.MethodPut && strings.EqualFold(ctx.FullPath(), "/api/projects/:projectId/deploy/:id") // 重新部署允许guest操作
 }
 
 func AuthHandler() gin.HandlerFunc {
