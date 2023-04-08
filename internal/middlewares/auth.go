@@ -12,6 +12,7 @@ import (
 	repo "go-to-cloud/internal/repositories"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -24,6 +25,10 @@ var jwtMiddleware *jwt.GinJWTMiddleware
 
 func GinJwtMiddleware() *jwt.GinJWTMiddleware {
 	return jwtMiddleware
+}
+
+func skip(ctx *gin.Context) bool {
+	return strings.EqualFold(ctx.FullPath(), "/api/projects/:projectId/deploy/:id") // 重新部署允许guest操作
 }
 
 func AuthHandler() gin.HandlerFunc {
@@ -85,7 +90,9 @@ func AuthHandler() gin.HandlerFunc {
 			for _, s := range kind {
 
 				if models.Kind(s.(string)) == models.Guest && (c.Request.Method == http.MethodPut || c.Request.Method == http.MethodDelete) {
-					return false
+					if !skip(c) {
+						return false
+					}
 				}
 
 				ok, ex = enforcer.Enforce(s, c.Request.URL.Path, c.Request.Method)
