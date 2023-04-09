@@ -128,7 +128,7 @@ func mergeBuilderNodeOrg(repos []BuilderNodeWithOrg) ([]MergedBuilderNodeWithOrg
 }
 
 func (m *BuilderNode) EncryptKubeConfig() {
-	m.K8sKubeConfigEncrypted = utils.Base64AesEny([]byte(m.k8sKubeConfigDecrypted))
+	m.K8sKubeConfigEncrypted = utils.Base64AesEny(m.k8sKubeConfigDecrypted)
 }
 func (m *BuilderNode) DecryptKubeConfig() *string {
 	m.k8sKubeConfigDecrypted = utils.Base64AesEnyDecode(m.K8sKubeConfigEncrypted)

@@ -13,7 +13,8 @@ const (
 )
 
 // AesEny CTR模式
-func AesEny(plaintext []byte) []byte {
+func AesEny(plaintext string) []byte {
+	plaintextBytes := []byte(plaintext)
 	var (
 		block cipher.Block
 		err   error
@@ -22,12 +23,12 @@ func AesEny(plaintext []byte) []byte {
 		log.Fatal(err)
 	}
 	stream := cipher.NewCTR(block, []byte(AesIV))
-	stream.XORKeyStream(plaintext, plaintext)
-	return plaintext
+	stream.XORKeyStream(plaintextBytes, plaintextBytes)
+	return plaintextBytes
 }
 
 // Base64AesEny 将加密 / 解密结果转换为base64
-func Base64AesEny(plaintext []byte) string {
+func Base64AesEny(plaintext string) string {
 	return base64.StdEncoding.EncodeToString(AesEny(plaintext))
 }
 
@@ -37,5 +38,5 @@ func Base64AesEnyDecode(text string) string {
 		return ""
 	}
 
-	return string(AesEny(t))
+	return string(AesEny(string(t)))
 }

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -16,8 +17,7 @@ func TestIntersect(t *testing.T) {
 		{[]uint{}, []uint{}, []uint{}},
 	}
 	for _, tc := range testCases {
-		if got := Intersect(tc.a, tc.b); !reflect.DeepEqual(got, tc.want) {
-			t.Errorf("Intersect(%v, %v) = %v, want %v", tc.a, tc.b, got, tc.want)
-		}
+		got := Intersect(tc.a, tc.b)
+		assert.True(t, reflect.DeepEqual(got, tc.want))
 	}
 }
