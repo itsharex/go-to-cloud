@@ -3,7 +3,9 @@ package conf
 import (
 	"fmt"
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"os"
 	"sync"
 )
 
@@ -19,7 +21,9 @@ var onceDb sync.Once
 // GetDbClient 获取数据库连接对象
 func GetDbClient() *gorm.DB {
 	onceDb.Do(func() {
-		if db == nil {
+		if "1" == os.Getenv("UnitTestEnv") {
+			db, _ = getInMemoryDbClient()
+		} else {
 			dsn := getDbConnectionString(getConf())
 			_db, err := gorm.Open(mysql.Open(*dsn), &gorm.Config{
 				DisableForeignKeyConstraintWhenMigrating: true,
@@ -35,4 +39,13 @@ func GetDbClient() *gorm.DB {
 		}
 	})
 	return db
+}
+
+// getInMemoryDbClient 获取内存数据库对象，仅限单元测试使用
+func getInMemoryDbClient() (*gorm.DB, error) {
+	if client, err := gorm.Open(sqlite.Open("file::memory:?cache=private"), &gorm.Config{}); err != nil {
+		return nil, err
+	} else {
+		return client.Debug(), nil
+	}
 }

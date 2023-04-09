@@ -11,16 +11,20 @@ import (
 type Migration20220831 struct {
 }
 
-func (m *Migration20220831) Up(db *gorm.DB) {
+func (m *Migration20220831) Up(db *gorm.DB) error {
 
 	userOrgRelNotExists := false
 
 	if !db.Migrator().HasTable(&repo.User{}) {
-		db.AutoMigrate(&repo.User{})
+		if err := db.AutoMigrate(&repo.User{}); err != nil {
+			return err
+		}
 		userOrgRelNotExists = true
 	}
 	if !db.Migrator().HasTable(&repo.Org{}) {
-		db.AutoMigrate(&repo.Org{})
+		if err := db.AutoMigrate(&repo.Org{}); err != nil {
+			return err
+		}
 		userOrgRelNotExists = true
 	}
 
@@ -42,7 +46,10 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 			Orgs:       []*repo.Org{org},
 		}
 		initRootPassword := "root"
-		user.SetPassword(&initRootPassword)
+		if err := user.SetPassword(&initRootPassword); err != nil {
+			return err
+		}
+		// ignore error check
 		db.Debug().Create(user)
 		db.Debug().Save(user)
 
@@ -57,17 +64,26 @@ func (m *Migration20220831) Up(db *gorm.DB) {
 			Orgs:       []*repo.Org{org},
 		}
 		initRootPassword2 := "guest"
-		guest.SetPassword(&initRootPassword2)
-		db.Debug().Create(guest)
-		db.Debug().Save(guest)
+		if err := guest.SetPassword(&initRootPassword2); err != nil {
+			return err
+		}
+		if err := db.Debug().Create(guest).Error; err != nil {
+			return err
+		}
+		if err := db.Debug().Save(guest).Error; err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func (m *Migration20220831) Down(db *gorm.DB) {
-	db.Migrator().DropTable(
+func (m *Migration20220831) Down(db *gorm.DB) error {
+	if err := db.Migrator().DropTable(
 		&repo.Org{},
 		&repo.User{},
-	)
+	); err != nil {
+		return err
+	}
 
-	db.Migrator().DropTable("orgs_users_rel")
+	return db.Migrator().DropTable("orgs_users_rel")
 }

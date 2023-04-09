@@ -185,7 +185,9 @@ func DeleteUser(id uint) error {
 		return errors.New("至少需要保留一个用户")
 	}
 
-	err = db.Delete(&User{}, id).Error
+	var targetUser User
+	db.Model(&User{}).Find(&targetUser, id)
+	err = db.Delete(&targetUser, id).Error
 	return err
 }
 
@@ -204,17 +206,17 @@ func ResetPassword(id uint, origPassword *string) error {
 func ResetPasswordWithCheckOldPassword(id uint, oldPassword, origPassword *string) error {
 	db := conf.GetDbClient()
 
-	var user User
-	if err := db.First(&user, id).Error; err != nil {
+	var u User
+	if err := db.First(&u, id).Error; err != nil {
 		return err
 	}
 
-	if !user.comparePassword(oldPassword) {
+	if !u.comparePassword(oldPassword) {
 		return errors.New("旧密码不正确")
 	}
 
-	user.SetPassword(origPassword)
-	err := db.Select("password").Updates(user).Error
+	u.SetPassword(origPassword)
+	err := db.Select("password").Updates(u).Error
 	if err != nil {
 		return err
 	}

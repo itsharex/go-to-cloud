@@ -10,6 +10,7 @@ import (
 	"go-to-cloud/conf"
 	"go-to-cloud/internal/models"
 	repo "go-to-cloud/internal/repositories"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strings"
@@ -31,12 +32,7 @@ func skip(ctx *gin.Context) bool {
 	return ctx.Request.Method == http.MethodPut && strings.EqualFold(ctx.FullPath(), "/api/projects/:projectId/deploy/:id") // 重新部署允许guest操作
 }
 
-func AuthHandler() gin.HandlerFunc {
-	enforcer, err := GetCasbinEnforcer()
-	if err != nil {
-		panic(err)
-	}
-
+func AuthHandler(enforcer *casbin.Enforcer) gin.HandlerFunc {
 	m, _ := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       conf.GetJwtKey().Realm,
 		Key:         []byte(conf.GetJwtKey().Security),
@@ -124,8 +120,8 @@ func AuthHandler() gin.HandlerFunc {
 	return m.MiddlewareFunc()
 }
 
-func GetCasbinEnforcer() (*casbin.Enforcer, error) {
-	adapter, err := casbinAdapter.NewAdapterByDBWithCustomTable(conf.GetDbClient(), nil, "casbin_rules")
+func GetCasbinEnforcer(db *gorm.DB) (*casbin.Enforcer, error) {
+	adapter, err := casbinAdapter.NewAdapterByDBWithCustomTable(db, nil, "casbin_rules")
 	if err != nil {
 		return nil, err
 	}

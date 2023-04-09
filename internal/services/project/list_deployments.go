@@ -7,13 +7,13 @@ import (
 	"go-to-cloud/internal/utils"
 )
 
-func deploymentMapper(repo repositories.Deployment) deploy.Deployment {
+func deploymentMapper(repo repositories.DeploymentBase) deploy.Deployment {
 	return deploy.Deployment{
 		Id:           repo.ID,
 		Namespace:    repo.K8sNamespace,
-		K8S:          repo.K8sRepoId,
+		K8S:          repo.K8sRepo.ID,
+		Artifact:     repo.ArtifactDockerImageRepo.ArtifactRepoID,
 		K8sName:      repo.K8sRepo.Name,
-		Artifact:     repo.ArtifactDockerImageId,
 		ArtifactName: repo.ArtifactDockerImageRepo.Name,
 		Ports: func() []struct {
 			ServicePort   string `json:"text"`
@@ -81,7 +81,7 @@ func ListDeployments(projectId uint) ([]deploy.Deployment, error) {
 
 	models := make([]deploy.Deployment, len(deployments))
 	for i := range deployments {
-		models[i] = deploymentMapper(deployments[i])
+		models[i] = deploymentMapper(deployments[i].DeploymentBase)
 	}
 
 	return models, nil

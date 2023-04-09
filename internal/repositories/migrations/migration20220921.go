@@ -45,27 +45,28 @@ func addRouterPolicy(enforce *casbin.Enforcer) {
 	}
 }
 
-func (m *migration20220921) Up(db *gorm.DB) {
+func (m *migration20220921) Up(db *gorm.DB) error {
 
 	if !db.Migrator().HasTable(&repo.CasbinRule{}) {
 		err := db.AutoMigrate(&repo.CasbinRule{})
 		if err != nil {
-			panic(err)
+			return err
 		} else {
-			if enforce, err := middlewares.GetCasbinEnforcer(); err == nil {
+			if enforce, err := middlewares.GetCasbinEnforcer(db); err == nil {
 				addGroupPolicy(enforce)
 				addResourcePolicy(enforce)
 				addRouterPolicy(enforce)
+			} else {
+				return err
 			}
 		}
 	}
+	return nil
 }
 
-func (m *migration20220921) Down(db *gorm.DB) {
+func (m *migration20220921) Down(db *gorm.DB) error {
 	err := db.Migrator().DropTable(
 		&repo.CasbinRule{},
 	)
-	if err != nil {
-		panic(err)
-	}
+	return err
 }

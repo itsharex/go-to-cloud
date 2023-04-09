@@ -7,8 +7,11 @@ import (
 
 // DeploymentHistory k8s环境部署历史
 type DeploymentHistory struct {
-	Deployment
-	DeploymentId uint `json:"deploymentId" gorm:"column:deployment_id;type:bigint unsigned"`
+	DeploymentBase
+	DeploymentId          uint `json:"deploymentId" gorm:"column:deployment_id;type:bigint unsigned"`
+	ProjectId             uint `json:"projectId" gorm:"project_id;type:bigint unsigned;index:deployment_history_project_id"`
+	K8sRepoId             uint `json:"k8sRepoId" gorm:"column:k8s_repo_id;index:deployment_history_k8s_repo_id"`
+	ArtifactDockerImageId uint `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned;index:deployment_history_artifact_docker_image_id"`
 }
 
 func (m *DeploymentHistory) TableName() string {
