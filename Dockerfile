@@ -1,12 +1,14 @@
 ## build
 FROM golang:1.19-alpine3.16 AS build-env
 
+RUN apk add build-base
+
 ADD . /go/src/app
 
 WORKDIR /go/src/app
 
 RUN go env -w GO111MODULE=on \
-    && go env -w GOPROXY=https://goproxy.cn,direct \
+    # && go env -w GOPROXY=https://goproxy.cn,direct \
     && go mod tidy \
     && go build -o gtc
 
