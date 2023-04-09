@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	"go-to-cloud/conf"
 	auth2 "go-to-cloud/internal/auth"
 	"go-to-cloud/internal/controllers/auth"
 	"go-to-cloud/internal/controllers/users"
@@ -16,7 +17,11 @@ func buildRouters(router *gin.Engine) {
 	api.POST("/login", auth.Login)
 	api.GET("/user/logout", users.Logout)
 
-	router.Use(middlewares.AuthHandler())
+	enforcer, err := middlewares.GetCasbinEnforcer(conf.GetDbClient())
+	if err != nil {
+		panic(err)
+	}
+	router.Use(middlewares.AuthHandler(enforcer))
 	{
 		for _, routerMap := range auth2.RouterMaps {
 			if strings.HasPrefix(routerMap.Url, "/api") {

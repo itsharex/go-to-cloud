@@ -2,28 +2,54 @@ package repositories
 
 import (
 	"github.com/stretchr/testify/assert"
+	"go-to-cloud/conf"
 	"go-to-cloud/internal/models/pipeline"
+	"go-to-cloud/internal/utils"
+	"os"
 	"testing"
 )
 
+func prepareDb() {
+	if conf.GetDbClient().Migrator().HasTable(Org{}) {
+		conf.GetDbClient().Migrator().DropTable(&Org{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&Org{})
+
+	if conf.GetDbClient().Migrator().HasTable(User{}) {
+		conf.GetDbClient().Migrator().DropTable(&User{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&User{})
+
+	if conf.GetDbClient().Migrator().HasTable(&PipelineSteps{}) {
+		conf.GetDbClient().Migrator().DropTable(&PipelineSteps{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&PipelineSteps{})
+
+	if conf.GetDbClient().Migrator().HasTable(&Pipeline{}) {
+		conf.GetDbClient().Migrator().DropTable(&Pipeline{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&Pipeline{})
+}
+
 func TestNewPlan(t *testing.T) {
-	if testing.Short() {
-		t.Skip()
+	if err := os.Setenv("UnitTestEnv", "1"); err != nil {
+		t.Skip("skipped due to CI")
+	} else {
+		defer func() {
+			os.Unsetenv("UnitTestEnv")
+		}()
+		prepareDb()
 	}
 
-	mockstr := "mock"
-	mockint := uint(1)
-	assert.NoError(t, NewPlan(uint(0), uint(1), &pipeline.PlanModel{
-		Name:            "name",
-		QaEnabled:       true,
-		ArtifactEnabled: false,
-		UnitTest:        &mockstr,
-		LintCheck:       &mockstr,
-		Dockerfile:      &mockstr,
-		ArtifactRepoId:  &mockint,
-		Remark:          "remark",
-		SourceCodeID:    1,
-		Env:             "3.1",
-		Branch:          "m",
-	}))
+	model := &pipeline.PlanModel{
+		Name: *utils.StrongPasswordGen(6),
+	}
+
+	plan, err := NewPlan(1, 1, model)
+	assert.NoError(t, err)
+	assert.NotNil(t, plan)
+
+	plan2, err := QueryPipeline(plan.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, plan2.Name, plan.Name)
 }

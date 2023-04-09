@@ -15,7 +15,7 @@ func ListDeploymentHistory(projectId, deploymentId uint) ([]deploy.DeploymentHis
 	models := make([]deploy.DeploymentHistory, len(history))
 	for i := range history {
 		models[i] = deploy.DeploymentHistory{
-			Deployment:   deploymentMapper(history[i].Deployment),
+			Deployment:   deploymentMapper(history[i].DeploymentBase),
 			DeploymentId: deploymentId,
 		}
 	}

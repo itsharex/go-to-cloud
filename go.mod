@@ -21,6 +21,7 @@ require (
 	golang.org/x/net v0.7.0
 	gorm.io/datatypes v1.1.0
 	gorm.io/driver/mysql v1.4.7
+	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.24.5
 	k8s.io/api v0.26.1
 	k8s.io/apimachinery v0.26.1
@@ -68,6 +69,7 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-sqlite3 v1.14.15 // indirect
 	github.com/microsoft/go-mssqldb v0.20.0 // indirect
 	github.com/moby/spdystream v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

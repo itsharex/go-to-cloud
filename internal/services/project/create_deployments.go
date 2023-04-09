@@ -23,20 +23,22 @@ func CreateDeployments(projectId uint, d *deploy.Deployment) (uint, error) {
 		}
 	}
 	repo := repositories.Deployment{
-		ProjectId:               projectId,
-		K8sNamespace:            d.Namespace,
-		K8sRepoId:               d.K8S,
-		ArtifactDockerImageId:   d.Artifact,
-		ArtifactTag:             d.ArtifactTag,
-		Ports:                   datatypes.JSON(ser(d.Ports)),
-		Env:                     datatypes.JSON(ser(d.Env)),
-		Replicas:                d.Replicate,
-		ResourceLimitCpuRequest: v(d.CpuRequest),
-		ResourceLimitCpuLimits:  v(d.CpuLimits),
-		ResourceLimitMemRequest: v(d.MemRequest),
-		ResourceLimitMemLimits:  v(d.MemLimits),
-		Liveness:                d.Healthcheck,
-		LivenessPort:            d.HealthcheckPort,
+		ProjectId:             projectId,
+		K8sRepoId:             d.K8S,
+		ArtifactDockerImageId: d.Artifact,
+		DeploymentBase: repositories.DeploymentBase{
+			K8sNamespace:            d.Namespace,
+			ArtifactTag:             d.ArtifactTag,
+			Ports:                   datatypes.JSON(ser(d.Ports)),
+			Env:                     datatypes.JSON(ser(d.Env)),
+			Replicas:                d.Replicate,
+			ResourceLimitCpuRequest: v(d.CpuRequest),
+			ResourceLimitCpuLimits:  v(d.CpuLimits),
+			ResourceLimitMemRequest: v(d.MemRequest),
+			ResourceLimitMemLimits:  v(d.MemLimits),
+			Liveness:                d.Healthcheck,
+			LivenessPort:            d.HealthcheckPort,
+		},
 	}
 	return repositories.CreateDeployment(&repo)
 }

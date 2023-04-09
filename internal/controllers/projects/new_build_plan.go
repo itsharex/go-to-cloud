@@ -42,7 +42,7 @@ func NewBuildPlan(ctx *gin.Context) {
 		return
 	}
 
-	err = repositories.NewPlan(uint(projectId), userId, &req)
+	_, err = repositories.NewPlan(uint(projectId), userId, &req)
 	if err != nil {
 		msg := err.Error()
 		response.Fail(ctx, http.StatusInternalServerError, &msg)

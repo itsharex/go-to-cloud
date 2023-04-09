@@ -8,14 +8,10 @@ import (
 	"time"
 )
 
-// Deployment k8s环境部署方案
-type Deployment struct {
+type DeploymentBase struct {
 	Model
-	ProjectId               uint                 `json:"projectId" gorm:"project_id;type:bigint unsigned;index:deployment_project_id"`
 	K8sNamespace            string               `json:"k8sNamespace" gorm:"column:k8s_namespace;type:varchar(20)"`
-	K8sRepoId               uint                 `json:"k8sRepoId" gorm:"column:k8s_repo_id;index:deployment_k8s_repo_id"`
 	K8sRepo                 K8sRepo              `json:"-" gorm:"foreignKey:k8s_repo_id"`
-	ArtifactDockerImageId   uint                 `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned;index:deployment_artifact_docker_image_id"`
 	ArtifactDockerImageRepo ArtifactDockerImages `json:"-" gorm:"foreignKey:artifact_docker_image_id"`
 	ArtifactTag             string               `json:"artifactTag" gorm:"column:artifact_tag;type:varchar(50);default:'latest';not null"` // 镜像版本
 	Ports                   datatypes.JSON       `json:"ports" gorm:"column:ports"`                                                         // 端口{containerPort: 80, servicePort: 80, nodePort: 30080, portName: 'http'}
@@ -33,6 +29,14 @@ type Deployment struct {
 	ResourceLimitMemLimits  uint                 `json:"resourceLimitMemLimits" gorm:"resource_limit_mem_limits;type:int unsigned"`         // 资源限制：内在分配上限，单位Mi
 	NodeSelector            datatypes.JSON       `json:"nodeSelector" gorm:"node_selector;"`                                                // 节点选择，json，[{"labelName": "labelValue"}]
 	LastDeployAt            *time.Time           `json:"lastDeployAt" gorm:"last_deploy_at"`                                                // 最近一次部署时间
+}
+
+// Deployment k8s环境部署方案
+type Deployment struct {
+	DeploymentBase
+	ProjectId             uint `json:"projectId" gorm:"project_id;type:bigint unsigned;index:deployment_project_id"`
+	K8sRepoId             uint `json:"k8sRepoId" gorm:"column:k8s_repo_id;index:deployment_k8s_repo_id"`
+	ArtifactDockerImageId uint `json:"artifactDockerImageId" gorm:"column:artifact_docker_image_id;type:bigint unsigned;index:deployment_artifact_docker_image_id"`
 }
 
 func (m *Deployment) TableName() string {
@@ -119,7 +123,10 @@ func Deployed(projectId, deploymentId uint) error {
 		}
 
 		var rlt2 DeploymentHistory
-		rlt2.Deployment = rlt
+		rlt2.DeploymentBase = rlt.DeploymentBase
+		rlt2.ProjectId = rlt.ProjectId
+		rlt2.K8sRepoId = rlt.K8sRepoId
+		rlt2.ArtifactDockerImageId = rlt.ArtifactDockerImageId
 		rlt2.DeploymentId = rlt.ID
 
 		return tx.Model(&DeploymentHistory{}).Omit("id").Create(&rlt2).Error
@@ -139,7 +146,7 @@ func UpdateDeploymentByHistory(projectId, deploymentId, historyId uint) (*Deploy
 			return
 		}
 
-		e = tx.First(&deployment, deploymentId).Omit("id", "created_at").Updates(history.Deployment).Error
+		e = tx.First(&deployment, deploymentId).Omit("id", "created_at").Updates(history).Error
 		if e != nil {
 			return
 		}

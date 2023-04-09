@@ -26,10 +26,13 @@ import (
 //}
 
 type PipelineHistory struct {
-	Pipeline
-	Params     datatypes.JSON `json:"params" gorm:"column:params"`           // 本次运行的参数(json格式）
-	BuildLog   string         `json:"log" gorm:"column:log;type:mediumtext"` // 构建日志
-	PipelineID uint           `json:"pipeline_id" gorm:"column:pipeline_id;index:pipeline_history_pipeline_id_index"`
+	PipelineBase
+	ProjectID      uint           `json:"project_id" gorm:"column:project_id;type:bigint unsigned;index:pipeline_history_project_id"`
+	ArtifactRepoId *uint          `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned;index:pipeline_history_artifact_repo_id"`
+	SourceCodeID   uint           `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned;index:pipeline_history_source_code_id"`
+	Params         datatypes.JSON `json:"params" gorm:"column:params"`           // 本次运行的参数(json格式）
+	BuildLog       string         `json:"log" gorm:"column:log;type:mediumtext"` // 构建日志
+	PipelineID     uint           `json:"pipeline_id" gorm:"column:pipeline_id;index:pipeline_history_pipeline_id_index"`
 }
 
 func (m *PipelineHistory) TableName() string {

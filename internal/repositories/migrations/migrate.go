@@ -6,8 +6,8 @@ import (
 )
 
 type Migration interface {
-	Up(db *gorm.DB)
-	Down(db *gorm.DB)
+	Up(db *gorm.DB) error
+	Down(db *gorm.DB) error
 }
 
 var migrations []Migration

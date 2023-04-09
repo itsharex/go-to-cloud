@@ -10,22 +10,26 @@ import (
 	"time"
 )
 
-type Pipeline struct {
+type PipelineBase struct {
 	Model
-	PipelineSteps  []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
-	ProjectID      uint                    `json:"project_id" gorm:"column:project_id;type:bigint unsigned;index:pipeline_project_id"`
-	ArtifactRepoId *uint                   `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned;index:pipeline_artifact_repo_id"`
-	Name           string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
-	Env            string                  `json:"env" gorm:"column:env;type:nvarchar(64)"`   // 运行环境(模板), e.g. dotnet:6; go:1.17
-	SourceCodeID   uint                    `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned;index:pipeline_source_code_id"`
-	SourceCode     ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
-	Branch         string                  `json:"branch" gorm:"column:branch;type:nvarchar(128)"` // 分支名称
-	CreatedBy      uint                    `json:"created_by" gorm:"column:created_by;type:bigint unsigned"`
-	Remark         string                  `json:"remark" gorm:"column:remark;type:nvarchar(200)"`
-	LastRunId      uint                    `json:"last_run_id" gorm:"column:last_run_id;type:bigint unsigned"`   // 最近一次构建记录ID，即pipeline_history.id
-	LastRunAt      *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
-	LastRunResult  pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
-	ArtifactName   string                  `json:"artifact_name" gorm:"column:artifact_name;type:nvarchar(200)"` // 制品名称
+	PipelineSteps []PipelineSteps         `json:"-" gorm:"foreignKey:pipeline_id"`
+	Name          string                  `json:"name" gorm:"column:name;type:nvarchar(64)"` // 计划名称
+	Env           string                  `json:"env" gorm:"column:env;type:nvarchar(64)"`   // 运行环境(模板), e.g. dotnet:6; go:1.17
+	SourceCode    ProjectSourceCode       `json:"-" gorm:"foreignKey:source_code_id"`
+	Branch        string                  `json:"branch" gorm:"column:branch;type:nvarchar(128)"` // 分支名称
+	CreatedBy     uint                    `json:"created_by" gorm:"column:created_by;type:bigint unsigned"`
+	Remark        string                  `json:"remark" gorm:"column:remark;type:nvarchar(200)"`
+	LastRunId     uint                    `json:"last_run_id" gorm:"column:last_run_id;type:bigint unsigned"`   // 最近一次构建记录ID，即pipeline_history.id
+	LastRunAt     *time.Time              `json:"last_run_at" gorm:"column:last_run_at"`                        // 最近一次运行时间
+	LastRunResult pipeline.BuildingResult `json:"last_run_result" gorm:"column:last_run_result"`                // 最近一次运行结果; 1：成功；2：取消；3：失败；0：从未执行
+	ArtifactName  string                  `json:"artifact_name" gorm:"column:artifact_name;type:nvarchar(200)"` // 制品名称
+}
+
+type Pipeline struct {
+	PipelineBase
+	ProjectID      uint  `json:"project_id" gorm:"column:project_id;type:bigint unsigned;index:pipeline_project_id"`
+	ArtifactRepoId *uint `json:"artifact_repo_id" gorm:"column:artifact_repo_id;type:bigint unsigned;index:pipeline_artifact_repo_id"`
+	SourceCodeID   uint  `json:"source_code_id" gorm:"column:source_code_id;type:bigint unsigned;index:pipeline_source_code_id"`
 }
 
 func (m *Pipeline) TableName() string {
@@ -33,7 +37,7 @@ func (m *Pipeline) TableName() string {
 }
 
 // NewPlan 新建构建计划
-func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err error) {
+func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (plan *Pipeline, err error) {
 	steps := make(steps, 0)
 	sort := 0
 	// TODO: 质量检查逻辑（暂时移除）
@@ -43,26 +47,28 @@ func NewPlan(projectId uint, currentUserId uint, model *pipeline.PlanModel) (err
 	//}
 	err = steps.artifactStep(model, &sort)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	plan := Pipeline{
+	plan = &Pipeline{
 		ProjectID:      projectId,
 		ArtifactRepoId: model.ArtifactRepoId,
-		Name:           model.Name,
-		Env:            model.Env,
 		SourceCodeID:   model.SourceCodeID,
-		Branch:         model.Branch,
-		CreatedBy:      currentUserId,
-		Remark:         model.Remark,
-		ArtifactName:   model.ImageName,
-		LastRunResult:  0,
-		PipelineSteps:  steps,
+		PipelineBase: PipelineBase{
+			Name:          model.Name,
+			Env:           model.Env,
+			Branch:        model.Branch,
+			CreatedBy:     currentUserId,
+			Remark:        model.Remark,
+			ArtifactName:  model.ImageName,
+			LastRunResult: 0,
+			PipelineSteps: steps,
+		},
 	}
 
 	tx := conf.GetDbClient()
 
-	err = tx.Omit("updated_at").Model(&Pipeline{}).Create(&plan).Error
+	err = tx.Omit("updated_at").Model(&Pipeline{}).Create(plan).Error
 
 	return
 }
@@ -129,7 +135,7 @@ func DeletePlan(projectId, planId uint) error {
 
 	tx = tx.Preload(clause.Associations)
 	tx = tx.Where("project_id = ?", projectId)
-	err := tx.Delete(&Pipeline{Model: Model{ID: planId}}).Error
+	err := tx.Delete(&Pipeline{PipelineBase: PipelineBase{Model: Model{ID: planId}}}).Error
 
 	if err == nil {
 		tx = tx.Session(&gorm.Session{NewDB: true})
@@ -160,12 +166,12 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 				j, _ := json.Marshal(plan.PipelineSteps)
 				return j
 			}(),
-			Pipeline: Pipeline{
-				ProjectID:    projectId,
-				Name:         plan.Name,
-				Env:          plan.Env,
-				SourceCodeID: plan.SourceCodeID,
-				Branch:       plan.Branch,
+			ProjectID:    projectId,
+			SourceCodeID: plan.SourceCodeID,
+			PipelineBase: PipelineBase{
+				Name:   plan.Name,
+				Env:    plan.Env,
+				Branch: plan.Branch,
 
 				CreatedBy:     userId,
 				Remark:        plan.Remark,
@@ -182,9 +188,11 @@ func StartPlan(projectId, planId, userId uint) (*Pipeline, uint, error) {
 		historyId = history.ID
 
 		if err := tx.Model(&plan).Updates(&Pipeline{
-			LastRunId:     historyId,
-			LastRunAt:     &now,
-			LastRunResult: state,
+			PipelineBase: PipelineBase{
+				LastRunId:     historyId,
+				LastRunAt:     &now,
+				LastRunResult: state,
+			},
 		}).Error; err != nil {
 			return err
 		}
