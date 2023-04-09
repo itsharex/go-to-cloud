@@ -6,11 +6,19 @@ import (
 )
 
 func TestAesEny(t *testing.T) {
-	plaintext := []byte("Hello中文")
+	plaintext := "Hello中文"
 
 	encoded := AesEny(plaintext)
 
-	decoded := AesEny(encoded)
+	decoded := AesEny(string(encoded))
 
 	assert.Equal(t, plaintext, decoded)
+}
+
+func TestBase64AesEny(t *testing.T) {
+	plaintext := "hello world"
+	encoded := Base64AesEny(plaintext)
+	decoded := Base64AesEnyDecode(encoded)
+
+	assert.Equal(t, decoded, plaintext)
 }

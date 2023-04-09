@@ -74,3 +74,28 @@ func TestSets(t *testing.T) {
 		t.Errorf("Expected [2, 4, 5], got %v", List(c))
 	}
 }
+
+func TestIntersectGeneric(t *testing.T) {
+	// Test with empty sets
+	s1 := New[int]()
+	s2 := New[int]()
+	s3 := New[int]()
+	expected := New[int]()
+
+	assert.True(t, Empty(s1))
+
+	actual := IntersectGeneric(s1, s2, s3)
+	assert.True(t, reflect.DeepEqual(actual, expected))
+
+	// Test with non-empty sets
+	xs1 := New[string]("a", "b", "c")
+	xs2 := New[string]("a", "c", "d")
+	xs3 := New[string]("a", "b", "d")
+	xexpected := New[string]("a")
+
+	xactual := IntersectGeneric[string](xs1, xs2, xs3)
+	assert.True(t, reflect.DeepEqual(xactual, xexpected))
+
+	Clear(xs3)
+	assert.True(t, Empty(s3))
+}
