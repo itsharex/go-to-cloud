@@ -22,3 +22,11 @@ func TestBase64AesEny(t *testing.T) {
 
 	assert.Equal(t, decoded, plaintext)
 }
+
+func TestBase64AesEny(t *testing.T) {
+	plaintext := "hello world"
+	encoded := Base64AesEny(plaintext)
+	decoded := Base64AesEnyDecode(encoded)
+
+	assert.Equal(t, decoded, plaintext)
+}
