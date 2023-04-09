@@ -66,6 +66,7 @@ func BuildPodSpec(buildId uint, node *repositories.BuilderNode, plan *repositori
 					var model pipeline.ArtifactScript
 					if err := json.Unmarshal([]byte(cmd), &model); err == nil {
 						steps[i].Dockerfile = model.Dockerfile
+						steps[i].Context = model.Context
 						steps[i].ArtifactName = fmt.Sprintf("%s-%s", plan.ArtifactName, plan.Branch)
 						steps[i].ArtifactTag = padLeftBuildIdStr
 						steps[i].Registry.Url = model.Registry

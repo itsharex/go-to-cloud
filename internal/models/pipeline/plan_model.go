@@ -64,6 +64,7 @@ type PlanModel struct {
 	LintCheck       *string `json:"lint_check"`
 	ArtifactEnabled bool    `json:"artifact_enabled"`
 	Dockerfile      *string `json:"dockerfile"`
+	Workdir         string  `json:"workdir"`
 	ImageName       string  `json:"image_name"`
 	ArtifactRepoId  *uint   `json:"artifact_repo_id"`
 	DeployEnabled   bool    `json:"deploy_enabled"`
@@ -88,6 +89,9 @@ func (m *PlanModel) Valid() error {
 	}
 	if m.SourceCodeID == 0 {
 		return errors.New("source code is not selected")
+	}
+	if len(strings.TrimSpace(m.Workdir)) == 0 {
+		m.Workdir = "."
 	}
 	return nil
 }

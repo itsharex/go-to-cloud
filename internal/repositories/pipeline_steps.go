@@ -57,6 +57,7 @@ func (steps *steps) artifactStep(model *pipeline.PlanModel, sort *int) error {
 			}
 			script, _ := json.Marshal(pipeline.ArtifactScript{
 				Dockerfile: *model.Dockerfile,
+				Context:    model.Workdir,
 				Registry:   *url,
 				IsSecurity: isSecurity,
 				Account:    *account,

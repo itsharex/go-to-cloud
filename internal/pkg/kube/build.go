@@ -17,6 +17,7 @@ type Step struct {
 	CommandText  string
 	Command      string // 当StepType是Image时，Command无意义
 	Dockerfile   string
+	Context      string
 	ArtifactName string // 制品名称
 	ArtifactTag  string // 制品Tag
 	Registry     struct {
@@ -75,6 +76,15 @@ func (m PodSpecConfig) GetDockerfile() string {
 	for _, step := range m.Steps {
 		if step.CommandType == pipeline.Image {
 			return step.Dockerfile
+		}
+	}
+	return ""
+}
+
+func (m PodSpecConfig) GetContext() string {
+	for _, step := range m.Steps {
+		if step.CommandType == pipeline.Image {
+			return step.Context
 		}
 	}
 	return ""
@@ -210,7 +220,7 @@ spec:
       image: {{.GetBaseImage}}
       args:
         - "--dockerfile={{.GetDockerfile}}"
-        - "--context=/workdir"
+        - "--context=/workdir/{{.GetContext}}"
         - "--skip-tls-verify"
         - "--insecure"
         - "--destination={{.GetRegistryUrl}}/{{.GetDockerImageName}}"

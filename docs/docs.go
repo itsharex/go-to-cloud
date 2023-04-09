@@ -2665,6 +2665,9 @@ const docTemplate = `{
                 },
                 "unit_test": {
                     "type": "string"
+                },
+                "workdir": {
+                    "type": "string"
                 }
             }
         },
@@ -2711,6 +2714,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "unit_test": {
+                    "type": "string"
+                },
+                "workdir": {
                     "type": "string"
                 }
             }
