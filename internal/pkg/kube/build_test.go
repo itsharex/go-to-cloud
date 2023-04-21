@@ -8,6 +8,55 @@ import (
 	"testing"
 )
 
+func TestGetRegistryUrl(t *testing.T) {
+
+	host := "mockurl.com/registry/v2"
+	p1 := &PodSpecConfig{
+		Steps: []Step{
+			{
+				CommandType: pipeline.Image,
+				Registry: struct {
+					Url      string
+					User     string
+					Password string
+					Security bool
+				}{Url: "https://mockurl.com/registry/v2", User: "regUser", Password: "regPwd", Security: true},
+			},
+		},
+	}
+	assert.Equal(t, host, p1.GetRegistryUrl())
+
+	p2 := &PodSpecConfig{
+		Steps: []Step{
+			{
+				CommandType: pipeline.Image,
+				Registry: struct {
+					Url      string
+					User     string
+					Password string
+					Security bool
+				}{Url: "http://mockurl.com/registry/v2", User: "regUser", Password: "regPwd", Security: false},
+			},
+		},
+	}
+	assert.Equal(t, host, p2.GetRegistryUrl())
+
+	p3 := &PodSpecConfig{
+		Steps: []Step{
+			{
+				CommandType: pipeline.LintCheck,
+				Registry: struct {
+					Url      string
+					User     string
+					Password string
+					Security bool
+				}{Url: "http://mockurl.com/registry/v2", User: "regUser", Password: "regPwd", Security: false},
+			},
+		},
+	}
+	assert.Equal(t, "", p3.GetRegistryUrl())
+}
+
 func TestParseTemplate(t *testing.T) {
 	podSpecConfig := &PodSpecConfig{
 		Namespace:  "testNs",
@@ -26,7 +75,7 @@ func TestParseTemplate(t *testing.T) {
 					User     string
 					Password string
 					Security bool
-				}{Url: "regUrl", User: "regUser", Password: "regPwd", Security: false},
+				}{Url: "http://mockurl.com/registry/v2", User: "regUser", Password: "regPwd", Security: false},
 			},
 			{
 				CommandType: pipeline.LintCheck,
