@@ -93,15 +93,9 @@ func (m PodSpecConfig) GetContext() string {
 func (m PodSpecConfig) GetRegistryUrl() string {
 	for _, step := range m.Steps {
 		if step.CommandType == pipeline.Image {
-			if strings.HasPrefix(step.Registry.Url, "http://") || strings.HasPrefix(step.Registry.Url, "https://") {
-				schema := "http"
-				if step.Registry.Security {
-					schema = "https"
-				}
-				return schema + "//" + step.Registry.Url
-			} else {
-				return step.Registry.Url
-			}
+			s1 := strings.TrimPrefix(step.Registry.Url, "http://")
+			s2 := strings.TrimPrefix(s1, "https://")
+			return s2
 		}
 	}
 	return ""

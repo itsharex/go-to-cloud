@@ -23,7 +23,10 @@ func TestCreateOrg(t *testing.T) {
 	name := orgName
 	remark := orgRemark
 
-	err := CreateOrg(&name, &remark)
+	err := CreateOrg(nil, &remark)
+	assert.Error(t, err, "组织名称不能为空")
+
+	err = CreateOrg(&name, &remark)
 	assert.NoError(t, err)
 }
 

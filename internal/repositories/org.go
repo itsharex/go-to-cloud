@@ -29,7 +29,7 @@ func GetOrgs() ([]Org, error) {
 }
 
 func CreateOrg(name, remark *string) error {
-	if len(*name) == 0 {
+	if name == nil || len(*name) == 0 {
 		return errors.New("组织名称不能为空")
 	}
 	db := conf.GetDbClient()
