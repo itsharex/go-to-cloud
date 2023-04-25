@@ -109,3 +109,76 @@ func TestUpdateBuilderNode(t *testing.T) {
 	assert.Equal(t, 4, actualNode.MaxWorkers) // changed
 	assert.Equal(t, datatypes.JSON("[3,4]"), actualNode.BelongsTo)
 }
+
+// testGetBuildNodesOnK8sByOrgId 需要sqlite 支持json_contains方法
+// 需要考虑是否调整sql
+func testGetBuildNodesOnK8sByOrgId(t *testing.T) {
+	if err := os.Setenv("UnitTestEnv", "1"); err != nil {
+		t.Skip("skipped due to CI")
+	} else {
+		defer func() {
+			os.Unsetenv("UnitTestEnv")
+		}()
+		prepareDb()
+	}
+
+	err := CreateOrg(&orgName, &orgRemark)
+	assert.NoError(t, err)
+
+	model := &builder.OnK8sModel{
+		Name:       "test",
+		MaxWorkers: 3,
+		Workspace:  "ws",
+		KubeConfig: "xcy",
+		Orgs:       []uint{1},
+		Remark:     "remark",
+	}
+
+	_, err = NewBuilderNode(model, 1, nil)
+	assert.NoError(t, err)
+
+	n, err := GetBuildNodesOnK8sByOrgId([]uint{1}, "", nil)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(n))
+}
+
+func TestMergeOrg(t *testing.T) {
+	repos := make([]BuilderNodeWithOrg, 0)
+
+	repos = append(repos, BuilderNodeWithOrg{
+		BuilderNode: BuilderNode{
+			Model: Model{ID: 1},
+		},
+		OrgLite: OrgLite{
+			OrgId:   1,
+			OrgName: "1",
+		},
+	})
+	repos = append(repos, BuilderNodeWithOrg{
+		BuilderNode: BuilderNode{
+			Model: Model{ID: 1},
+		},
+		OrgLite: OrgLite{
+			OrgId:   1,
+			OrgName: "1",
+		},
+	})
+
+	a, err := mergeBuilderNodeOrg(repos)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(a))
+
+	repos = append(repos, BuilderNodeWithOrg{
+		BuilderNode: BuilderNode{
+			Model: Model{ID: 2},
+		},
+		OrgLite: OrgLite{
+			OrgId:   2,
+			OrgName: "2",
+		},
+	})
+
+	a, err = mergeBuilderNodeOrg(repos)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(a))
+}
