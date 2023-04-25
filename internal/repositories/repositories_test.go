@@ -1,6 +1,8 @@
 package repositories
 
-import "go-to-cloud/conf"
+import (
+	"go-to-cloud/conf"
+)
 
 func prepareDb() {
 	if conf.GetDbClient().Migrator().HasTable(Org{}) {
@@ -27,4 +29,9 @@ func prepareDb() {
 		conf.GetDbClient().Migrator().DropTable(&BuilderNode{})
 	}
 	conf.GetDbClient().Migrator().AutoMigrate(&BuilderNode{})
+
+	if conf.GetDbClient().Migrator().HasTable(&ArtifactRepo{}) {
+		conf.GetDbClient().Migrator().DropTable(&ArtifactRepo{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&ArtifactRepo{})
 }
