@@ -74,6 +74,43 @@ func TestDeleteBuilderNode(t *testing.T) {
 	assert.EqualValues(t, 0, nilNode.ID)
 }
 
+func TestDecryptKubeConfig(t *testing.T) {
+	if err := os.Setenv("UnitTestEnv", "1"); err != nil {
+		t.Skip("skipped due to CI")
+	} else {
+		defer func() {
+			os.Unsetenv("UnitTestEnv")
+		}()
+		prepareDb()
+	}
+
+	kubecfg := "abcdefg123"
+
+	model := &builder.OnK8sModel{
+		Name:       "test",
+		MaxWorkers: 3,
+		Workspace:  "ws",
+		KubeConfig: kubecfg,
+		Orgs:       []uint{1},
+		Remark:     "remark",
+	}
+
+	node, err := NewBuilderNode(model, 1, []uint{2, 3})
+	assert.NoError(t, err)
+	assert.NotNil(t, node)
+
+	actualNode, err := GetBuildNodesById(node)
+	assert.NoError(t, err)
+	assert.NotNil(t, actualNode)
+
+	assert.NotEqual(t, kubecfg, actualNode.K8sKubeConfigEncrypted)
+	assert.Empty(t, actualNode.k8sKubeConfigDecrypted)
+	assert.Equal(t, kubecfg, *actualNode.DecryptKubeConfig())
+	assert.NotEmpty(t, actualNode.k8sKubeConfigDecrypted)
+	assert.Equal(t, actualNode.k8sKubeConfigDecrypted, *actualNode.DecryptKubeConfig())
+
+}
+
 func TestUpdateBuilderNode(t *testing.T) {
 	if err := os.Setenv("UnitTestEnv", "1"); err != nil {
 		t.Skip("skipped due to CI")
