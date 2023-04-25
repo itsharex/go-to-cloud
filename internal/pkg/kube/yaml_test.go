@@ -1,7 +1,10 @@
 package kube
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"io"
+	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
 	"os"
 	"testing"
 	"text/template"
@@ -92,4 +95,11 @@ func TestYamlTemplateCheck(t *testing.T) {
 	}
 
 	assert.NoError(t, config.validate())
+}
+
+func TestDecodeYaml(t *testing.T) {
+	podCfg := corev1.PodApplyConfiguration{}
+	spec := ""
+	err := DecodeYaml(&spec, &podCfg)
+	assert.EqualValues(t, fmt.Errorf("文件内容为空：%v", io.EOF), err)
 }
