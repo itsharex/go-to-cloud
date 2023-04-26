@@ -207,20 +207,20 @@ type ResLimits struct {
 
 func (cfg *ResLimits) validate() error {
 	if cfg.MemLimits != nil && *cfg.MemLimits <= 0 {
-		return errors.New("内存分配上限不能小于0M")
+		return errors.New("内存分配上限不能小于或等于0M")
 	}
 	if cfg.MemRequest != nil && *cfg.MemRequest <= 0 {
-		return errors.New("内存分配不能小于0M")
+		return errors.New("内存分配不能小于或等于0M")
 	}
 	if cfg.MemLimits != nil && cfg.MemRequest != nil && *cfg.MemLimits < *cfg.MemRequest {
 		return errors.New("内存分配上限不能小于内存分配数量")
 	}
 
 	if cfg.CpuLimits != nil && (*cfg.CpuLimits <= 0) {
-		return errors.New("CPU不能少于0")
+		return errors.New("CPU分配上限不能少于或等于0")
 	}
 	if cfg.CpuRequest != nil && (*cfg.CpuRequest <= 0) {
-		return errors.New("CPU不能少于0")
+		return errors.New("CPU分配量不能少于或等于0")
 	}
 
 	if cfg.CpuLimits != nil && cfg.CpuRequest != nil && *cfg.CpuLimits < *cfg.CpuRequest {

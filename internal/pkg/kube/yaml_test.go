@@ -10,6 +10,82 @@ import (
 	"text/template"
 )
 
+func TestValidate(t *testing.T) {
+	config := AppDeployConfig{
+		Name:     "HelloWorld",
+		Image:    "Empty",
+		Replicas: 1,
+		Ports: []Port{
+			{
+				ServicePort:   0,
+				ContainerPort: 10,
+			},
+		},
+	}
+	assert.ErrorContains(t, config.validate(), "服务端口范围 1~65535")
+
+	config.Ports[0].ServicePort = 10
+	config.Ports[0].ContainerPort = 0
+	assert.ErrorContains(t, config.validate(), "容器端口范围 1~65535")
+	config.Ports[0].ContainerPort = 10
+
+	config.Image = ""
+	assert.ErrorContains(t, config.validate(), "镜像地址没有配置")
+	config.Image = "123"
+
+	config.Replicas = -1
+	assert.ErrorContains(t, config.validate(), "副本数量不允许小于0")
+	config.Replicas = 1
+}
+
+func TestRollingUpValidate(t *testing.T) {
+	config := &RollingUpdateStrategy{
+		MaxSurge:       -1,
+		MaxUnavailable: 0,
+	}
+	assert.ErrorContains(t, config.validate(), "最大激发数范围：1～100")
+	config.MaxSurge = 101
+	config.MaxUnavailable = 0
+	assert.ErrorContains(t, config.validate(), "最大激发数范围：1～100")
+
+	config.MaxSurge = 1
+	config.MaxUnavailable = -1
+	assert.ErrorContains(t, config.validate(), "最大无效数范围：1～100")
+	config.MaxSurge = 1
+	config.MaxUnavailable = 101
+	assert.ErrorContains(t, config.validate(), "最大无效数范围：1～100")
+}
+
+func TestResourceLimitValidate(t *testing.T) {
+	zero := 0
+	nonzero := 1
+	greater := 2
+
+	config := &ResLimits{}
+
+	config.MemLimits = &zero
+	assert.ErrorContains(t, config.validate(), "内存分配上限不能小于或等于0M")
+	config.MemLimits = &nonzero
+	config.MemRequest = &zero
+	assert.ErrorContains(t, config.validate(), "内存分配不能小于或等于0M")
+
+	config.MemLimits = &nonzero
+	config.MemRequest = &greater
+	assert.ErrorContains(t, config.validate(), "内存分配上限不能小于内存分配数量")
+
+	config.MemRequest = nil
+	config.MemLimits = nil
+
+	config.CpuLimits = &zero
+	assert.ErrorContains(t, config.validate(), "CPU分配上限不能少于或等于0")
+	config.CpuLimits = &nonzero
+	config.CpuRequest = &zero
+	assert.ErrorContains(t, config.validate(), "CPU分配量不能少于或等于0")
+
+	config.CpuLimits = &nonzero
+	config.CpuRequest = &greater
+	assert.ErrorContains(t, config.validate(), "CPU分配上限不能小于CPU分配数量")
+}
 func TestYamlTemplateParser(t *testing.T) {
 
 	cpuRequest, cpuLimit, memRequest, memLimit := 1, 2, 3, 4
