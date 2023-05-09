@@ -179,3 +179,106 @@ func TestDecodeYaml(t *testing.T) {
 	err := DecodeYaml(&spec, &podCfg)
 	assert.EqualValues(t, fmt.Errorf("文件内容为空：%v", io.EOF), err)
 }
+
+func TestGetYamlFromTemple(t *testing.T) {
+
+	cpuRequest, cpuLimit, memRequest, memLimit := 1, 2, 3, 4
+
+	config := AppDeployConfig{
+		Name:     "HelloWorld",
+		Image:    "Nginx:latest",
+		Replicas: 1,
+		ResourceLimit: &ResLimits{
+			CpuRequest: &cpuRequest,
+			CpuLimits:  &cpuLimit,
+			MemRequest: &memRequest,
+			MemLimits:  &memLimit,
+		},
+		RollingUpdate: &RollingUpdateStrategy{
+			MaxSurge:       12,
+			MaxUnavailable: 30,
+		},
+		Dependencies: []DependContainer{
+			{
+				ContainerName: "C1",
+				Namespace:     "helloWorld",
+			},
+			{
+				ContainerName: "c2",
+				Namespace:     "helloWorld2",
+			},
+		},
+		Ports: []Port{
+			{
+				ServicePort:   10,
+				ContainerPort: 10,
+			},
+			{
+				ServicePort:   11,
+				ContainerPort: 11,
+				NodePort:      30010,
+			},
+		},
+	}
+
+	t1, t2, err := GetYamlFromTemple(&config)
+
+	assert.NoError(t, err)
+	assert.NotEmpty(t, *t1)
+	assert.NotEmpty(t, *t2)
+}
+
+func TestProbValidate(t *testing.T) {
+	prob := &ProbeConfigure{
+		Path:             "path",
+		Timeout:          10,
+		Delay:            10,
+		Period:           10,
+		Port:             30010,
+		SuccessThreshold: 10,
+		FailureThreshold: 10,
+	}
+	err := prob.validate("abc")
+
+	assert.NoError(t, err)
+
+	name := "abc"
+
+	prob.Path = ""
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"路径未配置")
+	prob.Path = "DDD"
+
+	prob.Timeout = 0
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"超时时间不能小于0")
+	prob.Timeout = 10
+
+	prob.Delay = 0
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"延时探测时间不能小于0")
+	prob.Delay = 10
+
+	prob.Period = 0
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"探测频率不能小于0")
+	prob.Period = 10
+
+	prob.Port = 0
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"探测端口范围")
+	prob.Port = 65536
+	assert.ErrorContains(t, err, name+"探测端口范围")
+	prob.Port = 10
+
+	prob.SuccessThreshold = 0
+	err = prob.validate(name)
+	assert.ErrorContains(t, err, name+"成功阈值不能小于0")
+	prob.SuccessThreshold = 10
+
+	name = "探针"
+	prob.FailureThreshold = 0
+	err = prob.validate()
+	assert.ErrorContains(t, err, name+"失败阈值不能小于0")
+	prob.FailureThreshold = 10
+}
