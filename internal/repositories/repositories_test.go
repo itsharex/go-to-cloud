@@ -25,6 +25,11 @@ func prepareDb() {
 	}
 	conf.GetDbClient().Migrator().AutoMigrate(&Pipeline{})
 
+	if conf.GetDbClient().Migrator().HasTable(&PipelineHistory{}) {
+		conf.GetDbClient().Migrator().DropTable(&PipelineHistory{})
+	}
+	conf.GetDbClient().Migrator().AutoMigrate(&PipelineHistory{})
+
 	if conf.GetDbClient().Migrator().HasTable(&BuilderNode{}) {
 		conf.GetDbClient().Migrator().DropTable(&BuilderNode{})
 	}

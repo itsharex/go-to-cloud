@@ -29,4 +29,17 @@ func TestNewPlan(t *testing.T) {
 	plan2, err := QueryPipeline(plan.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, plan2.Name, plan.Name)
+
+	_, _, _ = StartPlan(1, plan2.ID, 1)
+	incompletePipeline, err := QueryIncompletePipeline()
+	assert.NoError(t, err)
+	assert.NotNil(t, incompletePipeline)
+	assert.Len(t, incompletePipeline, 1)
+	assert.Equal(t, plan2.Name, incompletePipeline[0].Name)
+
+	byProject, err := QueryPipelinesByProjectId(1)
+	assert.NoError(t, err)
+	assert.NotNil(t, byProject)
+	assert.Len(t, byProject, 1)
+	assert.Equal(t, plan2.Name, byProject[0].Name)
 }
