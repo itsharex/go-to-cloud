@@ -2,6 +2,7 @@ package project
 
 import (
 	"go-to-cloud/internal/models/project"
+	scm2 "go-to-cloud/internal/models/scm"
 	"go-to-cloud/internal/pkg/scm"
 	"go-to-cloud/internal/repositories"
 	"go-to-cloud/internal/utils"
@@ -19,12 +20,16 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 
 	rlt := make([]project.CodeRepoGroup, len(coderepo))
 	for i, s := range coderepo {
-		if models, err := scm.ListCodeProjects(s.Origin, &s.Url, s.Token); err != nil {
-			return nil, err
-		} else {
+		if models, err := scm.ListCodeProjects(s.Origin, &s.Url, s.Token); err == nil {
 			rlt[i].Id = s.Id
 			rlt[i].Name = s.Name
-			rlt[i].Host = s.Url
+			if s.Origin == scm2.Gitee {
+				rlt[i].Host = "Gitee"
+			} else if s.Origin == scm2.Github {
+				rlt[i].Host = "Github"
+			} else {
+				rlt[i].Host = s.Url
+			}
 			rlt[i].Git = make([]project.GitSources, len(models))
 			for j, model := range models {
 				rlt[i].Git[j] = project.GitSources{
@@ -38,6 +43,16 @@ func GetCodeRepoGroupsByOrg(orgId []uint) ([]project.CodeRepoGroup, error) {
 			sort.SliceStable(rlt[i].Git, func(x, y int) bool {
 				return strings.Compare(rlt[i].Git[x].Url, rlt[i].Git[y].Url) == -1
 			})
+		} else {
+			rlt[i].Id = s.Id
+			rlt[i].Name = s.Name
+			if s.Origin == scm2.Gitee {
+				rlt[i].Host = "Gitee"
+			} else if s.Origin == scm2.Github {
+				rlt[i].Host = "Github"
+			} else {
+				rlt[i].Host = s.Url
+			}
 		}
 	}
 	return rlt, nil

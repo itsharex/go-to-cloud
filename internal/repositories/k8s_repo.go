@@ -56,7 +56,7 @@ func QueryK8sRepo(orgs []uint, repoNamePattern string, pager *models.Pager) ([]M
 		tx = tx.Where("k8s_repo.name like ?", repoNamePattern+"%")
 	}
 
-	if pager != nil {
+	if pager != nil && pager.PageSize > 0 && pager.PageIndex > 1 {
 		tx = tx.Limit(pager.PageSize).Offset((pager.PageIndex - 1) * pager.PageSize)
 	}
 

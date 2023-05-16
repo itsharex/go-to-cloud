@@ -358,6 +358,7 @@ spec:
       containers:
       - name: {{.Name}}
         image: {{.Image}}
+        imagePullPolicy: IfNotPresent
 {{- if .ContainerExtracts}}
 {{- range .ContainerExtracts}}
         {{.Key}}:

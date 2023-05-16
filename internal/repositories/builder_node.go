@@ -66,7 +66,7 @@ func GetBuildNodesOnK8sByOrgId(orgs []uint, repoNamePattern string, pager *model
 		tx = tx.Where("builder_nodes.name like ?", repoNamePattern+"%")
 	}
 
-	if pager != nil {
+	if pager != nil && pager.PageSize > 0 && pager.PageIndex > 1 {
 		tx = tx.Limit(pager.PageSize).Offset((pager.PageIndex - 1) * pager.PageSize)
 	}
 
